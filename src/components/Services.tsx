@@ -134,7 +134,7 @@ export const Services = () => {
                 Let's clearly define your strategic challenges and craft the corridor that 
                 decisively moves your ambitions forward.
               </p>
-              <Button variant="hero" size="lg" className="text-lg px-8 py-6">
+              <Button variant="default" size="lg" className="text-lg px-8 py-6">
                 Schedule Strategic Consultation
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>

@@ -44,7 +44,7 @@ export const Navigation = () => {
               </a>
             ))}
             <a href="/#contact">
-              <Button variant="hero" size="sm">
+              <Button variant="default" size="sm">
                 Get in Touch
               </Button>
             </a>
@@ -78,7 +78,7 @@ export const Navigation = () => {
                 </a>
               ))}
               <a href="/#contact">
-                <Button variant="hero" size="sm" className="mt-2">
+                <Button variant="default" size="sm" className="mt-2">
                   Get in Touch
                 </Button>
               </a>

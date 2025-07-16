@@ -174,7 +174,7 @@ export const Contact = () => {
                     </Label>
                   </div>
 
-                  <Button variant="hero" size="lg" className="w-full text-lg py-6">
+                  <Button variant="default" size="lg" className="w-full text-lg py-6">
                     <Send className="h-5 w-5 mr-2" />
                     Send Strategic Inquiry
                   </Button>
