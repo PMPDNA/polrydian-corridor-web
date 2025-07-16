@@ -1,3 +1,4 @@
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import CalendlyButton from '@/components/CalendlyButton'
@@ -15,7 +16,8 @@ export default function CalendlyDemo() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <Navigation />
+      <div className="container mx-auto px-4 pt-24 pb-8 space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold">Schedule a Meeting</h1>

@@ -154,7 +154,7 @@ export default function Services() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto px-4 py-12 space-y-16">
+      <div className="container mx-auto px-4 pt-24 pb-12 space-y-16">
         {/* Hero Section */}
         <div id="hero" className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
@@ -304,7 +304,6 @@ export default function Services() {
           </CardContent>
         </Card>
       </div>
-      <SectionNavigator sections={sections} />
       <Footer />
     </div>
   );

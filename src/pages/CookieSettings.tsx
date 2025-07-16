@@ -1,3 +1,4 @@
+import { Navigation } from "@/components/Navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -88,7 +89,8 @@ export default function CookieSettings() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+      <Navigation />
+      <div className="container mx-auto px-4 pt-24 pb-12 max-w-4xl">
         {/* Header */}
         <div className="text-center space-y-4 mb-8">
           <div className="flex justify-center">

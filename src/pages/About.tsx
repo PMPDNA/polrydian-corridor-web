@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
+import { Navigation } from "@/components/Navigation";
+import {
   Award, 
   Globe, 
   Target, 
@@ -12,7 +13,6 @@ import {
 } from "lucide-react";
 
 import Footer from "@/components/Footer";
-import SectionNavigator from "@/components/SectionNavigator";
 
 export default function About() {
   const teamMembers = [
@@ -240,7 +240,6 @@ export default function About() {
           </CardContent>
         </Card>
       </div>
-      <SectionNavigator sections={sections} />
       <Footer />
     </div>
   );

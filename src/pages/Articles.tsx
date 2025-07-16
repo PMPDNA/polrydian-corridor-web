@@ -1,3 +1,4 @@
+import { Navigation } from "@/components/Navigation";
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Calendar, Clock, ExternalLink, Plus, Camera, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -113,6 +114,7 @@ export default function Articles() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
       {/* Hero Section with Rotating Articles */}
       {featuredArticles.length > 0 && (
         <section className="relative h-[70vh] overflow-hidden">

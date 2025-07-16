@@ -33,7 +33,7 @@ const Index = () => {
       <div id="contact">
         <Contact />
       </div>
-      <SectionNavigator sections={sections} />
+      
     </div>
   );
 };

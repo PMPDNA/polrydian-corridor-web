@@ -1,3 +1,4 @@
+import { Navigation } from "@/components/Navigation";
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -111,7 +112,9 @@ export default function ProfileManager() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <div className="container mx-auto px-4 pt-24 pb-12 space-y-8">
       <div>
         <h1 className="text-3xl font-bold mb-2">Profile & Settings</h1>
         <p className="text-muted-foreground">
@@ -354,6 +357,7 @@ export default function ProfileManager() {
           Save Changes
         </Button>
       </div>
+    </div>
     </div>
   );
 }

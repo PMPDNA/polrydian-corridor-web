@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Shield, 
@@ -14,7 +15,8 @@ export default function Privacy() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12 space-y-8">
+      <Navigation />
+      <div className="container mx-auto px-4 pt-24 pb-12 space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
