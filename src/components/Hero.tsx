@@ -32,9 +32,16 @@ export const Hero = () => {
             <span className="text-accent block mt-2">Strategic Clarity</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Founder of Polrydian Group specializing in corridor economics—mapping strategic flows of capital, 
-            technology, and expertise across critical global regions to transform obstacles into pathways for growth.
+            Strategic consulting with Patrick Misiewicz, Founder of Polrydian Group. Specializing in corridor economics—mapping 
+            strategic flows of capital, technology, and expertise across 60+ countries to transform complex global challenges into competitive advantages.
           </p>
+          
+          {/* Key Differentiators */}
+          <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
+            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">15+ Years Global Experience</span>
+            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">Board Director - World Affairs Council</span>
+            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">Masters in Logistics & Georgetown Public Policy</span>
+          </div>
         </div>
 
         {/* Call to Action */}

@@ -123,25 +123,13 @@ export const Services = () => {
           ))}
         </div>
 
-        {/* Call to Action */}
+        {/* Simplified Call to Action */}
         <div className="text-center">
-          <Card className="shadow-elegant bg-gradient-to-r from-primary/5 to-accent/5 border-accent/20">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-semibold text-foreground mb-4">
-                Ready to Transform Your Strategic Challenges?
-              </h3>
-              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                Let's clearly define your strategic challenges and craft the corridor that 
-                decisively moves your ambitions forward.
-              </p>
-              <a href="/calendly-demo">
-                <Button variant="default" size="lg" className="text-lg px-8 py-6">
-                  Schedule Strategic Consultation
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Button>
-              </a>
-            </CardContent>
-          </Card>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Ready to transform your strategic challenges into competitive advantages? 
+            <a href="/calendly-demo" className="text-accent hover:underline ml-1">Schedule a consultation</a> 
+            or <a href="/about" className="text-accent hover:underline ml-1">learn more about our approach</a>.
+          </p>
         </div>
       </div>
     </section>
