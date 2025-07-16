@@ -7,14 +7,13 @@ export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
-    { label: "About", href: "#about" },
-    { label: "Services", href: "#services" },
-    { label: "Experience", href: "#experience" },
+    { label: "About", href: "/about" },
+    { label: "Services", href: "/services" },
+    { label: "Insights", href: "/insights" },
+    { label: "FAQ", href: "/faq" },
     { label: "Articles", href: "/articles" },
     { label: "Schedule", href: "/calendly-demo" },
-    { label: "Profile", href: "/profile" },
-    { label: "Admin", href: "/admin" },
-    { label: "Contact", href: "#contact" }
+    { label: "Contact", href: "/#contact" }
   ];
 
   return (

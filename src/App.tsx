@@ -5,6 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SupabaseProtectedRoute from "@/components/SupabaseProtectedRoute";
 import Index from "./pages/Index";
+import About from "./pages/About";
+import Services from "./pages/Services";
+import Insights from "./pages/Insights";
+import FAQ from "./pages/FAQ";
+import Privacy from "./pages/Privacy";
 import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
@@ -21,6 +26,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="/articles" element={<Articles />} />
           <Route path="/admin" element={
             <SupabaseProtectedRoute requireAdmin={true}>
