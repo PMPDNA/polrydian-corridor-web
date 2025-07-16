@@ -7,6 +7,7 @@ import { Contact } from "@/components/Contact";
 import SectionNavigator from "@/components/SectionNavigator";
 import { AccessibilityMenu } from "@/components/AccessibilityMenu";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
     { id: "about", title: "About" },
     { id: "services", title: "Services" },
     { id: "experience", title: "Experience" },
+    { id: "testimonials", title: "Testimonials" },
     { id: "contact", title: "Contact" }
   ];
 
@@ -40,6 +42,9 @@ const Index = () => {
         </section>
         <section id="experience" aria-label="Experience section">
           <Experience />
+        </section>
+        <section id="testimonials" aria-label="Testimonials section">
+          <TestimonialsSection />
         </section>
         <section id="contact" aria-label="Contact section">
           <Contact />

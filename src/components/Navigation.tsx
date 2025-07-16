@@ -13,6 +13,7 @@ export const Navigation = () => {
     { label: "Insights", href: "/insights" },
     { label: "FAQ", href: "/faq" },
     { label: "Articles", href: "/articles" },
+    { label: "Search", href: "/search" },
     { label: "Schedule", href: "/calendly-demo" },
     { label: "Contact", href: "/#contact" }
   ];
