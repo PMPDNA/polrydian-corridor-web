@@ -11,6 +11,8 @@ import {
   Mail
 } from "lucide-react";
 
+import Footer from "@/components/Footer";
+
 export default function About() {
   const teamMembers = [
     {
@@ -226,6 +228,7 @@ export default function About() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }

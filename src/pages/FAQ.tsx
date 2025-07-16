@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Accordion,
@@ -253,6 +254,7 @@ export default function FAQ() {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

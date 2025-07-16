@@ -7,6 +7,7 @@ export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
+    { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Services", href: "/services" },
     { label: "Insights", href: "/insights" },
@@ -20,8 +21,10 @@ export const Navigation = () => {
     <nav className="fixed top-0 w-full bg-background/95 backdrop-blur-sm border-b border-border z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          {/* Polrydian Logo */}
-          <PolrydianLogo variant="compact" size="sm" />
+          {/* Polrydian Logo - Make it clickable to go home */}
+          <a href="/" className="hover:opacity-80 transition-opacity">
+            <PolrydianLogo variant="compact" size="sm" />
+          </a>
 
           {/* Personal Branding */}
           <div className="hidden sm:block ml-4 pl-4 border-l border-border">
@@ -40,9 +43,11 @@ export const Navigation = () => {
                 {item.label}
               </a>
             ))}
-            <Button variant="hero" size="sm">
-              Get in Touch
-            </Button>
+            <a href="/#contact">
+              <Button variant="hero" size="sm">
+                Get in Touch
+              </Button>
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,9 +77,11 @@ export const Navigation = () => {
                   {item.label}
                 </a>
               ))}
-              <Button variant="hero" size="sm" className="mt-2">
-                Get in Touch
-              </Button>
+              <a href="/#contact">
+                <Button variant="hero" size="sm" className="mt-2">
+                  Get in Touch
+                </Button>
+              </a>
             </div>
           </div>
         )}

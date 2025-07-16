@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Shield, 
@@ -192,6 +193,7 @@ export default function Privacy() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }
