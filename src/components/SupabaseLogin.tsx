@@ -1,12 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Shield, Eye, EyeOff, Mail, Lock, KeyRound } from 'lucide-react'
+import { Shield, Eye, EyeOff, Mail, Lock, KeyRound, UserPlus } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import TwoFactorVerification from './TwoFactorVerification'
 
@@ -18,9 +17,39 @@ export default function SupabaseLogin() {
   const [isLoading, setIsLoading] = useState(false)
   const [needsMFA, setNeedsMFA] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-  const [activeTab, setActiveTab] = useState('signin')
+  const [showOneTimeSetup, setShowOneTimeSetup] = useState(false)
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true)
   const { signIn, signUp, resetPassword } = useSupabaseAuth()
   const { toast } = useToast()
+
+  const ADMIN_EMAIL = 'polrydian@gmail.com'
+
+  // Check if admin account exists on component mount
+  useEffect(() => {
+    checkAdminExists()
+  }, [])
+
+  const checkAdminExists = async () => {
+    setIsCheckingAdmin(true)
+    try {
+      // Try to sign in with a dummy password to see if account exists
+      const { error } = await signIn(ADMIN_EMAIL, 'dummy-password')
+      
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          // Account exists but wrong password - this is expected
+          setIsCheckingAdmin(false)
+          return
+        } else if (error.message.includes('Invalid email')) {
+          // Account doesn't exist
+          setShowOneTimeSetup(true)
+        }
+      }
+    } catch (error) {
+      console.error('Error checking admin:', error)
+    }
+    setIsCheckingAdmin(false)
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,7 +92,7 @@ export default function SupabaseLogin() {
     }
   }
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleOneTimeSetup = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (password !== confirmPassword) {
@@ -75,10 +104,10 @@ export default function SupabaseLogin() {
       return
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       toast({
         title: "Password Too Short",
-        description: "Password must be at least 6 characters long.",
+        description: "Password must be at least 8 characters long.",
         variant: "destructive",
       })
       return
@@ -87,35 +116,26 @@ export default function SupabaseLogin() {
     setIsLoading(true)
 
     try {
-      const { data, error } = await signUp(email, password)
+      const { data, error } = await signUp(ADMIN_EMAIL, password)
       
       if (error) {
-        console.error('Sign up error:', error)
-        
-        // Better error messages
-        let errorMessage = error.message
-        if (error.message.includes('User already registered')) {
-          errorMessage = 'An account with this email already exists. Try signing in instead.'
-        } else if (error.message.includes('Password should be')) {
-          errorMessage = 'Password must be at least 6 characters long.'
-        }
-        
-        throw new Error(errorMessage)
+        console.error('Admin setup error:', error)
+        throw error
       }
 
       toast({
-        title: "Account Created",
+        title: "Admin Account Created",
         description: data.user?.email_confirmed_at 
           ? "Account created successfully! You can now sign in." 
-          : "Account created! Please check your email to verify your account before signing in.",
+          : "Account created! Please check your email to verify your account.",
       })
       
-      setActiveTab('signin')
+      setShowOneTimeSetup(false)
       setPassword('')
       setConfirmPassword('')
     } catch (error: any) {
       toast({
-        title: "Sign Up Failed",
+        title: "Setup Failed",
         description: error.message,
         variant: "destructive",
       })
@@ -160,6 +180,98 @@ export default function SupabaseLogin() {
     }
   }
 
+  if (isCheckingAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (showOneTimeSetup) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 p-3 w-fit rounded-full bg-primary/10">
+              <UserPlus className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl font-bold">Admin Setup</CardTitle>
+            <CardDescription>
+              Create your admin account for secure access
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Alert className="mb-6">
+              <Mail className="h-4 w-4" />
+              <AlertDescription>
+                Creating admin access for: <strong>polrydian@gmail.com</strong>
+              </AlertDescription>
+            </Alert>
+
+            <form onSubmit={handleOneTimeSetup} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="setup-password">Create Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="setup-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Create a strong password (min. 8 characters)"
+                    required
+                    disabled={isLoading}
+                    className="pl-10 pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="setup-confirm-password">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="setup-confirm-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    required
+                    disabled={isLoading}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading || !password.trim() || !confirmPassword.trim()}
+              >
+                {isLoading ? 'Creating Admin Account...' : 'Create Admin Account'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   if (showForgotPassword) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -177,19 +289,19 @@ export default function SupabaseLogin() {
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="reset-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="reset-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                      required
-                      disabled={isLoading}
-                      className="pl-10"
-                    />
-                  </div>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    required
+                    disabled={isLoading}
+                    className="pl-10"
+                  />
+                </div>
               </div>
               
               <div className="flex gap-2">
