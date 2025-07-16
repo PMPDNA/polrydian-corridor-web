@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Save, X, Webhook, Link, Upload } from "lucide-react";
+import { FileUpload } from "@/components/FileUpload";
 import { useToast } from "@/hooks/use-toast";
 
 interface Article {
@@ -207,12 +208,19 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="heroImage">Hero Image URL</Label>
+              <Label htmlFor="heroImage">Hero Image</Label>
+              <FileUpload
+                onFilesChange={(urls) => setFormData(prev => ({ ...prev, heroImage: urls[0] || "" }))}
+                currentFiles={formData.heroImage ? [formData.heroImage] : []}
+                multiple={false}
+                label="Upload Hero Image"
+                className="mb-4"
+              />
               <Input
                 id="heroImage"
                 value={formData.heroImage}
                 onChange={(e) => setFormData(prev => ({ ...prev, heroImage: e.target.value }))}
-                placeholder="https://example.com/image.jpg or /api/placeholder/1200/600"
+                placeholder="Or enter image URL"
               />
             </div>
 
@@ -248,32 +256,51 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="vipPhotos">VIP Photos (comma-separated URLs)</Label>
-                <Textarea
-                  id="vipPhotos"
-                  value={formData.vipPhotos.join(", ")}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    vipPhotos: e.target.value.split(",").map(url => url.trim()).filter(Boolean)
-                  }))}
-                  placeholder="URL1, URL2, URL3..."
-                  rows={3}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <Label>VIP Meeting Photos</Label>
+                <FileUpload
+                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, vipPhotos: urls }))}
+                  currentFiles={formData.vipPhotos}
+                  multiple={true}
+                  label="Upload VIP Photos"
                 />
+                <div className="space-y-2">
+                  <Label htmlFor="vipPhotosText">Or enter URLs (comma-separated)</Label>
+                  <Textarea
+                    id="vipPhotosText"
+                    value={formData.vipPhotos.join(", ")}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      vipPhotos: e.target.value.split(",").map(url => url.trim()).filter(Boolean)
+                    }))}
+                    placeholder="URL1, URL2, URL3..."
+                    rows={3}
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="eventPhotos">Event Photos (comma-separated URLs)</Label>
-                <Textarea
-                  id="eventPhotos"
-                  value={formData.eventPhotos.join(", ")}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    eventPhotos: e.target.value.split(",").map(url => url.trim()).filter(Boolean)
-                  }))}
-                  placeholder="URL1, URL2, URL3..."
-                  rows={3}
+              
+              <div className="space-y-4">
+                <Label>Event Photos</Label>
+                <FileUpload
+                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, eventPhotos: urls }))}
+                  currentFiles={formData.eventPhotos}
+                  multiple={true}
+                  label="Upload Event Photos"
                 />
+                <div className="space-y-2">
+                  <Label htmlFor="eventPhotosText">Or enter URLs (comma-separated)</Label>
+                  <Textarea
+                    id="eventPhotosText"
+                    value={formData.eventPhotos.join(", ")}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      eventPhotos: e.target.value.split(",").map(url => url.trim()).filter(Boolean)
+                    }))}
+                    placeholder="URL1, URL2, URL3..."
+                    rows={3}
+                  />
+                </div>
               </div>
             </div>
           </CardContent>
