@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FileUpload } from "@/components/FileUpload";
 import { MapPin, GraduationCap, Award, Users } from "lucide-react";
 
 export const About = () => {
+  const [profilePhoto, setProfilePhoto] = useState<string>("");
   const highlights = [
     {
       icon: MapPin,
@@ -52,13 +55,37 @@ export const About = () => {
             <div className="relative">
               {/* Photo Placeholder - Replace with actual Patrick photo */}
               <div className="w-full max-w-md mx-auto bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-8 shadow-elegant">
-                <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <span className="text-2xl font-bold text-accent">PM</span>
+                <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center overflow-hidden relative group">
+                  {profilePhoto ? (
+                    <img 
+                      src={profilePhoto} 
+                      alt="Patrick Misiewicz" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <div className="w-20 h-20 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <span className="text-2xl font-bold text-accent">PM</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Patrick Misiewicz</p>
+                      <p className="text-xs text-muted-foreground">Click to upload photo</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">Patrick Misiewicz</p>
-                    <p className="text-xs text-muted-foreground">Professional Photo</p>
+                  )}
+                  
+                  {/* Upload overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <FileUpload
+                      onFilesChange={(urls) => {
+                        if (urls.length > 0) {
+                          setProfilePhoto(urls[0]);
+                        }
+                      }}
+                      currentFiles={profilePhoto ? [profilePhoto] : []}
+                      multiple={false}
+                      accept="image/*"
+                      label="Upload Photo"
+                      className="w-full h-full"
+                    />
                   </div>
                 </div>
               </div>
