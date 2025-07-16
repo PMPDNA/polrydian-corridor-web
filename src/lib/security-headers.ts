@@ -1,37 +1,31 @@
+import { SECURITY_CONFIG } from './security-config'
+
 // Security headers and CSP configuration
 export const securityHeaders = {
-  'Content-Security-Policy': [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Needed for React dev
-    "style-src 'self' 'unsafe-inline'", // Needed for styled components
-    "img-src 'self' data: https:",
-    "connect-src 'self' https://*.supabase.co https://hooks.zapier.com",
-    "font-src 'self' data:",
-    "object-src 'none'",
-    "media-src 'self'",
-    "frame-src 'self' https://calendly.com",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'"
-  ].join('; '),
+  'Content-Security-Policy': Object.entries(SECURITY_CONFIG.CSP_DIRECTIVES)
+    .map(([directive, sources]) => `${directive} ${sources.join(' ')}`)
+    .join('; '),
   
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
   'Permissions-Policy': [
     'camera=()',
     'microphone=()',
     'geolocation=()',
-    'payment=()'
+    'payment=()',
+    'usb=()',
+    'bluetooth=()'
   ].join(', ')
 };
 
 // Rate limiting for auth attempts
 export class AuthRateLimit {
   private attempts = new Map<string, { count: number; resetTime: number }>();
-  private readonly maxAttempts = 5;
-  private readonly windowMs = 15 * 60 * 1000; // 15 minutes
+  private readonly maxAttempts = SECURITY_CONFIG.AUTH_MAX_ATTEMPTS;
+  private readonly windowMs = SECURITY_CONFIG.AUTH_WINDOW_MS;
 
   isAllowed(identifier: string): boolean {
     const now = Date.now();
