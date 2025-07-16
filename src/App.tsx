@@ -16,6 +16,7 @@ import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
 import CalendlyDemo from "./pages/CalendlyDemo";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 import CookieConsent from "./components/CookieConsent";
 import ScrollIndicator from "./components/ScrollIndicator";
@@ -55,6 +56,13 @@ const App = () => (
             } />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/calendly-demo" element={<CalendlyDemo />} />
+            <Route path="/analytics" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <Analytics />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
