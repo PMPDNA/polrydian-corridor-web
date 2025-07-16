@@ -19,6 +19,18 @@ export default function PasswordChangeForm() {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    // Get current stored password
+    const storedPassword = localStorage.getItem('admin-password') || 'admin123'
+    
+    if (currentPassword !== storedPassword) {
+      toast({
+        title: "Password Change Failed",
+        description: "Current password is incorrect",
+        variant: "destructive",
+      })
+      return
+    }
+    
     if (newPassword !== confirmPassword) {
       toast({
         title: "Password Mismatch",
@@ -40,22 +52,8 @@ export default function PasswordChangeForm() {
     setIsLoading(true)
 
     try {
-      // First verify current password by trying to sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: 'polrydian@gmail.com',
-        password: currentPassword
-      })
-
-      if (signInError) {
-        throw new Error('Current password is incorrect')
-      }
-
-      // Update password
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      })
-      
-      if (error) throw error
+      // Update the stored password
+      localStorage.setItem('admin-password', newPassword)
 
       toast({
         title: "Password Updated",

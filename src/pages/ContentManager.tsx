@@ -31,7 +31,7 @@ export default function ContentManager() {
     // Simple delay for security
     await new Promise(resolve => setTimeout(resolve, 500))
 
-    if (password === 'admin123') {
+    if (password === (localStorage.getItem('admin-password') || 'admin123')) {
       localStorage.setItem('admin-auth', 'true')
       setIsAuthenticated(true)
       toast({
