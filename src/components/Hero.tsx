@@ -6,12 +6,12 @@ import { PolrydianLogo } from "@/components/PolrydianLogo";
 export const Hero = () => {
   return (
     <section 
-      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background"
+      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background pt-20"
     >
       {/* Clean background without blue overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/30 to-background"></div>
       
-      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center pt-8">
         {/* Polrydian Logo */}
         <div className="mb-8 animate-fade-in">
           <PolrydianLogo variant="full" size="lg" className="justify-center" />
