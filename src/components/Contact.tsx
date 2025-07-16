@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import CalendlyPopup from "@/components/CalendlyPopup";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Mail, 
   Phone, 
@@ -12,10 +16,81 @@ import {
   Linkedin, 
   Send,
   Clock,
-  Shield
+  Shield,
+  CheckCircle
 } from "lucide-react";
 
 export const Contact = () => {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    company: "",
+    service: "",
+    message: "",
+    urgent: false
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { id, value, type } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields marked with *",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: formData
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Message Sent Successfully!",
+        description: "Your strategic consultation inquiry has been received. You'll get a confirmation email shortly.",
+      });
+
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        company: "",
+        service: "",
+        message: "",
+        urgent: false
+      });
+
+    } catch (error: any) {
+      console.error('Contact form error:', error);
+      toast({
+        title: "Error Sending Message",
+        description: "There was an issue sending your message. Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const contactInfo = [
     {
       icon: Mail,
@@ -123,33 +198,68 @@ export const Contact = () => {
                 <CardTitle className="text-2xl text-foreground">Start the Conversation</CardTitle>
               </CardHeader>
               <CardContent>
-                <form className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="firstName">First Name *</Label>
-                      <Input id="firstName" placeholder="Your first name" className="mt-1" />
+                      <Input 
+                        id="firstName" 
+                        placeholder="Your first name" 
+                        className="mt-1" 
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        disabled={isSubmitting}
+                        required
+                      />
                     </div>
                     <div>
                       <Label htmlFor="lastName">Last Name *</Label>
-                      <Input id="lastName" placeholder="Your last name" className="mt-1" />
+                      <Input 
+                        id="lastName" 
+                        placeholder="Your last name" 
+                        className="mt-1" 
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        disabled={isSubmitting}
+                        required
+                      />
                     </div>
                   </div>
 
                   <div>
                     <Label htmlFor="email">Email Address *</Label>
-                    <Input id="email" type="email" placeholder="your.email@company.com" className="mt-1" />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="your.email@company.com" 
+                      className="mt-1" 
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      disabled={isSubmitting}
+                      required
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="company">Organization</Label>
-                    <Input id="company" placeholder="Your company or organization" className="mt-1" />
+                    <Input 
+                      id="company" 
+                      placeholder="Your company or organization" 
+                      className="mt-1" 
+                      value={formData.company}
+                      onChange={handleInputChange}
+                      disabled={isSubmitting}
+                    />
                   </div>
 
                   <div>
                     <Label htmlFor="service">Area of Interest</Label>
                     <select 
                       id="service" 
-                      className="w-full mt-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full mt-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                      value={formData.service}
+                      onChange={handleInputChange}
+                      disabled={isSubmitting}
                     >
                       <option value="">Select a service area</option>
                       {services.map((service, index) => (
@@ -164,19 +274,45 @@ export const Contact = () => {
                       id="message" 
                       placeholder="Describe your strategic challenge, project scope, or opportunity. The more detail you provide, the better we can tailor our initial consultation." 
                       className="mt-1 min-h-[120px]"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      disabled={isSubmitting}
+                      required
                     />
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <input type="checkbox" id="urgent" className="rounded" />
+                    <input 
+                      type="checkbox" 
+                      id="urgent" 
+                      className="rounded disabled:opacity-50" 
+                      checked={formData.urgent}
+                      onChange={handleInputChange}
+                      disabled={isSubmitting}
+                    />
                     <Label htmlFor="urgent" className="text-sm">
                       This is an urgent strategic matter requiring immediate attention
                     </Label>
                   </div>
 
-                  <Button variant="default" size="lg" className="w-full text-lg py-6">
-                    <Send className="h-5 w-5 mr-2" />
-                    Send Strategic Inquiry
+                  <Button 
+                    type="submit" 
+                    variant="default" 
+                    size="lg" 
+                    className="w-full text-lg py-6" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <LoadingSpinner size="sm" className="mr-2" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-5 w-5 mr-2" />
+                        Send Strategic Inquiry
+                      </>
+                    )}
                   </Button>
 
                   <p className="text-xs text-muted-foreground text-center">
