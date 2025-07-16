@@ -26,7 +26,7 @@ export const Contact = () => {
     {
       icon: Phone,
       title: "Phone",
-      value: "+1 (305) 555-0123",
+      value: "+1 305 878 6400",
       description: "Direct line for urgent matters"
     },
     {
