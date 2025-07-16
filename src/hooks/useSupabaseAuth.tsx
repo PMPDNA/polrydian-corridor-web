@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
-import { getUserDisplayName, isUserAdmin } from '@/utils/userUtils'
+import { getUserDisplayName, isUserAdminSync, getUserRole, clearUserRoleCache } from '@/utils/userUtils'
 
 interface AuthContextType {
   user: User | null
@@ -17,16 +17,31 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Admin email - updated to use polrydian@gmail.com
-const ADMIN_EMAIL = 'polrydian@gmail.com'
-
 export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
 
-  const isAdmin = isUserAdmin(user)
   const displayName = getUserDisplayName(user)
+
+  // Load user role when user changes
+  useEffect(() => {
+    if (user?.id) {
+      // First check sync cache
+      setIsAdmin(isUserAdminSync(user))
+      
+      // Then load fresh role from database
+      getUserRole(user.id).then(role => {
+        setIsAdmin(role === 'admin')
+      }).catch(error => {
+        console.warn('Failed to load user role:', error)
+        setIsAdmin(false)
+      })
+    } else {
+      setIsAdmin(false)
+    }
+  }, [user?.id])
 
   useEffect(() => {
     // Get initial session
@@ -43,6 +58,11 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
+      
+      // Clear role cache when user changes
+      if (session?.user?.id) {
+        clearUserRoleCache(session.user.id)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -55,8 +75,8 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       password,
       options: {
         data: {
-          display_name: email === ADMIN_EMAIL ? 'Patrick Misiewicz' : 'User',
-          name: email === ADMIN_EMAIL ? 'Patrick Misiewicz' : 'User'
+          display_name: email === 'polrydian@gmail.com' ? 'Patrick Misiewicz' : 'User',
+          name: email === 'polrydian@gmail.com' ? 'Patrick Misiewicz' : 'User'
         }
       }
     })

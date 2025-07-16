@@ -11,11 +11,11 @@ export const SECURITY_CONFIG = {
   // Session configuration
   SESSION_TIMEOUT_MS: 24 * 60 * 60 * 1000, // 24 hours
   
-  // Content Security Policy
+  // Content Security Policy (tightened for security)
   CSP_DIRECTIVES: {
     'default-src': ["'self'"],
-    'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-    'style-src': ["'self'", "'unsafe-inline'"],
+    'script-src': ["'self'", "'wasm-unsafe-eval'"], // Removed unsafe-inline and unsafe-eval
+    'style-src': ["'self'", "'unsafe-inline'"], // Keep for Tailwind CSS
     'img-src': ["'self'", "data:", "https:"],
     'connect-src': ["'self'", "https://*.supabase.co", "https://hooks.zapier.com"],
     'font-src': ["'self'", "data:"],
@@ -25,6 +25,16 @@ export const SECURITY_CONFIG = {
     'frame-ancestors': ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"]
+  },
+
+  // OTP Security settings (reduced from 24 hours to 10 minutes)
+  OTP_EXPIRY_MINUTES: 10,
+  
+  // Session security
+  SESSION_SECURITY: {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict' as const
   }
 } as const
 

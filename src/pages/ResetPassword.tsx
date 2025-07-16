@@ -43,10 +43,10 @@ export default function ResetPassword() {
       return
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       toast({
         title: "Password Too Short",
-        description: "Password must be at least 6 characters long.",
+        description: "Password must be at least 8 characters long.",
         variant: "destructive",
       })
       return
@@ -126,7 +126,7 @@ export default function ResetPassword() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter new password (min. 6 characters)"
+                  placeholder="Enter new password (min. 8 characters)"
                   required
                   disabled={isLoading}
                   className="pr-10"
