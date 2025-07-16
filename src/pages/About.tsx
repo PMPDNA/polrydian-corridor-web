@@ -68,7 +68,8 @@ export default function About() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-20">
+      <Navigation />
       <div className="container mx-auto px-4 py-12 space-y-16">
         {/* Hero Section */}
         <div id="hero" className="text-center space-y-6">

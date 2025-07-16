@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { SocialLinks } from "@/components/SocialLinks";
 import CalendlyPopup from "@/components/CalendlyPopup";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -164,8 +165,13 @@ export const Contact = () => {
                         <h4 className="font-semibold text-foreground">{info.title}</h4>
                         <p className="text-foreground font-medium">{info.value}</p>
                         <p className="text-sm text-muted-foreground">{info.description}</p>
-                      </div>
-                    </div>
+          </div>
+
+          {/* Social Links Section */}
+          <div className="mt-8">
+            <SocialLinks />
+          </div>
+        </div>
                   ))}
                 </div>
 
