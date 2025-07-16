@@ -311,13 +311,6 @@ export default function SupabaseLogin() {
             </TabsContent>
             
             <TabsContent value="signup">
-              <Alert className="mb-4">
-                <Shield className="h-4 w-4" />
-                <AlertDescription>
-                  Use polrydian@gmail.com for admin access
-                </AlertDescription>
-              </Alert>
-              
               <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
