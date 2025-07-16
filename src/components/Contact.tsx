@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import CalendlyPopup from "@/components/CalendlyPopup";
 import { 
   Mail, 
   Phone, 
@@ -200,9 +201,13 @@ export const Contact = () => {
                 Let's navigate complexity together and build the corridors that advance your mission.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="hero" size="lg">
-                  Schedule Consultation Call
-                </Button>
+                <CalendlyPopup
+                  calendlyUrl="https://calendly.com/your-username/30min"
+                  buttonText="Schedule Consultation Call"
+                  variant="default"
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                />
                 <Button variant="outline" size="lg" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                   <Linkedin className="h-5 w-5 mr-2" />
                   Connect on LinkedIn

@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
+import CalendlyDemo from "./pages/CalendlyDemo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             </SupabaseProtectedRoute>
           } />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/calendly-demo" element={<CalendlyDemo />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

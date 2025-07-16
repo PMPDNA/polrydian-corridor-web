@@ -11,6 +11,7 @@ export const Navigation = () => {
     { label: "Services", href: "#services" },
     { label: "Experience", href: "#experience" },
     { label: "Articles", href: "/articles" },
+    { label: "Schedule", href: "/calendly-demo" },
     { label: "Profile", href: "/profile" },
     { label: "Admin", href: "/admin" },
     { label: "Contact", href: "#contact" }
