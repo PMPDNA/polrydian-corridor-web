@@ -210,7 +210,9 @@ export const Contact = () => {
                 />
                 <Button variant="outline" size="lg" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                   <Linkedin className="h-5 w-5 mr-2" />
-                  Connect on LinkedIn
+                  <a href="https://www.linkedin.com/in/patrick-misiewicz-mslscm-28299b40" target="_blank" rel="noopener noreferrer">
+                    Connect on LinkedIn
+                  </a>
                 </Button>
               </div>
             </CardContent>

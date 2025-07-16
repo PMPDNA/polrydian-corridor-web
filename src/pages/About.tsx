@@ -189,7 +189,9 @@ export default function About() {
                           <span className="text-sm">Contact</span>
                         </a>
                         <a 
-                          href={member.linkedin}
+                          href="https://www.linkedin.com/in/patrick-misiewicz-mslscm-28299b40"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="flex items-center gap-2 text-accent hover:text-accent/80 transition-colors"
                         >
                           <Linkedin className="h-4 w-4" />
