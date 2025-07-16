@@ -3,8 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/hooks/useAuth";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import { SupabaseAuthProvider } from "@/hooks/useSupabaseAuth";
+import SupabaseProtectedRoute from "@/components/SupabaseProtectedRoute";
 import Index from "./pages/Index";
 import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
@@ -15,7 +15,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
+    <SupabaseAuthProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -24,21 +24,21 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/articles" element={<Articles />} />
             <Route path="/profile" element={
-              <ProtectedRoute>
+              <SupabaseProtectedRoute requireAdmin={true}>
                 <ProfileManager />
-              </ProtectedRoute>
+              </SupabaseProtectedRoute>
             } />
             <Route path="/admin" element={
-              <ProtectedRoute>
+              <SupabaseProtectedRoute requireAdmin={true}>
                 <ContentManager />
-              </ProtectedRoute>
+              </SupabaseProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </AuthProvider>
+    </SupabaseAuthProvider>
   </QueryClientProvider>
 );
 

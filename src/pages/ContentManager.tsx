@@ -19,11 +19,13 @@ import {
   Briefcase,
   User,
   Phone,
-  LogOut
+  LogOut,
+  Shield
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { saveSecureData, getSecureData, removeSecureData, sanitizeInput, validateUrl } from "@/utils/secureStorage";
+import TwoFactorSetup from "@/components/TwoFactorSetup";
 
 interface WebsiteContent {
   hero: {
@@ -171,7 +173,7 @@ const defaultContent: WebsiteContent = {
 
 export default function ContentManager() {
   const { toast } = useToast();
-  const { logout } = useAuth();
+  const { signOut } = useSupabaseAuth();
   const [content, setContent] = useState<WebsiteContent>(defaultContent);
   const [hasChanges, setHasChanges] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
@@ -361,7 +363,7 @@ export default function ContentManager() {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={logout}
+                onClick={signOut}
                 className="gap-2"
               >
                 <LogOut className="h-4 w-4" />
@@ -373,7 +375,7 @@ export default function ContentManager() {
 
         {/* Content Editor */}
         <Tabs value={activeSection} onValueChange={setActiveSection}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="hero" className="gap-2">
               <Home className="h-4 w-4" />
               Hero
@@ -393,6 +395,10 @@ export default function ContentManager() {
             <TabsTrigger value="contact" className="gap-2">
               <Phone className="h-4 w-4" />
               Contact
+            </TabsTrigger>
+            <TabsTrigger value="security" className="gap-2">
+              <Shield className="h-4 w-4" />
+              Security
             </TabsTrigger>
           </TabsList>
 
@@ -798,6 +804,11 @@ export default function ContentManager() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Security Section */}
+          <TabsContent value="security" className="space-y-6">
+            <TwoFactorSetup />
           </TabsContent>
         </Tabs>
       </div>
