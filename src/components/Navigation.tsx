@@ -10,6 +10,7 @@ export const Navigation = () => {
     { label: "About", href: "#about" },
     { label: "Services", href: "#services" },
     { label: "Experience", href: "#experience" },
+    { label: "Articles", href: "/articles" },
     { label: "Contact", href: "#contact" }
   ];
 
