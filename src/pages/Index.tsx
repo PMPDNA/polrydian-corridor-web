@@ -5,7 +5,6 @@ import { Services } from "@/components/Services";
 import { Experience } from "@/components/Experience";
 import { Contact } from "@/components/Contact";
 import SectionNavigator from "@/components/SectionNavigator";
-import { AccessibilityMenu } from "@/components/AccessibilityMenu";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { useAnalytics } from "@/hooks/useAnalytics";
@@ -51,7 +50,6 @@ const Index = () => {
         </section>
       </main>
       
-      <AccessibilityMenu />
       <PerformanceMonitor />
     </div>
   );

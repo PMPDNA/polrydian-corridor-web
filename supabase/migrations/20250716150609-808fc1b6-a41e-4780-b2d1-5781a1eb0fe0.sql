@@ -1,0 +1,2 @@
+-- Create edge function for CSIS integration using Perplexity API
+-- This will be used to fetch economic insights and content from CSIS and other sources

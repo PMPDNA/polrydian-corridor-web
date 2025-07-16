@@ -71,22 +71,14 @@ export const About = () => {
                       <p className="text-xs text-muted-foreground">Click to upload photo</p>
                     </div>
                   )}
-                  
-                  {/* Upload overlay */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <FileUpload
-                      onFilesChange={(urls) => {
-                        if (urls.length > 0) {
-                          setProfilePhoto(urls[0]);
-                        }
-                      }}
-                      currentFiles={profilePhoto ? [profilePhoto] : []}
-                      multiple={false}
-                      accept="image/*"
-                      label="Upload Photo"
-                      className="w-full h-full"
-                    />
-                  </div>
+                   
+                   {/* Upload disabled - Profile photos should be managed by admin */}
+                   <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
+                     <div className="text-center">
+                       <p className="text-xs text-muted-foreground">Photo upload disabled</p>
+                       <p className="text-xs text-muted-foreground">Contact admin for updates</p>
+                     </div>
+                   </div>
                 </div>
               </div>
               
