@@ -6,8 +6,7 @@ import { Experience } from "@/components/Experience";
 import { Contact } from "@/components/Contact";
 import SectionNavigator from "@/components/SectionNavigator";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
-import { TestimonialsSection } from "@/components/TestimonialsSection";
-import { SearchComponent } from "@/components/SearchComponent";
+import { SocialMediaFeed } from "@/components/SocialMediaFeed";
 import Footer from "@/components/Footer";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
@@ -32,6 +31,9 @@ const Index = () => {
       <main role="main">
         <section id="hero" aria-label="Hero section">
           <Hero />
+        </section>
+        <section id="social-insights" aria-label="Social media insights" className="container mx-auto px-6">
+          <SocialMediaFeed showFeaturedOnly={true} limit={6} showTitle={false} />
         </section>
         <section id="services" aria-label="Services section">
           <Services />

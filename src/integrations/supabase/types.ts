@@ -256,6 +256,7 @@ export type Database = {
       }
       social_media_posts: {
         Row: {
+          approval_status: string | null
           content: string | null
           created_at: string
           engagement_data: Json | null
@@ -273,6 +274,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approval_status?: string | null
           content?: string | null
           created_at?: string
           engagement_data?: Json | null
@@ -290,6 +292,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approval_status?: string | null
           content?: string | null
           created_at?: string
           engagement_data?: Json | null

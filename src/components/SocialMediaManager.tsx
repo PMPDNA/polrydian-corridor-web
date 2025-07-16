@@ -21,7 +21,10 @@ import {
   Heart,
   MessageCircle,
   Share,
-  Calendar
+  Calendar,
+  Check,
+  X,
+  Clock
 } from 'lucide-react';
 
 interface SocialPost {
@@ -38,6 +41,7 @@ interface SocialPost {
   hashtags?: any;
   is_featured: boolean;
   is_visible: boolean;
+  approval_status: 'pending' | 'approved' | 'rejected';
 }
 
 interface GalleryItem {
@@ -79,7 +83,7 @@ export const SocialMediaManager = () => {
         .order('published_at', { ascending: false });
 
       if (error) throw error;
-      setSocialPosts(data || []);
+      setSocialPosts((data || []) as SocialPost[]);
     } catch (error: any) {
       console.error('Error loading social posts:', error);
       toast({
@@ -213,6 +217,33 @@ export const SocialMediaManager = () => {
       await loadSocialPosts();
     } catch (error: any) {
       console.error('Error updating post visibility:', error);
+    }
+  };
+
+  const updateApprovalStatus = async (id: string, status: 'approved' | 'rejected') => {
+    try {
+      const { error } = await supabase
+        .from('social_media_posts')
+        .update({ 
+          approval_status: status,
+          is_visible: status === 'approved'
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      await loadSocialPosts();
+      
+      toast({
+        title: 'Success',
+        description: `Post ${status} successfully!`,
+      });
+    } catch (error: any) {
+      console.error('Error updating approval status:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update post approval status.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -373,6 +404,17 @@ export const SocialMediaManager = () => {
                     <Badge variant="outline">
                       {post.platform}
                     </Badge>
+                    <Badge 
+                      variant={
+                        post.approval_status === 'approved' ? 'default' : 
+                        post.approval_status === 'rejected' ? 'destructive' : 'secondary'
+                      }
+                    >
+                      {post.approval_status === 'approved' && <Check className="h-3 w-3 mr-1" />}
+                      {post.approval_status === 'rejected' && <X className="h-3 w-3 mr-1" />}
+                      {post.approval_status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
+                      {post.approval_status}
+                    </Badge>
                     {post.is_featured && (
                       <Badge variant="default">
                         <Star className="h-3 w-3 mr-1" />
@@ -417,21 +459,45 @@ export const SocialMediaManager = () => {
                 </div>
                 
                 <div className="flex flex-col gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => togglePostVisibility(post.id, post.is_visible)}
-                  >
-                    {post.is_visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                  </Button>
+                  {post.approval_status === 'pending' && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={() => updateApprovalStatus(post.id, 'approved')}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => updateApprovalStatus(post.id, 'rejected')}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
                   
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => togglePostFeatured(post.id, post.is_featured)}
-                  >
-                    <Star className={`h-4 w-4 ${post.is_featured ? 'fill-current' : ''}`} />
-                  </Button>
+                  {post.approval_status === 'approved' && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => togglePostVisibility(post.id, post.is_visible)}
+                      >
+                        {post.is_visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </Button>
+                      
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => togglePostFeatured(post.id, post.is_featured)}
+                      >
+                        <Star className={`h-4 w-4 ${post.is_featured ? 'fill-current' : ''}`} />
+                      </Button>
+                    </>
+                  )}
                   
                   {post.post_url && (
                     <Button size="sm" variant="outline" asChild>

@@ -55,6 +55,7 @@ export const SocialMediaFeed: React.FC<SocialMediaFeedProps> = ({
         .from('social_media_posts')
         .select('*')
         .eq('is_visible', true)
+        .eq('approval_status', 'approved')
         .order('published_at', { ascending: false })
         .limit(limit);
 
