@@ -16,6 +16,7 @@ import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
 import CalendlyDemo from "./pages/CalendlyDemo";
+import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
 import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
@@ -58,6 +59,13 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/calendly-demo" element={<CalendlyDemo />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/security" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <SecurityDashboard />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
             <Route path="/analytics" element={
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
