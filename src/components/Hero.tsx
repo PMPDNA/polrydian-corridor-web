@@ -45,10 +45,10 @@ export const Hero = () => {
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
           </a>
-          <a href="#experience">
+          <a href="/calendly-demo">
             <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-accent text-accent hover:bg-accent hover:text-accent-foreground">
               <Globe2 className="h-5 w-5 mr-2" />
-              Global Experience
+              Schedule Consultation
             </Button>
           </a>
         </div>

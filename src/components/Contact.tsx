@@ -345,7 +345,7 @@ export const Contact = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <CalendlyPopup
                   calendlyUrl="https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
-                  buttonText="Schedule Consultation Call"
+                  buttonText="Schedule your meeting with Calendly integration"
                   variant="default"
                   size="lg"
                   className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
