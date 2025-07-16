@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import Footer from "@/components/Footer";
+import SectionNavigator from "@/components/SectionNavigator";
 
 export default function About() {
   const teamMembers = [
@@ -57,11 +58,20 @@ export default function About() {
     "Global Markets Research Certification"
   ];
 
+  const sections = [
+    { id: "hero", title: "Overview" },
+    { id: "story", title: "Our Story" },
+    { id: "values", title: "Values" },
+    { id: "team", title: "Team" },
+    { id: "credentials", title: "Credentials" },
+    { id: "mission", title: "Mission" }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 space-y-16">
         {/* Hero Section */}
-        <div className="text-center space-y-6">
+        <div id="hero" className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
             About Polrydian
           </h1>
@@ -228,6 +238,7 @@ export default function About() {
           </CardContent>
         </Card>
       </div>
+      <SectionNavigator sections={sections} />
       <Footer />
     </div>
   );

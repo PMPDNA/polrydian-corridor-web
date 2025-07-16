@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import SectionNavigator from "@/components/SectionNavigator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -141,11 +142,19 @@ export default function Services() {
     }
   ];
 
+  const sections = [
+    { id: "hero", title: "Overview" },
+    { id: "core-services", title: "Core Services" },
+    { id: "process", title: "Our Process" },
+    { id: "case-studies", title: "Success Stories" },
+    { id: "cta", title: "Get Started" }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 space-y-16">
         {/* Hero Section */}
-        <div className="text-center space-y-6">
+        <div id="hero" className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
             Strategic Services
           </h1>
@@ -156,7 +165,7 @@ export default function Services() {
         </div>
 
         {/* Core Services */}
-        <div className="space-y-8">
+        <div id="core-services" className="space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-foreground mb-4">Core Services</h2>
             <p className="text-muted-foreground">
@@ -215,7 +224,7 @@ export default function Services() {
         </div>
 
         {/* Process */}
-        <div className="space-y-8">
+        <div id="process" className="space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-foreground mb-4">Our Process</h2>
             <p className="text-muted-foreground">
@@ -240,7 +249,7 @@ export default function Services() {
         </div>
 
         {/* Case Studies */}
-        <div className="space-y-8">
+        <div id="case-studies" className="space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-foreground mb-4">Success Stories</h2>
             <p className="text-muted-foreground">
@@ -274,7 +283,7 @@ export default function Services() {
         </div>
 
         {/* CTA Section */}
-        <Card className="shadow-elegant bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-accent/20">
+        <Card id="cta" className="shadow-elegant bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-accent/20">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-semibold text-foreground mb-4">
               Ready to Transform Your Challenges?
@@ -293,6 +302,7 @@ export default function Services() {
           </CardContent>
         </Card>
       </div>
+      <SectionNavigator sections={sections} />
       <Footer />
     </div>
   );

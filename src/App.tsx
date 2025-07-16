@@ -17,6 +17,7 @@ import ResetPassword from "./pages/ResetPassword";
 import CalendlyDemo from "./pages/CalendlyDemo";
 import NotFound from "./pages/NotFound";
 import CookieConsent from "./components/CookieConsent";
+import ScrollIndicator from "./components/ScrollIndicator";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <ScrollIndicator />
         <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>
