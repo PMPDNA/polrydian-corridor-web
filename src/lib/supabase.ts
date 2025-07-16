@@ -1,9 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key'
+// Use environment variables or fallback for development
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://demo.supabase.co'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'demo-key'
 
-console.log('Supabase config:', { supabaseUrl, supabaseAnonKey: supabaseAnonKey.slice(0, 10) + '...' })
+console.log('Supabase Environment Check:', {
+  hasUrl: !!import.meta.env.VITE_SUPABASE_URL,
+  hasKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+  url: supabaseUrl.includes('demo') ? 'Using demo URL' : 'Using real URL'
+})
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 

@@ -30,11 +30,22 @@ export default function SupabaseLogin() {
       const { data, error } = await signIn(email, password)
       
       if (error) {
+        console.error('Sign in error:', error)
+        
         if (error.message.includes('MFA')) {
           setNeedsMFA(true)
           return
         }
-        throw error
+        
+        // Better error messages
+        let errorMessage = error.message
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password. Please check your credentials and try again.'
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Please check your email and click the verification link before signing in.'
+        }
+        
+        throw new Error(errorMessage)
       }
 
       toast({
@@ -78,14 +89,30 @@ export default function SupabaseLogin() {
     try {
       const { data, error } = await signUp(email, password)
       
-      if (error) throw error
+      if (error) {
+        console.error('Sign up error:', error)
+        
+        // Better error messages
+        let errorMessage = error.message
+        if (error.message.includes('User already registered')) {
+          errorMessage = 'An account with this email already exists. Try signing in instead.'
+        } else if (error.message.includes('Password should be')) {
+          errorMessage = 'Password must be at least 6 characters long.'
+        }
+        
+        throw new Error(errorMessage)
+      }
 
       toast({
         title: "Account Created",
-        description: "Please check your email to verify your account.",
+        description: data.user?.email_confirmed_at 
+          ? "Account created successfully! You can now sign in." 
+          : "Account created! Please check your email to verify your account before signing in.",
       })
       
       setActiveTab('signin')
+      setPassword('')
+      setConfirmPassword('')
     } catch (error: any) {
       toast({
         title: "Sign Up Failed",

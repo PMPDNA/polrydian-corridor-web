@@ -173,7 +173,7 @@ const defaultContent: WebsiteContent = {
 
 export default function ContentManager() {
   const { toast } = useToast();
-  const { signOut } = useSupabaseAuth();
+  const { signOut, displayName } = useSupabaseAuth();
   const [content, setContent] = useState<WebsiteContent>(defaultContent);
   const [hasChanges, setHasChanges] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
@@ -294,7 +294,7 @@ export default function ContentManager() {
               Content Manager
             </h1>
             <p className="text-muted-foreground mt-2">
-              Edit and manage all website content from one central location
+              Welcome back, {displayName}! Edit and manage all website content from one central location
             </p>
           </div>
           
