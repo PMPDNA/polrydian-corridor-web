@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Hexagon, Mail, Phone } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { PolrydianLogo } from "@/components/PolrydianLogo";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,19 +17,13 @@ export const Navigation = () => {
     <nav className="fixed top-0 w-full bg-background/95 backdrop-blur-sm border-b border-border z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          {/* Logo/Brand */}
-          <div className="flex items-center gap-3">
-            {/* Polrydian Logo Placeholder - Replace with actual logo */}
-            <div className="relative">
-              <Hexagon className="h-10 w-10 text-accent fill-accent/10 transform rotate-12" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-3 h-3 bg-accent rounded-full"></div>
-              </div>
-            </div>
-            <div>
-              <div className="font-bold text-lg text-foreground font-polrydian">Patrick Misiewicz</div>
-              <div className="text-sm text-muted-foreground font-polrydian">Polrydian Group</div>
-            </div>
+          {/* Polrydian Logo */}
+          <PolrydianLogo variant="compact" size="sm" />
+
+          {/* Personal Branding */}
+          <div className="hidden sm:block ml-4 pl-4 border-l border-border">
+            <div className="font-semibold text-sm text-foreground font-polrydian">Patrick Misiewicz</div>
+            <div className="text-xs text-muted-foreground font-polrydian">Founder & Strategic Advisor</div>
           </div>
 
           {/* Desktop Menu */}

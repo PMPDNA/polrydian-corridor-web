@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe2, TrendingUp } from "lucide-react";
 import polrydianHeroBg from "@/assets/polrydian-hero-bg.jpg";
+import { PolrydianLogo } from "@/components/PolrydianLogo";
 
 export const Hero = () => {
   return (
@@ -17,8 +18,13 @@ export const Hero = () => {
       <div className="absolute inset-0 bg-gradient-hero opacity-90"></div>
       
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-        {/* Quote */}
+        {/* Polrydian Logo */}
         <div className="mb-8 animate-fade-in">
+          <PolrydianLogo variant="full" size="lg" className="justify-center" />
+        </div>
+
+        {/* Quote */}
+        <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <blockquote className="text-xl md:text-2xl text-accent font-light italic mb-4">
             "The impediment to action advances action. What stands in the way becomes the way."
           </blockquote>
