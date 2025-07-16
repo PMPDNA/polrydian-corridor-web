@@ -10,6 +10,7 @@ import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ContentManager from "./pages/ContentManager";
 import ResetPassword from "./pages/ResetPassword";
+import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
               </SupabaseProtectedRoute>
             } />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/admin-setup" element={<AdminSetup />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
