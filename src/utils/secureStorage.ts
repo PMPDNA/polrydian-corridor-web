@@ -1,46 +1,26 @@
-// Secure storage utility with encryption and validation
-const STORAGE_KEY = 'app_secure_data';
-const ENCRYPTION_KEY = 'secure_key_2024'; // In production, this should be generated dynamically
+// Secure storage utility with proper validation
+// NOTE: This replaces the previous insecure base64 "encryption"
 
-// Simple encryption/decryption (for demo purposes - use proper encryption in production)
-function encrypt(text: string): string {
-  try {
-    return btoa(text);
-  } catch {
-    return text;
-  }
-}
+import { sanitizeText } from '@/lib/security';
 
-function decrypt(encryptedText: string): string {
-  try {
-    return atob(encryptedText);
-  } catch {
-    return encryptedText;
-  }
-}
-
-// Input sanitization
+// Input sanitization for storage
 export function sanitizeInput(input: string): string {
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
-    .replace(/javascript:/gi, '') // Remove javascript: URLs
-    .replace(/on\w+\s*=/gi, '') // Remove event handlers
-    .replace(/[<>'"]/g, '') // Remove potentially dangerous characters
-    .trim();
+  return sanitizeText(input);
 }
 
-// URL validation
+// URL validation - now using the security module
 export function validateUrl(url: string): boolean {
   try {
     const urlObj = new URL(url);
-    const allowedProtocols = ['http:', 'https:', 'mailto:'];
+    const allowedProtocols = ['https:', 'mailto:'];
     const allowedDomains = [
       'calendly.com',
-      'linkedin.com',
+      'linkedin.com', 
       'github.com',
       'twitter.com',
       'instagram.com',
-      'facebook.com'
+      'facebook.com',
+      'hooks.zapier.com'
     ];
     
     if (!allowedProtocols.includes(urlObj.protocol)) {
@@ -59,91 +39,122 @@ export function validateUrl(url: string): boolean {
   }
 }
 
-// Secure data storage
+// Secure data storage - WARNING about localStorage limitations
 export function saveSecureData(key: string, data: any): boolean {
+  console.warn('WARNING: localStorage is not secure for sensitive data. Use Supabase for production.');
+  
   try {
     const sanitizedData = typeof data === 'string' ? sanitizeInput(data) : data;
     const dataString = JSON.stringify(sanitizedData);
-    const encryptedData = encrypt(dataString);
     const timestamp = Date.now();
     
-    const securePayload = {
-      data: encryptedData,
-      timestamp,
-      checksum: btoa(dataString + timestamp)
+    const payload = {
+      data: dataString,
+      timestamp
     };
     
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(securePayload));
+    localStorage.setItem(`app_data_${key}`, JSON.stringify(payload));
     return true;
   } catch (error) {
-    console.error('Failed to save secure data:', error);
+    console.error('Failed to save data:', error);
     return false;
   }
 }
 
-// Secure data retrieval
+// Secure data retrieval with expiration
 export function getSecureData(key: string): any | null {
   try {
-    const stored = localStorage.getItem(`${STORAGE_KEY}_${key}`);
+    const stored = localStorage.getItem(`app_data_${key}`);
     if (!stored) return null;
     
-    const securePayload = JSON.parse(stored);
-    const decryptedData = decrypt(securePayload.data);
+    const payload = JSON.parse(stored);
     
-    // Verify data integrity
-    const expectedChecksum = btoa(decryptedData + securePayload.timestamp);
-    if (expectedChecksum !== securePayload.checksum) {
-      console.warn('Data integrity check failed');
-      return null;
-    }
-    
-    // Check if data is not too old (optional)
-    const maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
-    if (Date.now() - securePayload.timestamp > maxAge) {
+    // Check if data is not too old
+    const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+    if (Date.now() - payload.timestamp > maxAge) {
       removeSecureData(key);
       return null;
     }
     
-    return JSON.parse(decryptedData);
+    return JSON.parse(payload.data);
   } catch (error) {
-    console.error('Failed to retrieve secure data:', error);
+    console.error('Failed to retrieve data:', error);
     return null;
   }
 }
 
-// Remove secure data
+// Remove data
 export function removeSecureData(key: string): void {
-  localStorage.removeItem(`${STORAGE_KEY}_${key}`);
+  localStorage.removeItem(`app_data_${key}`);
 }
 
-// Validate file upload
+// File upload validation with strict security
 export function validateFileUpload(file: File): { valid: boolean; error?: string } {
   const allowedTypes = [
     'image/jpeg',
-    'image/png',
+    'image/png', 
     'image/gif',
-    'image/webp',
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain'
+    'image/webp'
   ];
   
-  const maxSize = 10 * 1024 * 1024; // 10MB
+  const maxSize = 5 * 1024 * 1024; // 5MB for images
   
   if (!allowedTypes.includes(file.type)) {
-    return { valid: false, error: 'File type not allowed' };
+    return { valid: false, error: 'Only JPEG, PNG, GIF, and WebP images are allowed' };
   }
   
   if (file.size > maxSize) {
-    return { valid: false, error: 'File size too large (max 10MB)' };
+    return { valid: false, error: 'File size too large (max 5MB)' };
   }
   
-  // Check for suspicious file names
-  const suspiciousPatterns = ['.exe', '.bat', '.cmd', '.scr', '.com', '.pif'];
-  if (suspiciousPatterns.some(pattern => file.name.toLowerCase().includes(pattern))) {
+  // Check for suspicious file names and extensions
+  const dangerousPatterns = [
+    '.exe', '.bat', '.cmd', '.scr', '.com', '.pif', '.js', '.html', '.php', '.asp'
+  ];
+  
+  const fileName = file.name.toLowerCase();
+  if (dangerousPatterns.some(pattern => fileName.includes(pattern))) {
     return { valid: false, error: 'Suspicious file type detected' };
   }
   
+  // Validate file extension matches MIME type
+  const extension = fileName.split('.').pop();
+  const mimeToExt: Record<string, string[]> = {
+    'image/jpeg': ['jpg', 'jpeg'],
+    'image/png': ['png'],
+    'image/gif': ['gif'],
+    'image/webp': ['webp']
+  };
+  
+  const expectedExtensions = mimeToExt[file.type];
+  if (!expectedExtensions || !expectedExtensions.includes(extension || '')) {
+    return { valid: false, error: 'File extension does not match file type' };
+  }
+  
   return { valid: true };
+}
+
+// Session management helper
+export function createSecureSession(userId: string): string {
+  const sessionData = {
+    userId,
+    timestamp: Date.now(),
+    expires: Date.now() + (2 * 60 * 60 * 1000) // 2 hours
+  };
+  
+  return btoa(JSON.stringify(sessionData));
+}
+
+export function validateSession(sessionToken: string): { valid: boolean; userId?: string } {
+  try {
+    const sessionData = JSON.parse(atob(sessionToken));
+    
+    if (Date.now() > sessionData.expires) {
+      return { valid: false };
+    }
+    
+    return { valid: true, userId: sessionData.userId };
+  } catch {
+    return { valid: false };
+  }
 }

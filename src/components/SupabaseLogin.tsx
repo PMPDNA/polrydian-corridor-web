@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Shield, Eye, EyeOff, Mail, Lock, KeyRound } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import { emailSchema } from '@/lib/security'
+import { authRateLimit } from '@/lib/security-headers'
 import TwoFactorVerification from './TwoFactorVerification'
 
 export default function SupabaseLogin() {
@@ -16,12 +18,43 @@ export default function SupabaseLogin() {
   const [isLoading, setIsLoading] = useState(false)
   const [needsMFA, setNeedsMFA] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [rateLimited, setRateLimited] = useState(false)
   const { signIn, resetPassword } = useSupabaseAuth()
   const { toast } = useToast()
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setErrors({})
+
+    // Check rate limiting
+    const clientId = `${email}_${Date.now().toString().slice(0, -3)}` // IP simulation
+    if (!authRateLimit.isAllowed(clientId)) {
+      const remainingTime = Math.ceil(authRateLimit.getRemainingTime(clientId) / 60000)
+      setRateLimited(true)
+      toast({
+        title: "Too Many Attempts",
+        description: `Please wait ${remainingTime} minutes before trying again.`,
+        variant: "destructive"
+      })
+      setIsLoading(false)
+      return
+    }
+
+    // Validate inputs
+    const emailValidation = emailSchema.safeParse(email)
+    if (!emailValidation.success) {
+      setErrors({ email: emailValidation.error.errors[0].message })
+      setIsLoading(false)
+      return
+    }
+
+    if (!password) {
+      setErrors({ password: 'Password is required' })
+      setIsLoading(false)
+      return
+    }
 
     try {
       const { data, error } = await signIn(email, password)

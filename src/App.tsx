@@ -3,12 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AdminLogin from "@/components/AdminLogin";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import SupabaseProtectedRoute from "@/components/SupabaseProtectedRoute";
 import Index from "./pages/Index";
 import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
-import ContentManager from "./pages/ContentManager";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
@@ -23,8 +21,17 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/articles" element={<Articles />} />
-          <Route path="/admin" element={<ContentManager />} />
-          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin" element={
+            <SupabaseProtectedRoute requireAdmin={true}>
+              <ProfileManager />
+            </SupabaseProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <SupabaseProtectedRoute>
+              <ProfileManager />
+            </SupabaseProtectedRoute>
+          } />
+          <Route path="/reset-password" element={<ResetPassword />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

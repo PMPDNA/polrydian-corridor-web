@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Save, X, Webhook, Link, Upload } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
 import { useToast } from "@/hooks/use-toast";
+import { articleSchema, sanitizeHtml, sanitizeFormData, isValidUrl } from "@/lib/security";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 interface Article {
   id: string;
@@ -34,8 +36,10 @@ interface ArticleFormProps {
 
 export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
   const { toast } = useToast();
+  const { isAdmin } = useSupabaseAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [zapierWebhook, setZapierWebhook] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     title: article?.title || "",
     excerpt: article?.excerpt || "",
@@ -53,11 +57,59 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
+
+    // Check admin privileges
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "You need admin privileges to publish articles.",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
 
     try {
+      // Sanitize input data
+      const sanitizedData = sanitizeFormData({
+        title: formData.title,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        category: formData.category,
+        featured: formData.featured,
+        zapierWebhookUrl: zapierWebhook
+      });
+      
+      // Validate with Zod schema  
+      const validationResult = articleSchema.safeParse(sanitizedData);
+      
+      if (!validationResult.success) {
+        const fieldErrors: Record<string, string> = {};
+        validationResult.error.errors.forEach(err => {
+          if (err.path[0]) {
+            fieldErrors[err.path[0] as string] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+        setIsLoading(false);
+        return;
+      }
+
+      const validatedData = validationResult.data;
       const newArticle: Article = {
         id: article?.id || Date.now().toString(),
-        ...formData
+        title: validatedData.title,
+        excerpt: validatedData.excerpt,
+        content: sanitizeHtml(validatedData.content),
+        category: validatedData.category as any,
+        heroImage: formData.heroImage,
+        publishDate: formData.publishDate,
+        readTime: formData.readTime,
+        linkedinUrl: formData.linkedinUrl,
+        featured: validatedData.featured || false,
+        vipPhotos: formData.vipPhotos,
+        eventPhotos: formData.eventPhotos
       };
 
       // Save to localStorage for persistence
@@ -74,13 +126,15 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
 
       onSave(newArticle);
 
-      // Trigger Zapier webhook if provided
-      if (zapierWebhook) {
+      // Trigger Zapier webhook if provided and valid
+      if (zapierWebhook && isValidUrl(zapierWebhook)) {
         try {
           await fetch(zapierWebhook, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            mode: "no-cors",
+            headers: { 
+              "Content-Type": "application/json",
+              "User-Agent": "PolrydianApp/1.0"
+            },
             body: JSON.stringify({
               action: "article_published",
               article: newArticle,
@@ -95,10 +149,16 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         } catch (error) {
           toast({
             title: "Article Published",
-            description: "Article published to website, but webhook failed.",
+            description: "Article published to website, but webhook failed. Check URL security.",
             variant: "destructive"
           });
         }
+      } else if (zapierWebhook && !isValidUrl(zapierWebhook)) {
+        toast({
+          title: "Article Published",
+          description: "Article published, but webhook URL is not secure (HTTPS required).",
+          variant: "destructive"
+        });
       } else {
         toast({
           title: "Article Published!",
@@ -165,7 +225,9 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Enter article title"
                   required
+                  maxLength={200}
                 />
+                {errors.title && <p className="text-sm text-destructive mt-1">{errors.title}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Category *</Label>
@@ -195,7 +257,9 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
                 placeholder="Brief description of the article"
                 rows={3}
                 required
+                maxLength={500}
               />
+              {errors.excerpt && <p className="text-sm text-destructive mt-1">{errors.excerpt}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -265,7 +329,9 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
                 placeholder="Write your full article content here..."
                 rows={12}
                 required
+                maxLength={50000}
               />
+              {errors.content && <p className="text-sm text-destructive mt-1">{errors.content}</p>}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
