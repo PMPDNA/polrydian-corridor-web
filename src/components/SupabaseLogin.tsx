@@ -26,27 +26,32 @@ export default function SupabaseLogin() {
 
   // Check if admin account exists on component mount
   useEffect(() => {
-    checkAdminExists()
+    createAdminAccountIfNeeded()
   }, [])
 
-  const checkAdminExists = async () => {
+  const createAdminAccountIfNeeded = async () => {
     setIsCheckingAdmin(true)
     try {
-      // Try to sign in with a dummy password to see if account exists
-      const { error } = await signIn(ADMIN_EMAIL, 'dummy-password')
+      // Create admin account with temporary password
+      const TEMP_PASSWORD = '123456789!'
+      const { data, error } = await signUp(ADMIN_EMAIL, TEMP_PASSWORD)
       
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          // Account exists but wrong password - this is expected
-          setIsCheckingAdmin(false)
-          return
-        } else if (error.message.includes('Invalid email')) {
-          // Account doesn't exist
-          setShowOneTimeSetup(true)
+        if (error.message.includes('User already registered')) {
+          // Account already exists, that's fine
+          console.log('Admin account already exists')
+        } else {
+          console.error('Error creating admin account:', error)
         }
+      } else {
+        console.log('Admin account created with temporary password')
+        toast({
+          title: "Admin Account Ready",
+          description: "Use polrydian@gmail.com with password: 123456789!",
+        })
       }
     } catch (error) {
-      console.error('Error checking admin:', error)
+      console.error('Error setting up admin:', error)
     }
     setIsCheckingAdmin(false)
   }
@@ -75,6 +80,15 @@ export default function SupabaseLogin() {
         }
         
         throw new Error(errorMessage)
+      }
+
+      // Check if using temporary password
+      if (password === '123456789!') {
+        toast({
+          title: "Temporary Password Detected",
+          description: "Please change your password in the Security tab for security.",
+          variant: "destructive",
+        })
       }
 
       toast({

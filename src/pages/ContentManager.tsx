@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { saveSecureData, getSecureData, removeSecureData, sanitizeInput, validateUrl } from "@/utils/secureStorage";
 import TwoFactorSetup from "@/components/TwoFactorSetup";
+import PasswordChangeForm from "@/components/PasswordChangeForm";
 
 interface WebsiteContent {
   hero: {
@@ -808,6 +809,7 @@ export default function ContentManager() {
 
           {/* Security Section */}
           <TabsContent value="security" className="space-y-6">
+            <PasswordChangeForm />
             <TwoFactorSetup />
           </TabsContent>
         </Tabs>
