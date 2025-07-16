@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Shield, Eye, EyeOff, Mail, Lock } from 'lucide-react'
+import { Shield, Eye, EyeOff, Mail, Lock, KeyRound } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import TwoFactorVerification from './TwoFactorVerification'
 
@@ -17,8 +17,9 @@ export default function SupabaseLogin() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [needsMFA, setNeedsMFA] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [activeTab, setActiveTab] = useState('signin')
-  const { signIn, signUp } = useSupabaseAuth()
+  const { signIn, signUp, resetPassword } = useSupabaseAuth()
   const { toast } = useToast()
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -96,6 +97,99 @@ export default function SupabaseLogin() {
     }
   }
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!email.trim()) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const { error } = await resetPassword(email)
+      
+      if (error) throw error
+
+      toast({
+        title: "Reset Email Sent",
+        description: "Please check your email for password reset instructions.",
+      })
+      
+      setShowForgotPassword(false)
+    } catch (error: any) {
+      toast({
+        title: "Reset Failed",
+        description: error.message,
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 p-3 w-fit rounded-full bg-primary/10">
+              <KeyRound className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
+            <CardDescription>
+              Enter your email to receive reset instructions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="polrydian@gmail.com"
+                    required
+                    disabled={isLoading}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowForgotPassword(false)}
+                  disabled={isLoading}
+                  className="flex-1"
+                >
+                  Back to Login
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="flex-1" 
+                  disabled={isLoading || !email.trim()}
+                >
+                  {isLoading ? 'Sending...' : 'Send Reset Email'}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   if (needsMFA) {
     return <TwoFactorVerification onCancel={() => setNeedsMFA(false)} />
   }
@@ -130,7 +224,7 @@ export default function SupabaseLogin() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="admin@polrydiangroup.com"
+                      placeholder="polrydian@gmail.com"
                       required
                       disabled={isLoading}
                       className="pl-10"
@@ -176,6 +270,16 @@ export default function SupabaseLogin() {
                 >
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
+                
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="w-full text-sm"
+                  disabled={isLoading}
+                >
+                  Forgot your password?
+                </Button>
               </form>
             </TabsContent>
             
@@ -183,27 +287,27 @@ export default function SupabaseLogin() {
               <Alert className="mb-4">
                 <Shield className="h-4 w-4" />
                 <AlertDescription>
-                  Use admin@polrydiangroup.com to create an admin account
+                  Use polrydian@gmail.com to create an admin account
                 </AlertDescription>
               </Alert>
               
               <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="admin@polrydiangroup.com"
-                      required
-                      disabled={isLoading}
-                      className="pl-10"
-                    />
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="polrydian@gmail.com"
+                        required
+                        disabled={isLoading}
+                        className="pl-10"
+                      />
+                    </div>
                   </div>
-                </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>

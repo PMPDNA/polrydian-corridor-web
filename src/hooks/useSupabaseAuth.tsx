@@ -9,13 +9,14 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<any>
   signIn: (email: string, password: string) => Promise<any>
   signOut: () => Promise<void>
+  resetPassword: (email: string) => Promise<any>
   isAdmin: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Admin email - in production, this should be managed via database roles
-const ADMIN_EMAIL = 'admin@polrydiangroup.com'
+// Admin email - updated to use polrydian@gmail.com
+const ADMIN_EMAIL = 'polrydian@gmail.com'
 
 export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -60,6 +61,13 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     return { data, error }
   }
 
+  const resetPassword = async (email: string) => {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    return { data, error }
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
   }
@@ -71,6 +79,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signIn,
     signOut,
+    resetPassword,
     isAdmin,
   }
 
