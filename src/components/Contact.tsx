@@ -19,7 +19,7 @@ export const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      value: "patrick@polrydiangroup.com",
+      value: "info@polrydian.com",
       description: "Strategic consultation inquiries"
     },
     {

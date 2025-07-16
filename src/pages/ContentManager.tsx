@@ -160,7 +160,7 @@ const defaultContent: WebsiteContent = {
     title: "Strategic Consultation",
     subtitle: "Let's define your strategic challenges and craft decisive pathways forward",
     info: {
-      email: "patrick@polrydiangroup.com",
+      email: "info@polrydian.com",
       phone: "+1 (305) 555-0123",
       location: "Miami, Florida"
     },
