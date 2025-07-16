@@ -1,8 +1,4 @@
 import { Navigation } from "@/components/Navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import CalendlyButton from '@/components/CalendlyButton'
-import CalendlyPopup from '@/components/CalendlyPopup'
 import CalendlyEmbed from '@/components/CalendlyEmbed'
 
 export default function CalendlyDemo() {
