@@ -214,14 +214,6 @@ export default function SupabaseLogin() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Alert className="mb-6">
-            <Mail className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Admin Credentials:</strong><br />
-              Email: polrydian@gmail.com<br />
-              Password: 123456789!
-            </AlertDescription>
-          </Alert>
 
           <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
