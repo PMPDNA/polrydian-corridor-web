@@ -25,12 +25,15 @@ export const Breadcrumbs = () => {
       'insights': 'Insights',
       'faq': 'FAQ',
       'articles': 'Articles',
+      'search': 'Search',
+      'luxury-client': 'VIP Client Experience',
       'calendly-demo': 'Schedule Meeting',
       'privacy': 'Privacy Policy',
       'cookie-settings': 'Cookie Settings',
       'admin': 'Admin Dashboard',
       'profile': 'Profile',
       'analytics': 'Analytics',
+      'security': 'Security Dashboard',
       'reset-password': 'Reset Password'
     };
 

@@ -47,6 +47,54 @@ export type Database = {
         }
         Relationships: []
       }
+      client_preferences: {
+        Row: {
+          communication_preference: string | null
+          concierge_services: boolean | null
+          created_at: string
+          id: string
+          industry_focus: string[] | null
+          meeting_frequency: string | null
+          notification_preferences: Json | null
+          preferred_meeting_times: Json | null
+          premium_support: boolean | null
+          project_updates_frequency: string | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          communication_preference?: string | null
+          concierge_services?: boolean | null
+          created_at?: string
+          id?: string
+          industry_focus?: string[] | null
+          meeting_frequency?: string | null
+          notification_preferences?: Json | null
+          preferred_meeting_times?: Json | null
+          premium_support?: boolean | null
+          project_updates_frequency?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          communication_preference?: string | null
+          concierge_services?: boolean | null
+          created_at?: string
+          id?: string
+          industry_focus?: string[] | null
+          meeting_frequency?: string | null
+          notification_preferences?: Json | null
+          preferred_meeting_times?: Json | null
+          premium_support?: boolean | null
+          project_updates_frequency?: string | null
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

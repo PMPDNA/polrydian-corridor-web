@@ -19,6 +19,7 @@ import CalendlyDemo from "./pages/CalendlyDemo";
 import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
 import Search from "./pages/Search";
+import LuxuryClient from "./pages/LuxuryClient";
 import NotFound from "./pages/NotFound";
 import CookieConsent from "./components/CookieConsent";
 import ScrollIndicator from "./components/ScrollIndicator";
@@ -70,6 +71,13 @@ const App = () => (
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
                   <Analytics />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
+            <Route path="/luxury-client" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute>
+                  <LuxuryClient />
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />

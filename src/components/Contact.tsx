@@ -187,14 +187,14 @@ export const Contact = () => {
                         <h4 className="font-semibold text-foreground">{info.title}</h4>
                         <p className="text-foreground font-medium">{info.value}</p>
                         <p className="text-sm text-muted-foreground">{info.description}</p>
-          </div>
-
-          {/* Social Links Section */}
-          <div className="mt-8">
-            <SocialLinks />
-          </div>
-        </div>
+                      </div>
+                    </div>
                   ))}
+                </div>
+
+                {/* Social Links Section */}
+                <div className="mt-8">
+                  <SocialLinks />
                 </div>
 
                 {/* Additional Info */}

@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileUpload } from "@/components/FileUpload";
-import { MapPin, GraduationCap, Award, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { useToast } from "@/hooks/use-toast";
+import { MapPin, GraduationCap, Award, Users, Upload, Camera } from "lucide-react";
 
 export const About = () => {
   const [profilePhoto, setProfilePhoto] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
+  const { user, isAdmin } = useSupabaseAuth();
+  const { toast } = useToast();
   const highlights = [
     {
       icon: MapPin,
@@ -36,6 +42,87 @@ export const About = () => {
     "Logistics & Supply Chain - FIU",
     "Public Policy - Georgetown University"
   ];
+
+  // Load existing profile photo on component mount
+  useEffect(() => {
+    loadProfilePhoto();
+  }, []);
+
+  const loadProfilePhoto = async () => {
+    try {
+      // Try to load Patrick's existing profile photo from profiles table
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .limit(1);
+
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      if (profiles && profiles.length > 0 && profiles[0].avatar_url) {
+        setProfilePhoto(profiles[0].avatar_url);
+      }
+    } catch (error) {
+      console.error('Error loading profile photo:', error);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsUploading(true);
+
+    try {
+      // Upload to avatars bucket
+      const fileExt = file.name.split('.').pop();
+      const fileName = `patrick-profile.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { 
+          upsert: true,
+          contentType: file.type
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          avatar_url: publicUrl,
+          display_name: 'Patrick Misiewicz'
+        });
+
+      if (updateError) throw updateError;
+
+      setProfilePhoto(publicUrl);
+      
+      toast({
+        title: "Photo Updated",
+        description: "Profile photo has been updated successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error uploading photo:', error);
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload photo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <section id="about" className="py-20 bg-muted/30">
@@ -72,13 +159,34 @@ export const About = () => {
                     </div>
                   )}
                    
-                   {/* Upload disabled - Profile photos should be managed by admin */}
-                   <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
-                     <div className="text-center">
-                       <p className="text-xs text-muted-foreground">Photo upload disabled</p>
-                       <p className="text-xs text-muted-foreground">Contact admin for updates</p>
+                   {/* Admin photo upload functionality */}
+                   {isAdmin && (
+                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                       <label htmlFor="photo-upload" className="cursor-pointer">
+                         <div className="text-center text-white">
+                           <Camera className="h-8 w-8 mx-auto mb-2" />
+                           <p className="text-sm font-medium">
+                             {isUploading ? "Uploading..." : "Update Photo"}
+                           </p>
+                         </div>
+                         <input
+                           id="photo-upload"
+                           type="file"
+                           accept="image/*"
+                           onChange={handleFileUpload}
+                           disabled={isUploading}
+                           className="hidden"
+                         />
+                       </label>
                      </div>
-                   </div>
+                   )}
+                   
+                   {/* Non-admin message */}
+                   {!user && (
+                     <div className="absolute bottom-2 left-2 right-2 bg-black/60 text-white text-xs p-2 rounded">
+                       Admin login required for photo updates
+                     </div>
+                   )}
                 </div>
               </div>
               
