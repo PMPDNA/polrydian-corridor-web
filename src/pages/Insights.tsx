@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import SectionNavigator from "@/components/SectionNavigator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -95,11 +96,18 @@ export default function Insights() {
     "M&A Strategy"
   ];
 
+  const sections = [
+    { id: "hero", title: "Overview" },
+    { id: "featured", title: "Featured" },
+    { id: "articles", title: "Latest Articles" },
+    { id: "cta", title: "Get Started" }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 space-y-12">
         {/* Hero Section */}
-        <div className="text-center space-y-6">
+        <div id="hero" className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
             Strategic Insights
           </h1>
@@ -136,7 +144,7 @@ export default function Insights() {
         </Card>
 
         {/* Featured Article */}
-        <Card className="shadow-elegant overflow-hidden">
+        <Card id="featured" className="shadow-elegant overflow-hidden">
           <div className="md:flex">
             <div className="md:w-1/2">
               <img 
@@ -174,7 +182,7 @@ export default function Insights() {
         </Card>
 
         {/* Articles Grid */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div id="articles" className="grid lg:grid-cols-3 gap-8">
           {/* Main Articles */}
           <div className="lg:col-span-2 space-y-6">
             <h2 className="text-2xl font-bold text-foreground">Latest Insights</h2>
@@ -299,7 +307,7 @@ export default function Insights() {
         </div>
 
         {/* CTA Section */}
-        <Card className="shadow-elegant bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-accent/20">
+        <Card id="cta" className="shadow-elegant bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-accent/20">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-semibold text-foreground mb-4">
               Ready to Apply These Insights?
@@ -314,6 +322,7 @@ export default function Insights() {
           </CardContent>
         </Card>
       </div>
+      <SectionNavigator sections={sections} />
       <Footer />
     </div>
   );

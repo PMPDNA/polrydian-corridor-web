@@ -83,7 +83,7 @@ export default function About() {
         </div>
 
         {/* Company Story */}
-        <Card className="shadow-elegant">
+        <Card id="story" className="shadow-elegant">
           <CardHeader>
             <CardTitle className="text-3xl text-foreground">Our Story</CardTitle>
           </CardHeader>
@@ -116,7 +116,7 @@ export default function About() {
         </Card>
 
         {/* Values */}
-        <div className="space-y-8">
+        <div id="values" className="space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-foreground mb-4">Our Values</h2>
             <p className="text-muted-foreground">
@@ -139,7 +139,7 @@ export default function About() {
         </div>
 
         {/* Team Section */}
-        <div className="space-y-8">
+        <div id="team" className="space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-foreground mb-4">Leadership Team</h2>
             <p className="text-muted-foreground">
@@ -207,7 +207,7 @@ export default function About() {
         </div>
 
         {/* Credentials */}
-        <Card className="shadow-elegant">
+        <Card id="credentials" className="shadow-elegant">
           <CardHeader>
             <CardTitle className="text-2xl text-foreground flex items-center gap-2">
               <Award className="h-6 w-6 text-accent" />
@@ -227,7 +227,7 @@ export default function About() {
         </Card>
 
         {/* Mission Statement */}
-        <Card className="shadow-elegant bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-accent/20">
+        <Card id="mission" className="shadow-elegant bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-accent/20">
           <CardContent className="p-8 text-center">
             <h2 className="text-2xl font-semibold text-foreground mb-4">
               "What stands in the way becomes the way."

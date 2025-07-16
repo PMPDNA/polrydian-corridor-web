@@ -1,4 +1,5 @@
 import Footer from "@/components/Footer";
+import SectionNavigator from "@/components/SectionNavigator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Accordion,
@@ -120,11 +121,18 @@ export default function FAQ() {
     }
   ];
 
+  const sections = [
+    { id: "hero", title: "Overview" },
+    { id: "faq-categories", title: "FAQ Categories" },
+    { id: "contact", title: "Contact" },
+    { id: "resources", title: "Resources" }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-12 space-y-12">
         {/* Hero Section */}
-        <div className="text-center space-y-6">
+        <div id="hero" className="text-center space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
             Frequently Asked Questions
           </h1>
@@ -135,7 +143,7 @@ export default function FAQ() {
         </div>
 
         {/* FAQ Categories */}
-        <div className="space-y-8">
+        <div id="faq-categories" className="space-y-8">
           {faqCategories.map((category, categoryIndex) => (
             <Card key={categoryIndex} className="shadow-elegant">
               <CardHeader>
@@ -169,7 +177,7 @@ export default function FAQ() {
         </div>
 
         {/* Quick Contact */}
-        <Card className="shadow-elegant bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-accent/20">
+        <Card id="contact" className="shadow-elegant bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border-accent/20">
           <CardContent className="p-8">
             <div className="text-center space-y-6">
               <div className="flex justify-center">
@@ -207,7 +215,7 @@ export default function FAQ() {
         </Card>
 
         {/* Additional Resources */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div id="resources" className="grid md:grid-cols-3 gap-6">
           <Card className="shadow-elegant">
             <CardContent className="p-6 text-center space-y-4">
               <div className="p-3 bg-accent/10 rounded-lg inline-block">
@@ -254,6 +262,7 @@ export default function FAQ() {
           </Card>
         </div>
       </div>
+      <SectionNavigator sections={sections} />
       <Footer />
     </div>
   );
