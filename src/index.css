@@ -9,47 +9,48 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 220 26% 14%;
+    --foreground: 215 25% 27%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 26% 14%;
+    --card-foreground: 215 25% 27%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 26% 14%;
+    --popover-foreground: 215 25% 27%;
 
-    --primary: 220 39% 11%;
+    /* Polrydian Blue Brand Colors */
+    --primary: 213 92% 30%; /* Deep Polrydian Blue */
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 26% 14%;
+    --secondary: 213 20% 96%;
+    --secondary-foreground: 215 25% 27%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 8.9% 46.1%;
+    --muted: 213 20% 96%;
+    --muted-foreground: 215 12% 50%;
 
-    --accent: 43 74% 49%;
+    --accent: 195 100% 50%; /* Bright Polrydian Blue */
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 220 39% 11%;
+    --border: 213 20% 90%;
+    --input: 213 20% 90%;
+    --ring: 213 92% 30%;
 
-    /* Custom design tokens */
-    --primary-50: 220 39% 95%;
-    --primary-900: 220 39% 8%;
-    --accent-50: 43 74% 95%;
-    --accent-600: 43 74% 35%;
+    /* Custom Polrydian design tokens */
+    --primary-50: 213 92% 95%;
+    --primary-900: 213 92% 20%;
+    --accent-50: 195 100% 95%;
+    --accent-600: 195 100% 35%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(220 39% 11%) 0%, hsl(220 39% 8%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(43 74% 49%) 0%, hsl(43 74% 35%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(220 39% 11%) 0%, hsl(220 26% 14%) 50%, hsl(220 39% 8%) 100%);
+    /* Polrydian Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(213 92% 30%) 0%, hsl(213 92% 20%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(195 100% 50%) 0%, hsl(195 100% 35%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(213 92% 30%) 0%, hsl(215 25% 27%) 50%, hsl(213 92% 20%) 100%);
     
     /* Shadows */
-    --shadow-elegant: 0 10px 25px -5px hsla(220, 39%, 11%, 0.1), 0 4px 6px -2px hsla(220, 39%, 11%, 0.05);
-    --shadow-glow: 0 0 40px hsla(43, 74%, 49%, 0.15);
+    --shadow-elegant: 0 10px 25px -5px hsla(213, 92%, 30%, 0.1), 0 4px 6px -2px hsla(213, 92%, 30%, 0.05);
+    --shadow-glow: 0 0 40px hsla(195, 100%, 50%, 0.15);
     
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -119,5 +120,6 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   }
 }

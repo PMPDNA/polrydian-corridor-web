@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe2, TrendingUp } from "lucide-react";
-import heroBackground from "@/assets/hero-background.jpg";
+import polrydianHeroBg from "@/assets/polrydian-hero-bg.jpg";
 
 export const Hero = () => {
   return (
     <section 
       className="min-h-screen flex items-center justify-center relative overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(135deg, rgba(220, 39, 11, 0.9) 0%, rgba(220, 26, 14, 0.8) 50%, rgba(220, 39, 8, 0.9) 100%), url(${heroBackground})`,
+        backgroundImage: `linear-gradient(135deg, rgba(25, 82, 153, 0.9) 0%, rgba(15, 72, 143, 0.8) 50%, rgba(10, 62, 133, 0.9) 100%), url(${polrydianHeroBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'

@@ -47,8 +47,32 @@ export const About = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
+          {/* Professional Photo */}
+          <div className="lg:order-2">
+            <div className="relative">
+              {/* Photo Placeholder - Replace with actual Patrick photo */}
+              <div className="w-full max-w-md mx-auto bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-8 shadow-elegant">
+                <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-accent">PM</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">Patrick Misiewicz</p>
+                    <p className="text-xs text-muted-foreground">Professional Photo</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Quote overlay */}
+              <div className="absolute -bottom-6 -right-6 bg-background border border-accent/20 rounded-lg p-4 shadow-elegant max-w-xs">
+                <p className="text-sm italic text-muted-foreground">"What stands in the way becomes the way."</p>
+                <cite className="text-xs text-accent">— Marcus Aurelius</cite>
+              </div>
+            </div>
+          </div>
+
           {/* Main Bio */}
-          <div className="space-y-6">
+          <div className="space-y-6 lg:order-1">
             <Card className="shadow-elegant">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-semibold text-foreground mb-4">Strategic Philosophy</h3>

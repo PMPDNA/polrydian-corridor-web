@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Globe, Mail, Phone } from "lucide-react";
+import { Menu, X, Hexagon, Mail, Phone } from "lucide-react";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,11 +17,17 @@ export const Navigation = () => {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
           {/* Logo/Brand */}
-          <div className="flex items-center gap-2">
-            <Globe className="h-8 w-8 text-accent" />
+          <div className="flex items-center gap-3">
+            {/* Polrydian Logo Placeholder - Replace with actual logo */}
+            <div className="relative">
+              <Hexagon className="h-10 w-10 text-accent fill-accent/10 transform rotate-12" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-3 h-3 bg-accent rounded-full"></div>
+              </div>
+            </div>
             <div>
-              <div className="font-bold text-lg text-foreground">Patrick Misiewicz</div>
-              <div className="text-sm text-muted-foreground">Polrydian Group</div>
+              <div className="font-bold text-lg text-foreground font-polrydian">Patrick Misiewicz</div>
+              <div className="text-sm text-muted-foreground font-polrydian">Polrydian Group</div>
             </div>
           </div>
 
