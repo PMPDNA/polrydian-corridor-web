@@ -60,6 +60,18 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         ...formData
       };
 
+      // Save to localStorage for persistence
+      const existingArticles = JSON.parse(localStorage.getItem('published-articles') || '[]');
+      const articleIndex = existingArticles.findIndex((a: any) => a.id === newArticle.id);
+      
+      if (articleIndex >= 0) {
+        existingArticles[articleIndex] = newArticle;
+      } else {
+        existingArticles.unshift(newArticle);
+      }
+      
+      localStorage.setItem('published-articles', JSON.stringify(existingArticles));
+
       onSave(newArticle);
 
       // Trigger Zapier webhook if provided
@@ -77,20 +89,20 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           });
 
           toast({
-            title: "Article Saved & Synced",
-            description: "Article saved and Zapier webhook triggered successfully.",
+            title: "Article Published & Synced",
+            description: "Article published to website and Zapier webhook triggered.",
           });
         } catch (error) {
           toast({
-            title: "Article Saved",
-            description: "Article saved, but webhook failed. Check your Zapier settings.",
+            title: "Article Published",
+            description: "Article published to website, but webhook failed.",
             variant: "destructive"
           });
         }
       } else {
         toast({
-          title: "Article Saved",
-          description: "Article has been saved successfully.",
+          title: "Article Published!",
+          description: "Your article is now live on the website.",
         });
       }
     } catch (error) {

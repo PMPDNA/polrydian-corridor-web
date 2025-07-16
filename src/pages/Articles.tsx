@@ -65,10 +65,18 @@ const sampleArticles: Article[] = [
 ];
 
 export default function Articles() {
-  const [articles, setArticles] = useState<Article[]>(sampleArticles);
+  const [articles, setArticles] = useState<Article[]>(() => {
+    const stored = localStorage.getItem('published-articles');
+    return stored ? JSON.parse(stored) : sampleArticles;
+  });
   const [currentHero, setCurrentHero] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showForm, setShowForm] = useState(false);
+
+  // Save articles to localStorage whenever articles change
+  useEffect(() => {
+    localStorage.setItem('published-articles', JSON.stringify(articles));
+  }, [articles]);
 
   const featuredArticles = articles.filter(article => article.featured);
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
