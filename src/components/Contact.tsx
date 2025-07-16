@@ -202,7 +202,7 @@ export const Contact = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <CalendlyPopup
-                  calendlyUrl="https://calendly.com/your-username/30min"
+                  calendlyUrl="https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
                   buttonText="Schedule Consultation Call"
                   variant="default"
                   size="lg"

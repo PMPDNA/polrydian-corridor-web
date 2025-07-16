@@ -5,8 +5,8 @@ import CalendlyPopup from '@/components/CalendlyPopup'
 import CalendlyEmbed from '@/components/CalendlyEmbed'
 
 export default function CalendlyDemo() {
-  // Replace with your actual Calendly URL
-  const calendlyUrl = "https://calendly.com/your-username/30min"
+  // Your actual Calendly URL
+  const calendlyUrl = "https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
   
   const prefillData = {
     name: "John Doe",
