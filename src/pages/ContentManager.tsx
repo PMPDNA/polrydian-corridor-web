@@ -18,9 +18,12 @@ import {
   Home,
   Briefcase,
   User,
-  Phone
+  Phone,
+  LogOut
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { saveSecureData, getSecureData, removeSecureData, sanitizeInput, validateUrl } from "@/utils/secureStorage";
 
 interface WebsiteContent {
   hero: {
@@ -168,36 +171,41 @@ const defaultContent: WebsiteContent = {
 
 export default function ContentManager() {
   const { toast } = useToast();
+  const { logout } = useAuth();
   const [content, setContent] = useState<WebsiteContent>(defaultContent);
   const [hasChanges, setHasChanges] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
 
   useEffect(() => {
-    // Load saved content from localStorage
-    const savedContent = localStorage.getItem('website-content');
+    // Load saved content from secure storage
+    const savedContent = getSecureData('website-content');
     if (savedContent) {
-      try {
-        setContent(JSON.parse(savedContent));
-      } catch (error) {
-        console.error('Failed to parse saved content:', error);
-      }
+      setContent(savedContent);
     }
   }, []);
 
   const saveContent = () => {
-    localStorage.setItem('website-content', JSON.stringify(content));
-    // Trigger a custom event to notify components about content changes
-    window.dispatchEvent(new CustomEvent('contentUpdated', { detail: content }));
-    setHasChanges(false);
-    toast({
-      title: "Content Saved",
-      description: "Your changes have been saved and applied to the website.",
-    });
+    const success = saveSecureData('website-content', content);
+    if (success) {
+      // Trigger a custom event to notify components about content changes
+      window.dispatchEvent(new CustomEvent('contentUpdated', { detail: content }));
+      setHasChanges(false);
+      toast({
+        title: "Content Saved",
+        description: "Your changes have been saved securely and applied to the website.",
+      });
+    } else {
+      toast({
+        title: "Save Failed",
+        description: "Failed to save content securely. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const resetContent = () => {
     setContent(defaultContent);
-    localStorage.removeItem('website-content');
+    removeSecureData('website-content');
     window.dispatchEvent(new CustomEvent('contentUpdated', { detail: defaultContent }));
     setHasChanges(false);
     toast({
@@ -243,6 +251,21 @@ export default function ContentManager() {
   };
 
   const updateContent = (section: keyof WebsiteContent, path: string, value: any) => {
+    // Sanitize input if it's a string
+    const sanitizedValue = typeof value === 'string' ? sanitizeInput(value) : value;
+    
+    // Validate URLs if the field contains URL-like content
+    if (typeof sanitizedValue === 'string' && (path.includes('url') || path.includes('link') || sanitizedValue.startsWith('http'))) {
+      if (!validateUrl(sanitizedValue)) {
+        toast({
+          title: "Invalid URL",
+          description: "Please enter a valid URL from an allowed domain.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
     setContent(prev => {
       const newContent = { ...prev };
       const keys = path.split('.');
@@ -251,7 +274,7 @@ export default function ContentManager() {
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]];
       }
-      current[keys[keys.length - 1]] = value;
+      current[keys[keys.length - 1]] = sanitizedValue;
       
       setHasChanges(true);
       return newContent;
@@ -333,6 +356,16 @@ export default function ContentManager() {
               >
                 <Save className="h-4 w-4" />
                 Save Changes
+              </Button>
+              
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={logout}
+                className="gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
               </Button>
             </div>
           </div>
