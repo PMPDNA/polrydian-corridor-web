@@ -45,21 +45,33 @@ export const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields marked with *",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
+      // Enhanced validation using the security schema
+      const { contactFormSchema, sanitizeFormData } = await import("@/lib/security")
+      
+      // Sanitize input data
+      const sanitizedData = sanitizeFormData(formData)
+      
+      // Validate the sanitized data
+      const validationResult = contactFormSchema.safeParse(sanitizedData)
+      
+      if (!validationResult.success) {
+        const errors = validationResult.error.errors.map(err => err.message).join(', ')
+        toast({
+          title: "Validation Error",
+          description: errors,
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+
+      const validData = validationResult.data
+
       const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: formData
+        body: validData
       });
 
       if (error) throw error;
@@ -82,11 +94,21 @@ export const Contact = () => {
 
     } catch (error: any) {
       console.error('Contact form error:', error);
-      toast({
-        title: "Error Sending Message",
-        description: "There was an issue sending your message. Please try again or contact us directly.",
-        variant: "destructive",
-      });
+      
+      // Provide specific error messages for security issues
+      if (error.message?.includes('validation')) {
+        toast({
+          title: "Invalid Input",
+          description: "Please check your input and try again.",
+          variant: "destructive",
+        })
+      } else {
+        toast({
+          title: "Error Sending Message",
+          description: "There was an issue sending your message. Please try again or contact us directly.",
+          variant: "destructive",
+        })
+      }
     } finally {
       setIsSubmitting(false);
     }

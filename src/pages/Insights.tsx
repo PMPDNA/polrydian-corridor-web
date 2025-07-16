@@ -30,6 +30,7 @@ interface InsightItem {
 export default function Insights() {
   const [insights, setInsights] = useState<InsightItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -50,7 +51,28 @@ export default function Insights() {
 
   const fetchInsights = async (query: string, category: string = 'all') => {
     setLoading(true);
+    setError(null);
+    
     try {
+      // Validate and sanitize input
+      const sanitizedQuery = query.trim()
+      if (sanitizedQuery.length < 3) {
+        setError('Query must be at least 3 characters long')
+        return
+      }
+      
+      if (sanitizedQuery.length > 500) {
+        setError('Query is too long (max 500 characters)')
+        return
+      }
+      
+      // Get current session for authentication
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        setError('You must be logged in to access insights')
+        return
+      }
+      
       let searchSources = ['csis.org', 'tradeguys.org'];
       
       if (category !== 'all') {
@@ -69,8 +91,11 @@ export default function Insights() {
 
       const { data, error } = await supabase.functions.invoke('fetch-economic-insights', {
         body: { 
-          query,
+          query: sanitizedQuery,
           sources: searchSources
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
         }
       });
 
@@ -78,7 +103,7 @@ export default function Insights() {
 
       const newInsight: InsightItem = {
         id: Date.now().toString(),
-        title: query,
+        title: sanitizedQuery,
         content: data.content,
         sources: data.sources || [],
         relatedQuestions: data.relatedQuestions || [],
@@ -87,8 +112,18 @@ export default function Insights() {
       };
 
       setInsights(prev => [newInsight, ...prev.slice(0, 9)]); // Keep last 10
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching insights:', error);
+      
+      if (error.message?.includes('Authentication required')) {
+        setError('Please log in to access economic insights')
+      } else if (error.message?.includes('Rate limit exceeded')) {
+        setError('Too many requests. Please wait a few minutes before trying again.')
+      } else if (error.message?.includes('PERPLEXITY_API_KEY')) {
+        setError('Perplexity API key not configured. Please contact the administrator.')
+      } else {
+        setError('Failed to fetch insights. Please try again.')
+      }
     } finally {
       setLoading(false);
     }
@@ -218,9 +253,21 @@ export default function Insights() {
           ))}
         </div>
 
+        {/* Error Display */}
+        {error && (
+          <Card className="mb-6 border-destructive/50 bg-destructive/5">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-destructive">
+                <span className="text-sm font-medium">Error:</span>
+                <span className="text-sm">{error}</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Insights Feed */}
         <div className="space-y-6">
-          {insights.length === 0 && !loading && (
+          {insights.length === 0 && !loading && !error && (
             <Card className="text-center p-8">
               <CardContent>
                 <Globe className="h-12 w-12 text-muted-foreground mx-auto mb-4" />

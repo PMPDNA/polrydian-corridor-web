@@ -110,17 +110,75 @@ export const getSecurityHeaders = () => ({
   'Referrer-Policy': 'strict-origin-when-cross-origin'
 })
 
-// Input sanitization for forms
+// Enhanced input sanitization for forms
 export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
   const sanitized = {} as T
   
   for (const [key, value] of Object.entries(data)) {
     if (typeof value === 'string') {
-      sanitized[key as keyof T] = sanitizeText(value) as T[keyof T]
+      // Enhanced sanitization with additional security measures
+      let sanitizedValue = value
+        .replace(/[<>]/g, '') // Remove HTML tags
+        .replace(/['"]/g, '') // Remove quotes to prevent injection
+        .replace(/javascript:/gi, '') // Remove javascript protocol
+        .replace(/on\w+=/gi, '') // Remove event handlers
+        .trim()
+      
+      // Additional length validation
+      if (key === 'email' && sanitizedValue.length > 255) {
+        sanitizedValue = sanitizedValue.substring(0, 255)
+      } else if (key === 'message' && sanitizedValue.length > 2000) {
+        sanitizedValue = sanitizedValue.substring(0, 2000)
+      } else if (sanitizedValue.length > 500) {
+        sanitizedValue = sanitizedValue.substring(0, 500)
+      }
+      
+      sanitized[key as keyof T] = sanitizedValue as T[keyof T]
     } else {
-      sanitized[key as keyof T] = value
+      // Handle non-string values (boolean, arrays, etc.)
+      sanitized[key as keyof T] = value as T[keyof T]
     }
   }
   
   return sanitized
 }
+
+// Enhanced contact form validation
+export const contactFormSchema = z.object({
+  firstName: z.string()
+    .min(1, 'First name is required')
+    .max(50, 'First name must be less than 50 characters')
+    .regex(/^[a-zA-Z\s-']+$/, 'First name can only contain letters, spaces, hyphens, and apostrophes'),
+  
+  lastName: z.string()
+    .min(1, 'Last name is required')
+    .max(50, 'Last name must be less than 50 characters')
+    .regex(/^[a-zA-Z\s-']+$/, 'Last name can only contain letters, spaces, hyphens, and apostrophes'),
+  
+  email: z.string()
+    .email('Invalid email address')
+    .min(1, 'Email is required')
+    .max(255, 'Email must be less than 255 characters'),
+  
+  company: z.string()
+    .max(100, 'Company name must be less than 100 characters')
+    .optional(),
+  
+  service: z.string()
+    .max(100, 'Service must be less than 100 characters')
+    .optional(),
+  
+  message: z.string()
+    .min(10, 'Message must be at least 10 characters')
+    .max(2000, 'Message must be less than 2000 characters'),
+  
+  urgent: z.boolean().optional()
+})
+
+// Insights query validation
+export const insightsQuerySchema = z.object({
+  query: z.string()
+    .min(3, 'Query must be at least 3 characters')
+    .max(500, 'Query must be less than 500 characters')
+    .regex(/^[a-zA-Z0-9\s.,!?-]+$/, 'Query contains invalid characters')
+})
