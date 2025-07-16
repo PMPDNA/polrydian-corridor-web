@@ -95,6 +95,105 @@ export type Database = {
         }
         Relationships: []
       }
+      gallery: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          instagram_post_id: string | null
+          is_featured: boolean | null
+          is_visible: boolean | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+          instagram_post_id?: string | null
+          is_featured?: boolean | null
+          is_visible?: boolean | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          instagram_post_id?: string | null
+          is_featured?: boolean | null
+          is_visible?: boolean | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      linkedin_articles: {
+        Row: {
+          article_url: string | null
+          comment_count: number | null
+          content: string | null
+          created_at: string
+          id: string
+          is_migrated: boolean | null
+          like_count: number | null
+          linkedin_article_id: string
+          migrated_article_id: string | null
+          published_at: string | null
+          share_count: number | null
+          summary: string | null
+          title: string
+          updated_at: string
+          view_count: number | null
+        }
+        Insert: {
+          article_url?: string | null
+          comment_count?: number | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_migrated?: boolean | null
+          like_count?: number | null
+          linkedin_article_id: string
+          migrated_article_id?: string | null
+          published_at?: string | null
+          share_count?: number | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Update: {
+          article_url?: string | null
+          comment_count?: number | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_migrated?: boolean | null
+          like_count?: number | null
+          linkedin_article_id?: string
+          migrated_article_id?: string | null
+          published_at?: string | null
+          share_count?: number | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -155,6 +254,60 @@ export type Database = {
         }
         Relationships: []
       }
+      social_media_posts: {
+        Row: {
+          content: string | null
+          created_at: string
+          engagement_data: Json | null
+          hashtags: string[] | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          is_visible: boolean | null
+          platform: string
+          platform_post_id: string
+          post_type: string
+          post_url: string | null
+          published_at: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          engagement_data?: Json | null
+          hashtags?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_visible?: boolean | null
+          platform: string
+          platform_post_id: string
+          post_type: string
+          post_url?: string | null
+          published_at?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          engagement_data?: Json | null
+          hashtags?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_visible?: boolean | null
+          platform?: string
+          platform_post_id?: string
+          post_type?: string
+          post_url?: string | null
+          published_at?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -191,6 +344,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      sync_linkedin_article_to_articles: {
+        Args: { linkedin_article_id: string }
+        Returns: string
       }
     }
     Enums: {

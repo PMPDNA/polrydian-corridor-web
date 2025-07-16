@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/Navigation";
 import { useState } from "react";
+import { SocialMediaManager } from "@/components/SocialMediaManager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -341,6 +342,22 @@ export default function ProfileManager() {
               </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Social Media Management */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Settings className="h-5 w-5" />
+            Social Media Management
+          </CardTitle>
+          <CardDescription>
+            Manage Instagram and LinkedIn integrations, upload mobile photos, and sync content
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SocialMediaManager />
         </CardContent>
       </Card>
 

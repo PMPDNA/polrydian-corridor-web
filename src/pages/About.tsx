@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
+import { SocialMediaFeed } from "@/components/SocialMediaFeed";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import {
   Award, 
@@ -241,6 +242,15 @@ export default function About() {
             </p>
           </CardContent>
         </Card>
+
+        {/* Social Media Feed */}
+        <div className="space-y-8">
+          <SocialMediaFeed 
+            showFeaturedOnly={true} 
+            limit={6} 
+            showTitle={true}
+          />
+        </div>
       </div>
       <Footer />
     </div>
