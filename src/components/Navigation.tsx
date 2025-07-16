@@ -52,8 +52,9 @@ export const Navigation = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 ml-auto flex items-center justify-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? (
               <X className="h-6 w-6 text-foreground" />
