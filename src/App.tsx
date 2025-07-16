@@ -10,11 +10,13 @@ import Services from "./pages/Services";
 import Insights from "./pages/Insights";
 import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
+import CookieSettings from "./pages/CookieSettings";
 import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
 import CalendlyDemo from "./pages/CalendlyDemo";
 import NotFound from "./pages/NotFound";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,7 @@ const App = () => (
           <Route path="/insights" element={<Insights />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/privacy" element={<Privacy />} />
+          <Route path="/cookie-settings" element={<CookieSettings />} />
           <Route path="/articles" element={<Articles />} />
           <Route path="/admin" element={
             <SupabaseProtectedRoute requireAdmin={true}>
@@ -47,6 +50,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

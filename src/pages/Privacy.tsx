@@ -162,7 +162,7 @@ export default function Privacy() {
           <CardContent className="space-y-4">
             <div className="space-y-3 text-muted-foreground">
               <p>We use essential cookies to ensure our website functions properly and analytics cookies to understand how visitors interact with our site. We do not use tracking cookies for advertising purposes.</p>
-              <p>You can control cookie settings through your browser preferences. Disabling essential cookies may affect website functionality.</p>
+              <p>You can control cookie settings through your browser preferences or visit our <a href="/cookie-settings" className="text-accent hover:underline">Cookie Settings</a> page. Disabling essential cookies may affect website functionality.</p>
             </div>
           </CardContent>
         </Card>
