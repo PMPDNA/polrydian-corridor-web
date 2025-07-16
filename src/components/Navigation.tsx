@@ -65,23 +65,25 @@ export const Navigation = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-border pt-4">
-            <div className="flex flex-col gap-4">
-              {menuItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="text-foreground hover:text-accent transition-colors duration-300 py-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.label}
+          <div className="md:hidden absolute top-full left-0 right-0 bg-background border-t border-border shadow-lg z-50">
+            <div className="max-w-7xl mx-auto px-6 py-4">
+              <div className="flex flex-col gap-4">
+                {menuItems.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="text-foreground hover:text-accent transition-colors duration-300 py-2 text-lg"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+                <a href="/#contact" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="default" size="sm" className="mt-2 w-full">
+                    Get in Touch
+                  </Button>
                 </a>
-              ))}
-              <a href="/#contact">
-                <Button variant="default" size="sm" className="mt-2">
-                  Get in Touch
-                </Button>
-              </a>
+              </div>
             </div>
           </div>
         )}
