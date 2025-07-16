@@ -177,19 +177,19 @@ export default function SupabaseLogin() {
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="reset-email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="reset-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="polrydian@gmail.com"
-                    required
-                    disabled={isLoading}
-                    className="pl-10"
-                  />
-                </div>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="reset-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                      disabled={isLoading}
+                      className="pl-10"
+                    />
+                  </div>
               </div>
               
               <div className="flex gap-2">
@@ -251,7 +251,7 @@ export default function SupabaseLogin() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="polrydian@gmail.com"
+                      placeholder="Enter your email"
                       required
                       disabled={isLoading}
                       className="pl-10"
@@ -314,7 +314,7 @@ export default function SupabaseLogin() {
               <Alert className="mb-4">
                 <Shield className="h-4 w-4" />
                 <AlertDescription>
-                  Use polrydian@gmail.com to create an admin account
+                  Use polrydian@gmail.com for admin access
                 </AlertDescription>
               </Alert>
               
@@ -328,7 +328,7 @@ export default function SupabaseLogin() {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="polrydian@gmail.com"
+                        placeholder="Enter your email"
                         required
                         disabled={isLoading}
                         className="pl-10"
