@@ -4,34 +4,54 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FileUpload } from "@/components/FileUpload";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, ExternalLink, Trash2 } from "lucide-react";
+import { Pencil, ExternalLink, Trash2, Building, Briefcase } from "lucide-react";
 
 interface Organization {
   id: string;
   name: string;
   logo_url?: string;
   website_url?: string;
+  category: 'institutional' | 'business';
+  description?: string;
 }
 
 export const OrganizationLogos = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([
-    { id: "1", name: "World Affairs Council of Miami", website_url: "https://worldaffairs.miami" },
-    { id: "2", name: "World Affairs Council of Americas", website_url: "https://worldaffairscouncils.org" },
-    { id: "3", name: "GMF Marshall Memorial Fellowship", website_url: "https://www.gmfus.org/marshall-memorial-fellowship" },
-    { id: "4", name: "SIPA FIU", website_url: "https://sipa.fiu.edu" },
-    { id: "5", name: "Concordia", website_url: "https://www.concordia.net" },
-    { id: "6", name: "FII Institute", website_url: "https://fii-institute.org" },
-    { id: "7", name: "NATO", website_url: "https://www.nato.int" },
-    { id: "8", name: "MDC Honors College", website_url: "https://www.mdc.edu/honorscollege/" },
-    { id: "9", name: "Forum Americas", website_url: "https://forum-americas.org/conferences/miami/home/" },
-    { id: "10", name: "American Institute of Polish Culture", website_url: "https://ampolinstitute.com" },
-    { id: "11", name: "Chopin Foundation of the United States", website_url: "https://www.chopin.org" },
-    { id: "12", name: "CSIS", website_url: "https://www.csis.org" },
-    { id: "13", name: "Ministry of Foreign Affairs of Poland", website_url: "https://www.gov.pl/web/diplomacy" },
-    { id: "14", name: "Embassy of Poland to the United States", website_url: "https://www.gov.pl/web/usa-en/embassy-washington" },
-    { id: "15", name: "Defense Cooperation Agency University", website_url: "https://dscu.edu" }
+    // Institutional Partners
+    { id: "1", name: "World Affairs Council of Miami", website_url: "https://worldaffairs.miami", category: 'institutional' },
+    { id: "2", name: "World Affairs Council of Americas", website_url: "https://worldaffairscouncils.org", category: 'institutional' },
+    { id: "3", name: "GMF Marshall Memorial Fellowship", website_url: "https://www.gmfus.org/marshall-memorial-fellowship", category: 'institutional' },
+    { id: "4", name: "SIPA FIU", website_url: "https://sipa.fiu.edu", category: 'institutional' },
+    { id: "5", name: "Concordia", website_url: "https://www.concordia.net", category: 'institutional' },
+    { id: "6", name: "FII Institute", website_url: "https://fii-institute.org", category: 'institutional' },
+    { id: "7", name: "NATO", website_url: "https://www.nato.int", category: 'institutional' },
+    { id: "8", name: "MDC Honors College", website_url: "https://www.mdc.edu/honorscollege/", category: 'institutional' },
+    { id: "9", name: "Forum Americas", website_url: "https://forum-americas.org/conferences/miami/home/", category: 'institutional' },
+    { id: "10", name: "American Institute of Polish Culture", website_url: "https://ampolinstitute.com", category: 'institutional' },
+    { id: "11", name: "Chopin Foundation of the United States", website_url: "https://www.chopin.org", category: 'institutional' },
+    { id: "12", name: "CSIS", website_url: "https://www.csis.org", category: 'institutional' },
+    { id: "13", name: "Ministry of Foreign Affairs of Poland", website_url: "https://www.gov.pl/web/diplomacy", category: 'institutional' },
+    { id: "14", name: "Embassy of Poland to the United States", website_url: "https://www.gov.pl/web/usa-en/embassy-washington", category: 'institutional' },
+    { id: "15", name: "Defense Cooperation Agency University", website_url: "https://dscu.edu", category: 'institutional' },
+    
+    // Business Partners
+    { 
+      id: "16", 
+      name: "Maven Investment Partners", 
+      website_url: "https://mavenip.net", 
+      category: 'business',
+      description: "Maven Investment Partners is a Middle East based boutique advisory firm comprising of senior industry veterans with extensive experience in Corporate Finance Advisory, M&A Advisory, Transformation & Restructuring Advisory, Interim & Crisis Management and Corporate Governance Initiatives. We partner with shareholders and management teams to help them achieve their strategic objectives."
+    },
+    { 
+      id: "17", 
+      name: "KCC Capital", 
+      website_url: "https://kcccapitalpartners.com", 
+      category: 'business',
+      description: "We provide investment banking, capital formation, and advisory services for companies, funds, and family offices. Our core focuses are capital raising and sell-side M&A as well as IPO advisory."
+    }
   ]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingOrg, setEditingOrg] = useState<Organization | null>(null);
@@ -76,35 +96,18 @@ export const OrganizationLogos = () => {
     });
   };
 
-  return (
-    <section className="py-16 bg-muted/30">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-            Strategic Partnerships & Affiliations
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Collaborating with leading global institutions to deliver strategic insights and solutions
-          </p>
-          <Button 
-            onClick={() => setIsEditing(!isEditing)}
-            variant="outline"
-            className="mt-4"
-          >
-            <Pencil className="w-4 h-4 mr-2" />
-            {isEditing ? "Done Editing" : "Edit Organizations"}
-          </Button>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-          {organizations.map((org) => (
-            <Card 
-              key={org.id}
-              className={`p-4 flex flex-col items-center justify-center min-h-[150px] transition-all duration-300 bg-background/50 ${
-                org.website_url && !isEditing ? 'hover:shadow-lg cursor-pointer hover:bg-background/70' : ''
-              }`}
-              onClick={() => !isEditing && handleOrgClick(org)}
-            >
+  const institutionalOrgs = organizations.filter(org => org.category === 'institutional');
+  const businessOrgs = organizations.filter(org => org.category === 'business');
+
+  const renderOrganizationCard = (org: Organization) => {
+    const CardComponent = (
+      <Card 
+        key={org.id}
+        className={`p-4 flex flex-col items-center justify-center min-h-[150px] transition-all duration-300 bg-background/50 ${
+          org.website_url && !isEditing ? 'hover:shadow-lg cursor-pointer hover:bg-background/70' : ''
+        }`}
+        onClick={() => !isEditing && handleOrgClick(org)}
+      >
               {isEditing && (
                 <div className="absolute top-2 right-2 flex gap-1">
                   <Button
@@ -197,10 +200,70 @@ export const OrganizationLogos = () => {
                       </Button>
                     </div>
                   </div>
-                )}
+                 )}
               </div>
             </Card>
-          ))}
+        );
+
+        // Wrap business cards with tooltips for description
+        if (org.description && org.category === 'business') {
+          return (
+            <TooltipProvider key={org.id}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {CardComponent}
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs p-3">
+                  <p className="text-sm">{org.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        }
+
+        return CardComponent;
+      };
+
+  return (
+    <section className="py-16 bg-muted/30">
+      <div className="container mx-auto px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+            Strategic Partnerships & Affiliations
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Collaborating with leading global institutions and business partners to deliver strategic insights and solutions
+          </p>
+          <Button 
+            onClick={() => setIsEditing(!isEditing)}
+            variant="outline"
+            className="mt-4"
+          >
+            <Pencil className="w-4 h-4 mr-2" />
+            {isEditing ? "Done Editing" : "Edit Organizations"}
+          </Button>
+        </div>
+        
+        {/* Institutional Partners Section */}
+        <div className="mb-12">
+          <div className="flex items-center gap-2 mb-6">
+            <Building className="h-5 w-5 text-accent" />
+            <h3 className="text-xl font-semibold text-foreground">Institutional Partners</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {institutionalOrgs.map((org) => renderOrganizationCard(org))}
+          </div>
+        </div>
+
+        {/* Business Partners Section */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-6">
+            <Briefcase className="h-5 w-5 text-accent" />
+            <h3 className="text-xl font-semibold text-foreground">Business Partners</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            {businessOrgs.map((org) => renderOrganizationCard(org))}
+          </div>
         </div>
         
         <div className="text-center mt-8">
