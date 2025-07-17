@@ -12,9 +12,9 @@ export const Experience = () => {
       description: "Structured complex, multi-regional projects spanning energy, transportation, and digital infrastructure across Africa, Europe, North America, and Latin America.",
       highlights: [
         "Food-Security & Agritech expertise",
-        "Represented at Future Investment Initiative summits",
-        "GCC stakeholder diversification frameworks",
-        "Genevieve Leveille agritech model implementation"
+        "Deal origination and due diligence",
+        "M&A representation and execution",
+        "GCC mandate diversification thesis deal flow presentation"
       ],
       icon: Building
     },
