@@ -28,8 +28,8 @@ export const SECURITY_CONFIG = {
     'upgrade-insecure-requests': []
   },
 
-  // OTP Security settings (reduced to 5 minutes for better security)
-  OTP_EXPIRY_MINUTES: 5,
+  // OTP Security settings (reduced to 3 minutes for better security)
+  OTP_EXPIRY_MINUTES: 3,
   
   // Session security
   SESSION_SECURITY: {
