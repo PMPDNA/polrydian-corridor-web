@@ -14,9 +14,49 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      console.log('Missing authorization header');
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Verify user authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
+
+    if (authError || !user) {
+      console.log('Authentication failed:', authError);
+      return new Response(
+        JSON.stringify({ error: 'Authentication failed' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Rate limiting
+    const clientIP = req.headers.get('x-forwarded-for') || 'unknown';
+    const { data: rateCheck, error: rateLimitError } = await supabase
+      .rpc('check_rate_limit', {
+        identifier_value: `upload_${clientIP}`,
+        max_attempts: 10,
+        window_minutes: 60
+      });
+
+    if (rateLimitError || !rateCheck) {
+      console.log('Rate limit exceeded');
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -27,6 +67,24 @@ serve(async (req) => {
 
     if (!file) {
       throw new Error('No file provided');
+    }
+
+    // File validation
+    const maxFileSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (file.size > maxFileSize) {
+      return new Response(
+        JSON.stringify({ error: 'File size exceeds 10MB limit' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!allowedTypes.includes(file.type)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid file type. Only images are allowed.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Generate unique filename
@@ -64,7 +122,7 @@ serve(async (req) => {
         thumbnail_url: thumbnailUrl,
         category,
         instagram_post_id: instagramPostId,
-        uploaded_by: req.headers.get('user-id') // You'll need to pass this from the frontend
+        uploaded_by: user.id // Use authenticated user's ID
       })
       .select()
       .single();

@@ -47,6 +47,33 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_rate_limits: {
+        Row: {
+          attempt_count: number
+          blocked_until: string | null
+          created_at: string
+          id: string
+          identifier: string
+          window_start: string
+        }
+        Insert: {
+          attempt_count?: number
+          blocked_until?: string | null
+          created_at?: string
+          id?: string
+          identifier: string
+          window_start?: string
+        }
+        Update: {
+          attempt_count?: number
+          blocked_until?: string | null
+          created_at?: string
+          id?: string
+          identifier?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       client_preferences: {
         Row: {
           communication_preference: string | null
@@ -337,6 +364,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_admin_role: {
+        Args: { target_user_id: string }
+        Returns: boolean
+      }
+      check_rate_limit: {
+        Args: {
+          identifier_value: string
+          max_attempts?: number
+          window_minutes?: number
+        }
+        Returns: boolean
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
@@ -345,6 +384,14 @@ export type Database = {
         Args: {
           _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
+      prevent_role_self_elevation: {
+        Args: {
+          target_user_id: string
+          old_role: Database["public"]["Enums"]["app_role"]
+          new_role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
       }

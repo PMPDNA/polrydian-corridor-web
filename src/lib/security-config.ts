@@ -11,24 +11,25 @@ export const SECURITY_CONFIG = {
   // Session configuration
   SESSION_TIMEOUT_MS: 24 * 60 * 60 * 1000, // 24 hours
   
-  // Content Security Policy (tightened for security)
+  // Content Security Policy (enhanced for security)
   CSP_DIRECTIVES: {
     'default-src': ["'self'"],
     'script-src': ["'self'", "'wasm-unsafe-eval'"], // Removed unsafe-inline and unsafe-eval
     'style-src': ["'self'", "'unsafe-inline'"], // Keep for Tailwind CSS
-    'img-src': ["'self'", "data:", "https:"],
-    'connect-src': ["'self'", "https://*.supabase.co", "https://hooks.zapier.com"],
+    'img-src': ["'self'", "data:", "https://*.supabase.co", "https://calendly.com"],
+    'connect-src': ["'self'", "https://*.supabase.co"],
     'font-src': ["'self'", "data:"],
     'object-src': ["'none'"],
-    'media-src': ["'self'"],
+    'media-src': ["'self'", "https://*.supabase.co"],
     'frame-src': ["'self'", "https://calendly.com"],
     'frame-ancestors': ["'none'"],
     'base-uri': ["'self'"],
-    'form-action': ["'self'"]
+    'form-action': ["'self'"],
+    'upgrade-insecure-requests': []
   },
 
-  // OTP Security settings (reduced from 24 hours to 10 minutes)
-  OTP_EXPIRY_MINUTES: 10,
+  // OTP Security settings (reduced to 5 minutes for better security)
+  OTP_EXPIRY_MINUTES: 5,
   
   // Session security
   SESSION_SECURITY: {

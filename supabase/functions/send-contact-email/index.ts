@@ -27,6 +27,22 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Rate limiting by IP
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    
+    // Simple rate limiting check (you could enhance this with a database)
+    const userAgent = req.headers.get('user-agent') || '';
+    
+    // Block suspicious requests
+    if (userAgent.includes('bot') || userAgent.includes('crawler')) {
+      console.log('Blocked bot request from:', clientIP);
+      return new Response(
+        JSON.stringify({ error: 'Access denied' }),
+        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const body = await req.json();
     const { 
       firstName, 
       lastName, 
@@ -35,9 +51,9 @@ const handler = async (req: Request): Promise<Response> => {
       service, 
       message, 
       urgent 
-    }: ContactEmailRequest = await req.json();
+    }: ContactEmailRequest = body;
 
-    // Validate required fields
+    // Enhanced validation
     if (!firstName || !lastName || !email || !message) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
@@ -45,6 +61,33 @@ const handler = async (req: Request): Promise<Response> => {
           status: 400, 
           headers: { "Content-Type": "application/json", ...corsHeaders } 
         }
+      );
+    }
+
+    // Input sanitization and validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email format" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Length limits to prevent abuse
+    if (firstName.length > 50 || lastName.length > 50 || message.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: "Input too long" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Basic content filtering
+    const suspiciousPatterns = /<script|javascript|<iframe|onclick/i;
+    if (suspiciousPatterns.test(message) || suspiciousPatterns.test(firstName) || suspiciousPatterns.test(lastName)) {
+      console.log('Blocked suspicious content from:', clientIP);
+      return new Response(
+        JSON.stringify({ error: "Invalid content detected" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 

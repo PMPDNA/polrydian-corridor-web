@@ -17,7 +17,11 @@ export const securityHeaders = {
     'geolocation=()',
     'payment=()',
     'usb=()',
-    'bluetooth=()'
+    'bluetooth=()',
+    'accelerometer=()',
+    'gyroscope=()',
+    'magnetometer=()',
+    'fullscreen=(self)'
   ].join(', ')
 };
 
