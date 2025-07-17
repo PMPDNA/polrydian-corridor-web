@@ -24,6 +24,13 @@ export const Hero = () => {
             "The impediment to action advances action. What stands in the way becomes the way."
           </blockquote>
           <cite className="text-foreground text-sm">— Marcus Aurelius</cite>
+          
+          {/* Strategic thinking image under quote */}
+          <div className="mt-6 flex justify-center">
+            <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
+              <Globe2 className="h-8 w-8 text-accent" />
+            </div>
+          </div>
         </div>
 
         {/* Main Heading */}

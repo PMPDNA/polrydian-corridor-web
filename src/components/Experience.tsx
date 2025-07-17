@@ -37,7 +37,7 @@ export const Experience = () => {
       title: "Co-Founder",
       company: "Amber Route Initiative",
       location: "Central Europe / Latin America",
-      description: "Strategically aligned Central European industrial capacities with Latin American and Central American near-shoring hubs to serve U.S. markets.",
+      description: "Strategically aligned Central European industrial capacities with Latin American and Central American near-shoring hubs to serve U.S. markets. Developed in collaboration with Central Industrial Cluster of Poland, North-South Logistics and Transport Cluster, and Chamber of Commerce.",
       highlights: [
         "Central European export diversification",
         "Latin American market integration",
@@ -65,12 +65,13 @@ export const Experience = () => {
       title: "North American Business Development Manager",
       company: "Source International Corp Inc.",
       location: "Miami, FL",
-      description: "Led custom software business development in FMCG, Logistics, Building Automation, ERP, and many other enterprise custom solutions.",
+      description: "Led business development for advanced custom software solutions, specializing in Industry 4.0 technologies, IoT innovation, and enterprise digital transformation. Developed strategic partnerships with Fortune 500 clients across manufacturing, logistics, and automation sectors.",
       highlights: [
-        "FMCG custom solutions",
-        "Logistics systems development",
-        "Building automation solutions",
-        "Enterprise ERP consulting"
+        "Industry 4.0 implementation leadership",
+        "IoT innovation and deployment",
+        "Fortune 500 client development",
+        "Enterprise digital transformation",
+        "Advanced manufacturing solutions"
       ],
       icon: Building
     },
@@ -83,7 +84,9 @@ export const Experience = () => {
     "42% increase in Haiti mango exports",
     "750%+ individual farmer income boost",
     "Republican Executive Committee service (2016-2019)",
-    "Polish Ministry of Foreign Affairs Leadership Training (2016)"
+    "Polish Ministry of Foreign Affairs Leadership Training (2016)",
+    "CSIS Strategic Leadership Program",
+    "Defense Security Cooperation Agency University - Industry Collaboration with Defense Department (101 Training)"
   ];
 
   return (
