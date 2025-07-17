@@ -15,32 +15,34 @@ export const PromotionalPopup = () => {
         const hasSeenPopup = localStorage.getItem('polrydian-promo-seen');
         
         if (!hasSeenPopup) {
-          // Also check IP-based tracking via our cookie consent function
-          const response = await fetch('/api/track-cookie-consent', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            // If no previous consent data, this is likely a first-time visitor
-            if (!data.hasConsent) {
-              setTimeout(() => setIsOpen(true), 2000); // Show after 2 seconds
+          // Show popup after user scrolls 50% of the page or after reading content
+          const handleScroll = () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const scrollPercent = scrollTop / (documentHeight - windowHeight);
+            
+            if (scrollPercent > 0.5) {
+              setIsOpen(true);
+              window.removeEventListener('scroll', handleScroll);
             }
-          } else {
-            // Fallback to localStorage only
-            setTimeout(() => setIsOpen(true), 2000);
-          }
+          };
+
+          // Also show after 30 seconds if user hasn't scrolled
+          const timeoutId = setTimeout(() => {
+            setIsOpen(true);
+            window.removeEventListener('scroll', handleScroll);
+          }, 30000);
+
+          window.addEventListener('scroll', handleScroll);
+          
+          return () => {
+            window.removeEventListener('scroll', handleScroll);
+            clearTimeout(timeoutId);
+          };
         }
       } catch (error) {
         console.error('Error checking visitor status:', error);
-        // Fallback to localStorage check
-        const hasSeenPopup = localStorage.getItem('polrydian-promo-seen');
-        if (!hasSeenPopup) {
-          setTimeout(() => setIsOpen(true), 2000);
-        }
       }
     };
 
@@ -74,22 +76,12 @@ export const PromotionalPopup = () => {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md mx-auto">
         <DialogHeader>
-          <div className="flex justify-between items-start">
-            <DialogTitle className="text-xl font-bold text-foreground">
-              🎉 Limited Time Offer
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClose}
-              className="h-6 w-6 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-xl font-bold text-foreground">
+            🎉 Limited Time Offer
+          </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">

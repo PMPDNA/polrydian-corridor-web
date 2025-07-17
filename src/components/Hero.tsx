@@ -91,8 +91,8 @@ export const Hero = () => {
             <div className="text-muted-foreground">Years Experience</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-accent mb-2">Fortune 500</div>
-            <div className="text-muted-foreground">Clients</div>
+            <div className="text-3xl md:text-4xl font-bold text-accent mb-2">Coldwell Banker</div>
+            <div className="text-muted-foreground">& Major Corporations</div>
           </div>
         </div>
       </div>

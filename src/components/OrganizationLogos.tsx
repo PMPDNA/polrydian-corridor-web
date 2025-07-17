@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import organizationLogos from "@/assets/organization-logos.jpg";
 
 export const OrganizationLogos = () => {
   const organizations = [
@@ -27,6 +28,17 @@ export const OrganizationLogos = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Collaborating with leading global institutions to deliver strategic insights and solutions
           </p>
+        </div>
+        
+        {/* Featured Organizations Image */}
+        <div className="mb-12 flex justify-center">
+          <div className="max-w-4xl w-full">
+            <img 
+              src={organizationLogos} 
+              alt="Strategic partnerships with NATO, CSIS, World Affairs Council, and other global institutions"
+              className="w-full h-auto rounded-lg shadow-lg"
+            />
+          </div>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">

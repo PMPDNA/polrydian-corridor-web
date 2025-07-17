@@ -166,7 +166,7 @@ export default function SupabaseLogin() {
                   <Input
                     id="reset-email"
                     type="email"
-                    value=""
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     required
