@@ -60,8 +60,6 @@ export default function SupabaseLogin() {
       const { data, error } = await signIn(email, password)
       
       if (error) {
-        console.error('Sign in error:', error)
-        
         if (error.message.includes('MFA')) {
           setNeedsMFA(true)
           return

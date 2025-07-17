@@ -69,7 +69,6 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signUp = async (email: string, password: string) => {
-    console.log('Attempting signup with:', { email })
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -80,26 +79,21 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
         }
       }
     })
-    console.log('Signup result:', { data, error })
     return { data, error }
   }
 
   const signIn = async (email: string, password: string) => {
-    console.log('Attempting signin with:', { email })
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
-    console.log('Signin result:', { data, error })
     return { data, error }
   }
 
   const resetPassword = async (email: string) => {
-    console.log('Attempting password reset for:', { email })
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     })
-    console.log('Password reset result:', { data, error })
     return { data, error }
   }
 
