@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Globe2, TrendingUp } from "lucide-react";
+import { ArrowRight, Globe2, Zap, Clock } from "lucide-react";
 import polrydianHeroBg from "@/assets/polrydian-hero-bg.jpg";
 import { PolrydianLogo } from "@/components/PolrydianLogo";
+import CalendlyPopup from "./CalendlyPopup";
 
 export const Hero = () => {
   return (
@@ -45,19 +46,38 @@ export const Hero = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <a href="/services">
-            <Button variant="default" size="lg" className="text-lg px-8 py-6">
-              Explore Strategic Solutions
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
-          </a>
-          <a href="/calendly-demo">
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6 border-accent text-accent hover:bg-accent hover:text-accent-foreground">
-              <Globe2 className="h-5 w-5 mr-2" />
-              Schedule Consultation
-            </Button>
-          </a>
+        <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/services">
+              <Button variant="default" size="lg" className="text-lg px-8 py-6">
+                Explore Strategic Solutions
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </Button>
+            </a>
+            <CalendlyPopup
+              calendlyUrl="https://calendly.com/patrickmisiewicz/consultation"
+              buttonText="Schedule Consultation"
+              variant="outline"
+              size="lg"
+              className="text-lg px-8 py-6 border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+            />
+            <CalendlyPopup
+              calendlyUrl="https://calendly.com/patrickmisiewicz/emergency-consultation"
+              buttonText="Emergency Meeting ($500)"
+              variant="destructive"
+              size="lg"
+              className="text-lg px-8 py-6"
+              prefill={{
+                customAnswers: {
+                  "emergency_fee": "500",
+                  "meeting_type": "emergency"
+                }
+              }}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Emergency meetings available if I'm available • Last minute fee applies
+          </p>
         </div>
 
         {/* Key Metrics */}

@@ -7,6 +7,8 @@ import { Contact } from "@/components/Contact";
 import SectionNavigator from "@/components/SectionNavigator";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { SocialMediaFeed } from "@/components/SocialMediaFeed";
+import { OrganizationLogos } from "@/components/OrganizationLogos";
+import { PromotionalPopup } from "@/components/PromotionalPopup";
 import Footer from "@/components/Footer";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
@@ -32,6 +34,7 @@ const Index = () => {
         <section id="hero" aria-label="Hero section">
           <Hero />
         </section>
+        <OrganizationLogos />
         <section id="social-insights" aria-label="Social media insights" className="container mx-auto px-6">
           <SocialMediaFeed showFeaturedOnly={true} limit={6} showTitle={false} />
         </section>
@@ -49,6 +52,7 @@ const Index = () => {
       <SectionNavigator sections={sections} />
       <Footer />
       <PerformanceMonitor />
+      <PromotionalPopup />
     </div>
   );
 };

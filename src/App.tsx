@@ -15,11 +15,11 @@ import CookieSettings from "./pages/CookieSettings";
 import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
-import CalendlyDemo from "./pages/CalendlyDemo";
+
 import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
 import Search from "./pages/Search";
-import LuxuryClient from "./pages/LuxuryClient";
+
 import NotFound from "./pages/NotFound";
 import CookieConsent from "./components/CookieConsent";
 import ScrollIndicator from "./components/ScrollIndicator";
@@ -58,7 +58,7 @@ const App = () => (
               </ErrorBoundary>
             } />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/calendly-demo" element={<CalendlyDemo />} />
+            
             <Route path="/search" element={<Search />} />
             <Route path="/security" element={
               <ErrorBoundary>
@@ -71,13 +71,6 @@ const App = () => (
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
                   <Analytics />
-                </SupabaseProtectedRoute>
-              </ErrorBoundary>
-            } />
-            <Route path="/luxury-client" element={
-              <ErrorBoundary>
-                <SupabaseProtectedRoute>
-                  <LuxuryClient />
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
