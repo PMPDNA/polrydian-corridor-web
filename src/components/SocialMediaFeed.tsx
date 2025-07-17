@@ -99,7 +99,7 @@ export const SocialMediaFeed: React.FC<SocialMediaFeedProps> = ({
             Social Media Insights
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Follow my latest thoughts and insights across LinkedIn and Instagram
+            Follow my latest thoughts and insights across LinkedIn, Instagram, and social media
           </p>
         </div>
       )}

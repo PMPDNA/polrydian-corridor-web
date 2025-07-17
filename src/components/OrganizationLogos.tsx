@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FileUpload } from "@/components/FileUpload";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Pencil, ExternalLink, Trash2, Building, Briefcase } from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
 
 interface Organization {
   id: string;
@@ -244,26 +246,49 @@ export const OrganizationLogos = () => {
           </Button>
         </div>
         
-        {/* Institutional Partners Section */}
-        <div className="mb-12">
-          <div className="flex items-center gap-2 mb-6">
-            <Building className="h-5 w-5 text-accent" />
-            <h3 className="text-xl font-semibold text-foreground">Institutional Partners</h3>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {institutionalOrgs.map((org) => renderOrganizationCard(org))}
-          </div>
-        </div>
-
-        {/* Business Partners Section */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-6">
+        {/* Business Partners Section - Centered at top */}
+        <div className="mb-16">
+          <div className="flex items-center justify-center gap-2 mb-8">
             <Briefcase className="h-5 w-5 text-accent" />
             <h3 className="text-xl font-semibold text-foreground">Business Partners</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {businessOrgs.map((org) => renderOrganizationCard(org))}
+          <div className="flex justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
+              {businessOrgs.map((org) => renderOrganizationCard(org))}
+            </div>
           </div>
+        </div>
+
+        {/* Institutional Partners Section - Carousel */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <Building className="h-5 w-5 text-accent" />
+            <h3 className="text-xl font-semibold text-foreground">Institutional Partners</h3>
+          </div>
+          
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            plugins={[
+              Autoplay({
+                delay: 3000,
+                stopOnInteraction: true,
+              }),
+            ]}
+            className="w-full max-w-5xl mx-auto"
+          >
+            <CarouselContent>
+              {institutionalOrgs.map((org, index) => (
+                <CarouselItem key={org.id} className="md:basis-1/3 lg:basis-1/4">
+                  {renderOrganizationCard(org)}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
         
         <div className="text-center mt-8">

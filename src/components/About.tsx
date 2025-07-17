@@ -217,16 +217,45 @@ export const About = () => {
 
             <Card className="shadow-elegant">
               <CardContent className="p-8">
-                <h3 className="text-2xl font-semibold text-foreground mb-4">Background & Journey</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  Born in Florida and raised in Bydgoszcz, Poland, my earliest experiences involved navigating 
-                  diverse cultural and economic contexts, laying the foundation for my professional approach.
-                </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  Real-world exposure across 60 countries spanning Africa, Asia, Europe, Latin America, and 
-                  North America truly refined my perspective and skillset, providing practical understanding 
-                  of how sophisticated supply chains operate in dynamic markets.
-                </p>
+                <h3 className="text-2xl font-semibold text-foreground mb-4">Full Biography</h3>
+                <div className="text-muted-foreground leading-relaxed space-y-4">
+                  <p>
+                    Born in Florida and raised in Bydgoszcz, Poland, my earliest experiences involved navigating diverse cultural and economic contexts, laying the foundation for my professional approach. Academic milestones—including a BA in International Economic Relations at the University of Gdańsk, an Erasmus scholarship in Amsterdam, and a competitive study-abroad scholarship at Kyungpook National University in Daegu, South Korea—provided me with rigorous analytical grounding.
+                  </p>
+                  <p>
+                    Later, pursuing a Master's in Logistics & Supply Chain Management and executive programs in International Business at Florida International University, combined with Public Policy studies at Georgetown University, significantly deepened my strategic toolkit. Yet, it was real-world exposure across 60 countries spanning Africa, Asia, Europe, Latin America, and North America that truly refined my perspective and skillset.
+                  </p>
+                  <p>
+                    My professional trajectory consistently demonstrates the value of applying disciplined strategic clarity. My early career started out of passion, building Polish American community in Miami, from folk dances that were showcase at Miami Heat game, Independent Gallery Exhibition during Art Basel 2014 of Polish-Miami in collaboration with Elysse, Cervera and (other developer check the name in Edge water), concerts of Polish A rated artist, and many more that led me finally to my job as North American Business Development Manager at Source International Corp Inc., top custom software development firm with Fortune 500 clients where I was responsible form business development to IoT innovation with my first experience in industry 4.0 and through complex software deployments, gaining firsthand insight into how sophisticated supply chains operate in dynamic markets.
+                  </p>
+                  <p>
+                    Around the same period (2014), Miami-Dade Aviation Director Emilio González approached me about facilitating direct air connectivity between Warsaw and Miami via LOT Polish Airlines. Leveraging careful negotiation and clear strategy, we established the early-stage discussions that set the foundation for the eventual route. From 2017 onward, shortly after Port Gdańsk signed its sister-port agreement with PortMiami, I advised Port of Gdańsk leadership on strategic diversification away from China-centric shipping, successfully mapping practical pathways for capturing Central European exports bound for the U.S. and Latin American markets.
+                  </p>
+                  <p>
+                    From 2016 to 2021, I co-founded the Amber Route Initiative, strategically aligning Central European industrial capacities with Latin American and Central American near-shoring hubs to serve U.S. markets. Simultaneously, I co-led an impactful West African agritech and economic development initiative in Côte d'Ivoire, integrating local universities, policy-makers, private-sector partners, and guarantee funds into a robust economic mobility ecosystem.
+                  </p>
+                  <p>
+                    Between 2024 and 2025, as Senior Adviser & Director of Infrastructure & M&A at Zab Capital Holdings, I structured complex, multi-regional projects spanning energy, transportation, and digital infrastructure across Africa, Europe, North America, and Latin America. In parallel, as Food-Security & Agritech expert, I represented Zab Capital and the World Affairs Council of Miami at Future Investment Initiative summits in Miami and Rio, presenting actionable frameworks that enabled Gulf Cooperation Council stakeholders to diversify and secure critical food supply chains—drawing upon successful ecosystem frameworks such as the agritech model developed by Genevieve Leveille in Haiti (2019), which onboarded over 3,500 smallholder farmers, increased Haiti's mango exports by 42%, and boosted individual farmer incomes by over 750%.
+                  </p>
+                  <p>
+                    Effective strategic frameworks require rigorous validation against real-world contexts. Since 2022, as Board Director and Chair of the Central & Eastern Europe program at the World Affairs Council of Miami, I have convened senior diplomats, SOUTHCOM officials, economic development leaders, and private-sector decision-makers to translate global volatility into actionable local and international strategies. Key engagements have included leading strategic dialogues on Haiti's security crisis (2023), co-organizing the Concordia Americas Summit, and representing the Council at the 75th NATO Summit in Washington (2024).
+                  </p>
+                  <p>
+                    My prior civic engagement, including serving as Subcommitteeman for the Republican Executive Committee of Miami-Dade County (2016–2019) and participating in the Polish Ministry of Foreign Affairs Leadership Training Program (2016), deepened my understanding of the interplay between public policy, political realities, and strategic decision-making.
+                  </p>
+                  <p>
+                    A central lesson of Stoicism is aligning private ambition with public good—something I've consistently aimed for in my humanitarian and cultural initiatives. Following Hurricane Matthew's devastating impact on Haiti in 2016, I coordinated the delivery of sixty emergency shipments—medical supplies, baby formula, and shelf-stable food—navigating complex logistical networks to ensure rapid distribution directly to affected communities.
+                  </p>
+                  <p>
+                    In Miami, my ongoing commitment to cultural diplomacy includes organizing Polish-American art exhibitions, folk performances, and community dialogues alongside the Polish Consulate, American Institute of Polish Culture, and the Miami Heat—building genuine trust and lasting relationships that anchor economic corridors in meaningful cultural exchange.
+                  </p>
+                  <p>
+                    Beyond my professional and civic responsibilities, personal disciplines reinforce my strategic approach. Chess sharpens my pattern recognition, sailing strengthens my adaptive decision-making, and daily Stoic journaling helps maintain clarity and composure in volatility. Far from mere hobbies, these practices directly shape how I guide clients through complex global challenges.
+                  </p>
+                  <p className="font-medium text-foreground">
+                    Let's clearly define your strategic challenges and craft the corridor that decisively moves your ambitions forward.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 

@@ -36,7 +36,7 @@ const Index = () => {
         </section>
         <OrganizationLogos />
         <section id="social-insights" aria-label="Social media insights" className="container mx-auto px-6">
-          <SocialMediaFeed showFeaturedOnly={true} limit={6} showTitle={false} />
+          <SocialMediaFeed showFeaturedOnly={true} limit={6} showTitle={false} platform="linkedin" />
         </section>
         <section id="services" aria-label="Services section">
           <Services />

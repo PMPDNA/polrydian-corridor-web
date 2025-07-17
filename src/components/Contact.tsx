@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { SocialLinks } from "@/components/SocialLinks";
+
 import CalendlyPopup from "@/components/CalendlyPopup";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -192,10 +192,6 @@ export const Contact = () => {
                   ))}
                 </div>
 
-                {/* Social Links Section */}
-                <div className="mt-8">
-                  <SocialLinks />
-                </div>
 
                 {/* Additional Info */}
                 <div className="border-t border-border pt-6">
