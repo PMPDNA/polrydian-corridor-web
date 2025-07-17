@@ -65,29 +65,15 @@ export const Experience = () => {
       title: "North American Business Development Manager",
       company: "Source International Corp Inc.",
       location: "Miami, FL",
-      description: "Led business development for top custom software development firm with Fortune 500 clients, responsible for IoT innovation and Industry 4.0 initiatives.",
+      description: "Led custom software business development in FMCG, Logistics, Building Automation, ERP, and many other enterprise custom solutions.",
       highlights: [
-        "Fortune 500 client development",
-        "IoT innovation leadership",
-        "Industry 4.0 implementation",
-        "Complex software deployment oversight"
+        "FMCG custom solutions",
+        "Logistics systems development",
+        "Building automation solutions",
+        "Enterprise ERP consulting"
       ],
       icon: Building
     },
-    {
-      period: "2016",
-      title: "Humanitarian Coordinator",
-      company: "Hurricane Matthew Relief - Haiti",
-      location: "Haiti",
-      description: "Coordinated delivery of sixty emergency shipments following Hurricane Matthew's devastating impact, navigating complex logistical networks for rapid distribution.",
-      highlights: [
-        "60 emergency shipments coordinated",
-        "Medical supplies & essentials delivery",
-        "Complex logistics navigation",
-        "Direct community impact"
-      ],
-      icon: Award
-    }
   ];
 
   const achievements = [
@@ -170,24 +156,6 @@ export const Experience = () => {
           </div>
         </div>
 
-        {/* Key Achievements */}
-        <div className="mt-20">
-          <h3 className="text-2xl font-semibold text-foreground text-center mb-8">
-            Key Achievements & Impact
-          </h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {achievements.map((achievement, index) => (
-              <Card key={index} className="shadow-md hover:shadow-elegant transition-shadow duration-300">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <Award className="h-4 w-4 text-accent flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground">{achievement}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );
