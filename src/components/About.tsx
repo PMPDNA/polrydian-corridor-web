@@ -44,10 +44,11 @@ export const About = () => {
 
   const loadProfilePhoto = async () => {
     try {
-      // Try to load Patrick's existing profile photo from profiles table
+      // Load profile photo specifically for Patrick (admin user)
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('avatar_url')
+        .not('avatar_url', 'is', null)
         .limit(1);
 
       if (error) {
