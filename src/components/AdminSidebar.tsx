@@ -34,25 +34,19 @@ import {
 
 const contentItems = [
   { title: "Hero Section", url: "/admin/hero", icon: Home },
-  { title: "About Page", url: "/admin/about", icon: Info },
-  { title: "Services", url: "/admin/services", icon: Briefcase },
-  { title: "Organizations", url: "/admin/organizations", icon: Users },
-  { title: "Contact Info", url: "/admin/contact", icon: Phone },
+  // More content editors coming soon
 ]
 
 const mediaItems = [
-  { title: "Photo Gallery", url: "/admin/gallery", icon: Camera },
   { title: "Social Media", url: "/admin/social", icon: MessageSquare },
-  { title: "Instagram", url: "/admin/instagram", icon: Instagram },
-  { title: "LinkedIn", url: "/admin/linkedin", icon: Linkedin },
+  // More media tools coming soon
 ]
 
 const systemItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Articles", url: "/admin/articles", icon: FileText },
+  { title: "Profile", url: "/admin/profile", icon: Settings },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Security", url: "/security", icon: Shield },
-  { title: "Profile", url: "/admin/profile", icon: Settings },
 ]
 
 export function AdminSidebar() {
