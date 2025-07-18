@@ -116,7 +116,7 @@ export default function ResetPassword() {
             </CardHeader>
             <CardContent>
               <Button asChild className="w-full">
-                <a href="/auth">Back to Login</a>
+                <a href="/admin">Back to Admin Login</a>
               </Button>
             </CardContent>
           </Card>

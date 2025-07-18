@@ -4,7 +4,8 @@ import { AdminSidebar } from "@/components/AdminSidebar"
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth"
 import { Navigate } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
-import { User } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { User, LogOut } from "lucide-react"
 
 interface AdminLayoutProps {
   children: ReactNode
@@ -12,7 +13,7 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ children, title = "Admin Panel" }: AdminLayoutProps) {
-  const { user, isAdmin, loading, displayName } = useSupabaseAuth()
+  const { user, isAdmin, loading, displayName, signOut } = useSupabaseAuth()
 
   // Show loading spinner while auth is being determined
   if (loading) {
@@ -28,7 +29,7 @@ export function AdminLayout({ children, title = "Admin Panel" }: AdminLayoutProp
 
   // Only redirect after we're sure about auth state
   if (!loading && (!user || !isAdmin)) {
-    return <Navigate to="/auth" replace />
+    return <Navigate to="/admin" replace />
   }
 
   return (
@@ -53,6 +54,15 @@ export function AdminLayout({ children, title = "Admin Panel" }: AdminLayoutProp
                 <span className="text-sm font-medium">{displayName}</span>
                 <Badge variant="secondary" className="text-xs">Admin</Badge>
               </div>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={signOut}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-3 w-3" />
+                Sign Out
+              </Button>
             </div>
           </header>
 

@@ -16,10 +16,9 @@ import CookieSettings from "./pages/CookieSettings";
 import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
-import Auth from "./pages/Auth";
 import { AuthCallback } from "./pages/AuthCallback";
+import AdminPage from "./pages/AdminPage";
 
-import AdminDashboard from "./pages/admin/Dashboard";
 import AdminSocial from "./pages/admin/SocialMedia";
 import HeroEditor from "./pages/admin/HeroEditor";
 
@@ -52,7 +51,7 @@ const App = () => (
             <Route path="/articles" element={<Articles />} />
             <Route path="/admin" element={
               <ErrorBoundary>
-                <AdminDashboard />
+                <AdminPage />
               </ErrorBoundary>
             } />
             <Route path="/admin/profile" element={
@@ -94,7 +93,7 @@ const App = () => (
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth" element={<AdminPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

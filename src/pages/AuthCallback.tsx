@@ -151,7 +151,7 @@ export const AuthCallback = () => {
           
           {status === 'error' && (
             <Button onClick={() => navigate('/admin')} variant="outline">
-              Return to Admin Panel
+              Return to Admin
             </Button>
           )}
         </CardContent>
