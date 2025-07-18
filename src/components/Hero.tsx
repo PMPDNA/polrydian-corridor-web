@@ -41,15 +41,8 @@ export const Hero = () => {
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Strategic consulting with Patrick Misiewicz, Founder of Polrydian Group. Specializing in corridor economics—mapping 
-            strategic flows of capital, technology, and expertise across 60+ countries to transform complex global challenges into competitive advantages.
+            strategic flows of capital, technology, and expertise to transform complex global challenges into competitive advantages.
           </p>
-          
-          {/* Commercial Real Estate Focus */}
-          <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
-            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">Commercial Real Estate</span>
-            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">Warehouses • Schools • International Hotels</span>
-            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">$20M-$500M Deal Mandates</span>
-          </div>
         </div>
 
         {/* Call to Action */}
@@ -87,17 +80,6 @@ export const Hero = () => {
           </p>
         </div>
 
-        {/* Key Metrics */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 animate-slide-in-right" style={{ animationDelay: '0.9s' }}>
-          <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-accent mb-2">60+</div>
-            <div className="text-muted-foreground">Countries</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-accent mb-2">Commercial</div>
-            <div className="text-muted-foreground">Real Estate Focus</div>
-          </div>
-        </div>
       </div>
 
       {/* Scroll Indicator */}

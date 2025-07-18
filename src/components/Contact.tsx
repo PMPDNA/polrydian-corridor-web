@@ -132,12 +132,6 @@ export const Contact = () => {
       title: "Headquarters",
       value: "Miami, Florida",
       description: "Global operations base"
-    },
-    {
-      icon: Globe,
-      title: "Global Reach",
-      value: "60+ Countries",
-      description: "Worldwide strategic presence"
     }
   ];
 
