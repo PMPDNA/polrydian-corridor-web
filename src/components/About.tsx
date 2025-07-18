@@ -90,18 +90,23 @@ export const About = () => {
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // Update profile with new avatar URL
+      // Update the current user's profile with new avatar URL
       const { error: updateError } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user.id,
+        .update({
           avatar_url: publicUrl,
           display_name: 'Patrick Misiewicz'
-        });
+        })
+        .eq('user_id', user.id);
 
       if (updateError) throw updateError;
 
       setProfilePhoto(publicUrl);
+      
+      // Force reload the profile photo
+      setTimeout(() => {
+        loadProfilePhoto();
+      }, 1000);
       
       toast({
         title: "Photo Updated",
@@ -126,38 +131,35 @@ export const About = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             About Patrick Misiewicz
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             Founder of Polrydian Group, specializing in corridor economics and strategic transformation
           </p>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Professional Photo - Replace placeholder with welcome message */}
-          <div className="lg:order-2">
+          
+          {/* Profile Picture directly under the heading */}
+          <div className="flex justify-center mb-12">
             <div className="relative">
-              <div className="w-full max-w-md mx-auto bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-8 shadow-elegant">
-                <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center overflow-hidden relative group">
+              <div className="w-64 h-80 bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-6 shadow-elegant">
+                <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center overflow-hidden relative group">
                   {profilePhoto ? (
                     <img 
                       src={profilePhoto} 
                       alt="Patrick Misiewicz" 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-xl"
                     />
                   ) : (
-                    <div className="text-center p-6">
-                      <div className="w-20 h-20 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <span className="text-2xl font-bold text-accent">PM</span>
+                    <div className="text-center p-4">
+                      <div className="w-16 h-16 bg-accent/20 rounded-full mx-auto mb-3 flex items-center justify-center">
+                        <span className="text-xl font-bold text-accent">PM</span>
                       </div>
-                      <h3 className="text-lg font-semibold text-foreground mb-2">Welcome</h3>
-                      <p className="text-sm text-muted-foreground mb-4">Patrick Misiewicz</p>
-                      <p className="text-xs text-muted-foreground">Founder, Polrydian Group</p>
-                      <p className="text-xs text-muted-foreground mt-2">Commercial Real Estate & Strategic Consulting</p>
+                      <h3 className="text-lg font-semibold text-foreground mb-1">Patrick Misiewicz</h3>
+                      <p className="text-sm text-muted-foreground mb-2">Founder, Polrydian Group</p>
+                      <p className="text-xs text-muted-foreground">Commercial Real Estate & Strategic Consulting</p>
                     </div>
                   )}
                    
                    {/* Admin photo upload functionality */}
                    {isAdmin && (
-                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer rounded-xl">
                        <label htmlFor="photo-upload" className="cursor-pointer">
                          <div className="text-center text-white">
                            <Camera className="h-8 w-8 mx-auto mb-2" />
@@ -187,15 +189,17 @@ export const About = () => {
               </div>
               
               {/* Quote overlay */}
-              <div className="absolute -bottom-6 -right-6 bg-background border border-accent/20 rounded-lg p-4 shadow-elegant max-w-xs">
+              <div className="absolute -bottom-4 -right-4 bg-background border border-accent/20 rounded-lg p-3 shadow-elegant max-w-xs">
                 <p className="text-sm italic text-muted-foreground">"What stands in the way becomes the way."</p>
                 <cite className="text-xs text-accent">— Marcus Aurelius</cite>
               </div>
             </div>
           </div>
+        </div>
 
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Main Bio */}
-          <div className="space-y-6 lg:order-1">
+          <div className="space-y-6">
             <Card className="shadow-elegant">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-semibold text-foreground mb-4">Strategic Philosophy</h3>
