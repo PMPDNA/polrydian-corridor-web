@@ -19,6 +19,10 @@ import ResetPassword from "./pages/ResetPassword";
 import Auth from "./pages/Auth";
 import { AuthCallback } from "./pages/AuthCallback";
 
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminSocial from "./pages/admin/SocialMedia";
+import HeroEditor from "./pages/admin/HeroEditor";
+
 import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
 import Search from "./pages/Search";
@@ -49,7 +53,28 @@ const App = () => (
             <Route path="/admin" element={
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
+                  <AdminDashboard />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
+            <Route path="/admin/profile" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
                   <ProfileManager />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
+            <Route path="/admin/social" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <AdminSocial />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
+            <Route path="/admin/hero" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <HeroEditor />
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
