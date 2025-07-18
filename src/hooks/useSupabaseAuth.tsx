@@ -87,6 +87,16 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
     })
+    
+    // Enhanced security logging
+    if (error) {
+      const { logFailedAuth } = await import('@/lib/security-monitoring')
+      await logFailedAuth(email, error.message)
+    } else if (data.user) {
+      const { logSuccessfulAuth } = await import('@/lib/security-monitoring')
+      await logSuccessfulAuth(data.user.id, 'email')
+    }
+    
     return { data, error }
   }
 

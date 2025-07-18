@@ -14,8 +14,8 @@ export const SECURITY_CONFIG = {
   // Content Security Policy (enhanced for security)
   CSP_DIRECTIVES: {
     'default-src': ["'self'"],
-    'script-src': ["'self'", "'wasm-unsafe-eval'"], // Removed unsafe-inline and unsafe-eval
-    'style-src': ["'self'", "'unsafe-inline'"], // Keep for Tailwind CSS
+    'script-src': ["'self'", "'wasm-unsafe-eval'"],
+    'style-src': ["'self'", "'nonce-{NONCE}'"], // Enhanced CSP with nonce
     'img-src': ["'self'", "data:", "https://*.supabase.co", "https://calendly.com"],
     'connect-src': ["'self'", "https://*.supabase.co"],
     'font-src': ["'self'", "data:"],
@@ -25,7 +25,8 @@ export const SECURITY_CONFIG = {
     'frame-ancestors': ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"],
-    'upgrade-insecure-requests': []
+    'upgrade-insecure-requests': [],
+    'report-uri': ["/api/csp-report"]
   },
 
   // OTP Security settings (reduced to 3 minutes for better security)
