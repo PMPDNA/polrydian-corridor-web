@@ -44,11 +44,11 @@ export const Hero = () => {
             strategic flows of capital, technology, and expertise across 60+ countries to transform complex global challenges into competitive advantages.
           </p>
           
-          {/* Key Differentiators */}
+          {/* Commercial Real Estate Focus */}
           <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm">
-            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">15+ Years Global Experience</span>
-            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">Board Director - World Affairs Council</span>
-            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">Masters in Logistics & Georgetown Public Policy</span>
+            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">Commercial Real Estate</span>
+            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">Warehouses • Schools • International Hotels</span>
+            <span className="px-3 py-1 bg-accent/10 text-accent rounded-full">$20M-$500M Deal Mandates</span>
           </div>
         </div>
 
@@ -94,12 +94,8 @@ export const Hero = () => {
             <div className="text-muted-foreground">Countries</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-accent mb-2">15+</div>
-            <div className="text-muted-foreground">Years Experience</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-accent mb-2">Coldwell Banker</div>
-            <div className="text-muted-foreground">& Major Corporations</div>
+            <div className="text-3xl md:text-4xl font-bold text-accent mb-2">Commercial</div>
+            <div className="text-muted-foreground">Real Estate Focus</div>
           </div>
         </div>
       </div>

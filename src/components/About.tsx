@@ -19,19 +19,14 @@ export const About = () => {
       description: "60 countries across Africa, Asia, Europe, Latin America, and North America"
     },
     {
-      icon: GraduationCap,
-      title: "Academic Excellence",
-      description: "Masters in Logistics & Georgetown Public Policy studies"
-    },
-    {
       icon: Award,
-      title: "Strategic Leadership",
-      description: "Board Director at World Affairs Council of Miami"
+      title: "Commercial Real Estate",
+      description: "Warehouses, schools, and international hotels - buyer and seller side representation"
     },
     {
       icon: Users,
-      title: "Cultural Bridge",
-      description: "Polish-American community building and cultural diplomacy"
+      title: "Deal Mandates",
+      description: "Working with my brother on commercial transactions ranging $20M-$500M"
     }
   ];
 
@@ -39,8 +34,7 @@ export const About = () => {
     "International Economic Relations - University of Gdańsk",
     "Erasmus Scholar - Amsterdam", 
     "Study Abroad - Kyungpook National University, South Korea",
-    "Logistics & Supply Chain - FIU",
-    "Public Policy - Georgetown University"
+    "Commercial Real Estate Professional"
   ];
 
   // Load existing profile photo on component mount
@@ -137,10 +131,9 @@ export const About = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Professional Photo */}
+          {/* Professional Photo - Replace placeholder with welcome message */}
           <div className="lg:order-2">
             <div className="relative">
-              {/* Photo Placeholder - Replace with actual Patrick photo */}
               <div className="w-full max-w-md mx-auto bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-8 shadow-elegant">
                 <div className="aspect-[3/4] bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center overflow-hidden relative group">
                   {profilePhoto ? (
@@ -150,12 +143,14 @@ export const About = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="text-center">
+                    <div className="text-center p-6">
                       <div className="w-20 h-20 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center">
                         <span className="text-2xl font-bold text-accent">PM</span>
                       </div>
-                      <p className="text-sm text-muted-foreground">Patrick Misiewicz</p>
-                      <p className="text-xs text-muted-foreground">Click to upload photo</p>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">Welcome</h3>
+                      <p className="text-sm text-muted-foreground mb-4">Patrick Misiewicz</p>
+                      <p className="text-xs text-muted-foreground">Founder, Polrydian Group</p>
+                      <p className="text-xs text-muted-foreground mt-2">Commercial Real Estate & Strategic Consulting</p>
                     </div>
                   )}
                    
@@ -271,7 +266,7 @@ export const About = () => {
 
           {/* Highlights Grid */}
           <div className="space-y-6">
-            <h3 className="text-2xl font-semibold text-foreground mb-6">Key Distinctions</h3>
+            <h3 className="text-2xl font-semibold text-foreground mb-6">Commercial Real Estate & Strategic Focus</h3>
             <div className="grid gap-6">
               {highlights.map((item, index) => (
                 <Card key={index} className="shadow-md hover:shadow-elegant transition-shadow duration-300">

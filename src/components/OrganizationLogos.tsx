@@ -53,6 +53,12 @@ export const OrganizationLogos = () => {
       website_url: "https://kcccapitalpartners.com", 
       category: 'business',
       description: "We provide investment banking, capital formation, and advisory services for companies, funds, and family offices. Our core focuses are capital raising and sell-side M&A as well as IPO advisory."
+    },
+    {
+      id: "18",
+      name: "Misiewicz Brothers Commercial Real Estate",
+      category: 'business',
+      description: "Commercial real estate partnership specializing in warehouses, schools, and international hotels. Representing both buyers and sellers with deal mandates ranging from $20M to $500M."
     }
   ]);
   const [isEditing, setIsEditing] = useState(false);
