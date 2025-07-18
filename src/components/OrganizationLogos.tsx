@@ -57,6 +57,7 @@ export const OrganizationLogos = () => {
     {
       id: "18",
       name: "Lee & Associates",
+      website_url: "https://www.lee-associates.com/southflorida/our-team/sebastian-misiewicz/",
       category: 'business',
       description: "Commercial real estate specializing in warehouses, schools, and international hotels. Working with Sebastian Misiewicz, Principal. Representing both buyers and sellers with deal mandates ranging from $20M to $500M."
     }
