@@ -137,7 +137,7 @@ export const About = () => {
           
           {/* Profile Picture directly under the heading */}
           <div className="flex justify-center mb-12">
-            <div className="relative">
+            <div className="relative group">
               <div className="w-64 h-80 bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-6 shadow-elegant">
                 <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center overflow-hidden relative group">
                   {profilePhoto ? (
@@ -193,82 +193,60 @@ export const About = () => {
                 <p className="text-sm italic text-muted-foreground">"What stands in the way becomes the way."</p>
                 <cite className="text-xs text-accent">— Marcus Aurelius</cite>
               </div>
+
+              {/* Bio Popup - appears on hover */}
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-4 w-[800px] max-w-[90vw] bg-background border border-accent/20 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 p-6">
+                <div className="max-h-[60vh] overflow-y-auto">
+                  <h3 className="text-xl font-semibold text-foreground mb-4">Strategic Philosophy & Full Biography</h3>
+                  
+                  <div className="grid md:grid-cols-2 gap-6 text-sm text-muted-foreground leading-relaxed">
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">Strategic Philosophy</h4>
+                        <p>My work centers on <strong>corridor economics</strong>—the disciplined practice of mapping and managing strategic flows of capital, technology, policy, and expertise across critical global regions, transforming obstacles into pathways toward resilience and sustainable growth.</p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">Professional Background</h4>
+                        <p>I'm Patrick Oscar Misiewicz, founder of Polrydian Group, where my guiding principle is simple: transforming complexity and geopolitical friction into clear, actionable strategy.</p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">Academic Foundation</h4>
+                        <p>BA in International Economic Relations at the University of Gdańsk, Erasmus scholarship in Amsterdam, study-abroad at Kyungpook National University in South Korea, Master's in Logistics & Supply Chain Management at FIU, and Public Policy studies at Georgetown University.</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">Global Experience</h4>
+                        <p>Real-world exposure across 60 countries spanning Africa, Asia, Europe, Latin America, and North America, including strategic initiatives from the Amber Route Initiative to West African agritech development in Côte d'Ivoire.</p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">Current Roles</h4>
+                        <p>Board Director and Chair of the Central & Eastern Europe program at the World Affairs Council of Miami. Senior Adviser & Director of Infrastructure & M&A at Zab Capital Holdings (2024-2025).</p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium text-foreground mb-2">Personal Disciplines</h4>
+                        <p><strong>Chess</strong> sharpens pattern recognition, <strong>sailing</strong> strengthens adaptive decision-making, and <strong>daily Stoic journaling</strong> maintains clarity and composure in volatility.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-accent/20">
+                    <p className="text-center font-medium text-foreground">
+                      "Let's clearly define your strategic challenges and craft the corridor that decisively moves your ambitions forward."
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Main Bio */}
-          <div className="space-y-6">
-            <Card className="shadow-elegant">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-semibold text-foreground mb-4">Strategic Philosophy</h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  My work centers on <strong>corridor economics</strong>—the disciplined practice of mapping and managing 
-                  strategic flows of capital, technology, policy, and expertise across critical global regions, 
-                  transforming obstacles into pathways toward resilience and sustainable growth.
-                </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  My professional worldview draws deeply from <strong>Stoicism</strong>, a philosophy emphasizing 
-                  clear-sighted assessment, calm composure, and decisive action in the face of uncertainty.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-elegant">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-semibold text-foreground mb-4">Full Biography</h3>
-                <div className="text-muted-foreground leading-relaxed space-y-4">
-                  <p>
-                    I'm Patrick Oscar Misiewicz, founder of Polrydian Group, where my guiding principle is simple: transforming complexity and geopolitical friction into clear, actionable strategy. My work centers on what I call corridor economics—the disciplined practice of mapping and managing strategic flows of capital, technology, policy, and expertise across critical global regions, transforming obstacles into pathways toward resilience and sustainable growth.
-                  </p>
-                  <p>
-                    My professional worldview draws deeply from Stoicism, a philosophy emphasizing clear-sighted assessment, calm composure, and decisive action in the face of uncertainty.
-                  </p>
-                  <p>
-                    Born in Florida and raised in Bydgoszcz, Poland, my earliest experiences involved navigating diverse cultural and economic contexts, laying the foundation for my professional approach. Academic milestones—including a BA in International Economic Relations at the University of Gdańsk, an Erasmus scholarship in Amsterdam, and a competitive study-abroad scholarship at Kyungpook National University in Daegu, South Korea—provided me with rigorous analytical grounding. Later, pursuing a Master's in Logistics & Supply Chain Management and executive programs in International Business at Florida International University, combined with Public Policy studies at Georgetown University, significantly deepened my strategic toolkit. Yet, it was real-world exposure across 60 countries spanning Africa, Asia, Europe, Latin America, and North America that truly refined my perspective and skillset.
-                  </p>
-                  <p>
-                    My professional trajectory consistently demonstrates the value of applying disciplined strategic clarity. My early career started out of passion, building Polish American community in Miami, from folk dances that were showcased at Miami Heat games, Independent Gallery Exhibition during Art Basel 2014 of Polish-Miami in collaboration with Elysse, Cervera and other developers in Edgewater, concerts of Polish A-rated artists, and many more that led me finally to my job as North American Business Development Manager at Source International Corp Inc., top custom software development firm with Fortune 500 clients where I was responsible for business development to IoT innovation with my first experience in industry 4.0 and through complex software deployments, gaining firsthand insight into how sophisticated supply chains operate in dynamic markets.
-                  </p>
-                  <p>
-                    Around the same period (2014), Miami-Dade Aviation Director Emilio González approached me about facilitating direct air connectivity between Warsaw and Miami via LOT Polish Airlines. Leveraging careful negotiation and clear strategy, we established the early-stage discussions that set the foundation for the eventual route. From 2017 onward, shortly after Port Gdańsk signed its sister-port agreement with PortMiami, I advised Port of Gdańsk leadership on strategic diversification away from China-centric shipping, successfully mapping practical pathways for capturing Central European exports bound for the U.S. and Latin American markets.
-                  </p>
-                  <p>
-                    From 2016 to 2021, I co-founded the Amber Route Initiative, strategically aligning Central European industrial capacities with Latin American and Central American near-shoring hubs to serve U.S. markets. Simultaneously, I co-led an impactful West African agritech and economic development initiative in Côte d'Ivoire, integrating local universities, policy-makers, private-sector partners, and guarantee funds into a robust economic mobility ecosystem.
-                  </p>
-                  <p>
-                    Between 2024 and 2025, as Senior Adviser & Director of Infrastructure & M&A at Zab Capital Holdings, I structured complex, multi-regional projects spanning energy, transportation, and digital infrastructure across Africa, Europe, North America, and Latin America. In parallel, as Food-Security & Agritech expert, I represented Zab Capital and the World Affairs Council of Miami at Future Investment Initiative summits in Miami and Rio, presenting actionable frameworks that enabled Gulf Cooperation Council stakeholders to diversify and secure critical food supply chains—drawing upon successful ecosystem frameworks such as the agritech model developed by Genevieve Leveille in Haiti (2019), which onboarded over 3,500 smallholder farmers, increased Haiti's mango exports by 42%, and boosted individual farmer incomes by over 750%.
-                  </p>
-                  <p>
-                    Effective strategic frameworks require rigorous validation against real-world contexts. Since 2022, as Board Director and Chair of the Central & Eastern Europe program at the World Affairs Council of Miami, I have convened senior diplomats, SOUTHCOM officials, economic development leaders, and private-sector decision-makers to translate global volatility into actionable local and international strategies. Key engagements have included leading strategic dialogues on Haiti's security crisis (2023), co-organizing the Concordia Americas Summit, and representing the Council at the 75th NATO Summit in Washington (2024). My prior civic engagement, including serving as Subcommitteeman for the Republican Executive Committee of Miami-Dade County (2016–2019) and participating in the Polish Ministry of Foreign Affairs Leadership Training Program (2016), deepened my understanding of the interplay between public policy, political realities, and strategic decision-making.
-                  </p>
-                  <p>
-                    A central lesson of Stoicism is aligning private ambition with public good—something I've consistently aimed for in my humanitarian and cultural initiatives. Following Hurricane Matthew's devastating impact on Haiti in 2016, I coordinated the delivery of sixty emergency shipments—medical supplies, baby formula, and shelf-stable food—navigating complex logistical networks to ensure rapid distribution directly to affected communities. In Miami, my ongoing commitment to cultural diplomacy includes organizing Polish-American art exhibitions, folk performances, and community dialogues alongside the Polish Consulate, American Institute of Polish Culture, and the Miami Heat—building genuine trust and lasting relationships that anchor economic corridors in meaningful cultural exchange.
-                  </p>
-                  <p>
-                    Beyond my professional and civic responsibilities, personal disciplines reinforce my strategic approach. Chess sharpens my pattern recognition, sailing strengthens my adaptive decision-making, and daily Stoic journaling helps maintain clarity and composure in volatility. Far from mere hobbies, these practices directly shape how I guide clients through complex global challenges.
-                  </p>
-                  <p className="font-medium text-foreground">
-                    Let's clearly define your strategic challenges and craft the corridor that decisively moves your ambitions forward.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Education Badges */}
-            <div>
-              <h3 className="text-xl font-semibold text-foreground mb-4">Academic Foundation</h3>
-              <div className="flex flex-wrap gap-2">
-                {educationBadges.map((badge, index) => (
-                  <Badge key={index} variant="outline" className="text-sm py-1">
-                    {badge}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-
           {/* Highlights Grid */}
           <div className="space-y-6">
             <h3 className="text-2xl font-semibold text-foreground mb-6">Commercial Real Estate & Strategic Focus</h3>
@@ -305,6 +283,20 @@ export const About = () => {
                 </p>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Education Badges */}
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-xl font-semibold text-foreground mb-4">Academic Foundation</h3>
+              <div className="flex flex-wrap gap-2">
+                {educationBadges.map((badge, index) => (
+                  <Badge key={index} variant="outline" className="text-sm py-1">
+                    {badge}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
