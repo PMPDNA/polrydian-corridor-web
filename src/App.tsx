@@ -16,6 +16,7 @@ import CookieSettings from "./pages/CookieSettings";
 import Articles from "./pages/Articles";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
+import Auth from "./pages/Auth";
 
 import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
@@ -75,6 +76,7 @@ const App = () => (
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
+            <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
