@@ -116,20 +116,27 @@ export const SocialMediaManager = () => {
   const syncInstagramPosts = async () => {
     setIsSyncing(true);
     try {
-      const { error } = await supabase.functions.invoke('sync-instagram-data');
+      console.log('Starting Instagram sync...');
+      const { data, error } = await supabase.functions.invoke('sync-instagram-data');
       
-      if (error) throw error;
+      console.log('Instagram sync response:', { data, error });
+      
+      if (error) {
+        console.error('Instagram sync error:', error);
+        throw error;
+      }
       
       await loadSocialPosts();
+      await loadGallery();
       toast({
         title: 'Success',
-        description: 'Instagram posts synced successfully!',
+        description: `Instagram posts synced successfully! ${data?.posts_synced || 0} posts processed.`,
       });
     } catch (error: any) {
       console.error('Error syncing Instagram:', error);
       toast({
         title: 'Error',
-        description: 'Failed to sync Instagram posts. Check API configuration.',
+        description: `Failed to sync Instagram posts: ${error.message || 'Check API configuration.'}`,
         variant: 'destructive',
       });
     } finally {
@@ -140,22 +147,28 @@ export const SocialMediaManager = () => {
   const syncLinkedInPosts = async () => {
     setIsSyncing(true);
     try {
-      const { error } = await supabase.functions.invoke('sync-linkedin-data', {
+      console.log('Starting LinkedIn sync...');
+      const { data, error } = await supabase.functions.invoke('sync-linkedin-data', {
         body: { action: 'sync_posts' }
       });
       
-      if (error) throw error;
+      console.log('LinkedIn sync response:', { data, error });
+      
+      if (error) {
+        console.error('LinkedIn sync error:', error);
+        throw error;
+      }
       
       await loadSocialPosts();
       toast({
         title: 'Success',
-        description: 'LinkedIn posts synced successfully!',
+        description: `LinkedIn posts synced successfully! ${data?.posts_synced || 0} posts processed.`,
       });
     } catch (error: any) {
       console.error('Error syncing LinkedIn:', error);
       toast({
         title: 'Error',
-        description: 'Failed to sync LinkedIn posts. Check API configuration.',
+        description: `Failed to sync LinkedIn posts: ${error.message || 'Check API configuration.'}`,
         variant: 'destructive',
       });
     } finally {
