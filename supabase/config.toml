@@ -1,1 +1,4 @@
 project_id = "qemtvnwemcpzhvbwjbsk"
+
+[functions.linkedin-oauth]
+verify_jwt = false

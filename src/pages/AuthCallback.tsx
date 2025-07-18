@@ -3,12 +3,15 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
 export const AuthCallback = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, session, isAdmin } = useSupabaseAuth();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Processing LinkedIn authorization...');
 
@@ -40,38 +43,72 @@ export const AuthCallback = () => {
         return;
       }
 
-      try {
-        // Here we would normally exchange the code for an access token
-        // For now, we'll just show success and store the code
-        console.log('LinkedIn authorization code:', code);
-        
-        setStatus('success');
-        setMessage('LinkedIn authorization successful! Code received.');
-        
+      // Check if user is authenticated and admin
+      if (!user || !isAdmin) {
+        setStatus('error');
+        setMessage('Admin access required for LinkedIn integration');
         toast({
-          title: "Authorization Successful",
-          description: "LinkedIn authorization code received successfully",
+          title: "Access Denied",
+          description: "Only administrators can set up LinkedIn integration",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        setMessage('Exchanging authorization code for access token...');
+        
+        // Call the LinkedIn OAuth edge function
+        const { data, error: functionError } = await supabase.functions.invoke('linkedin-oauth', {
+          body: {
+            code: code,
+            action: 'exchange_token'
+          }
         });
 
-        // Redirect to home page after 3 seconds
+        if (functionError) {
+          throw new Error(functionError.message);
+        }
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        setStatus('success');
+        setMessage('LinkedIn integration completed successfully! Check the browser console for the access token to add to Supabase secrets.');
+        
+        // Log the token for admin to copy
+        console.log('🔑 LINKEDIN ACCESS TOKEN (Copy this to Supabase secrets):');
+        console.log('Secret name: LINKEDIN_ACCESS_TOKEN');
+        console.log('Instructions: Go to Supabase Dashboard > Settings > Edge Function Secrets');
+        
+        toast({
+          title: "LinkedIn Integration Successful",
+          description: "Access token generated. Check console for setup instructions.",
+        });
+
+        // Redirect to admin page after 5 seconds
         setTimeout(() => {
-          navigate('/');
-        }, 3000);
+          navigate('/admin');
+        }, 5000);
 
       } catch (error) {
         console.error('Error processing LinkedIn callback:', error);
         setStatus('error');
-        setMessage('Failed to process LinkedIn authorization');
+        setMessage(`Failed to complete LinkedIn integration: ${error.message}`);
         toast({
-          title: "Processing Failed",
-          description: "Failed to process LinkedIn authorization",
+          title: "Integration Failed",
+          description: error.message,
           variant: "destructive",
         });
       }
     };
 
-    handleLinkedInCallback();
-  }, [searchParams, navigate, toast]);
+    // Only process if we have a session
+    if (session !== null) {
+      handleLinkedInCallback();
+    }
+  }, [searchParams, navigate, toast, user, session, isAdmin]);
 
   const getIcon = () => {
     switch (status) {
@@ -102,14 +139,19 @@ export const AuthCallback = () => {
           <p className="text-sm text-muted-foreground">{message}</p>
           
           {status === 'success' && (
-            <p className="text-xs text-muted-foreground">
-              Redirecting to home page in a few seconds...
-            </p>
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Redirecting to admin panel in a few seconds...
+              </p>
+              <p className="text-xs text-amber-600">
+                ⚠️ Check browser console for access token setup instructions
+              </p>
+            </div>
           )}
           
           {status === 'error' && (
-            <Button onClick={() => navigate('/')} variant="outline">
-              Return to Home
+            <Button onClick={() => navigate('/admin')} variant="outline">
+              Return to Admin Panel
             </Button>
           )}
         </CardContent>
