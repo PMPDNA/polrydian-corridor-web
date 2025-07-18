@@ -44,25 +44,9 @@ export default function ResetPassword() {
       return
     }
 
-    if (accessToken && refreshToken) {
-      // Set the session with the tokens from the URL
-      supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      }).then(({ error }) => {
-        if (error) {
-          console.error('Error setting session:', error)
-          toast({
-            title: "Session Error",
-            description: "Failed to authenticate reset session",
-            variant: "destructive",
-          })
-        } else {
-          console.log('Reset session established successfully')
-        }
-      })
-    }
-  }, [accessToken, refreshToken, type, error, errorDescription, toast, searchParams])
+    // DO NOT automatically set session - we'll only use tokens for password update
+    // This prevents auto-login security issue
+  }, [error, errorDescription, toast, searchParams])
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -88,7 +72,22 @@ export default function ResetPassword() {
     setIsLoading(true)
 
     try {
-      console.log('Attempting to update password...')
+      console.log('Attempting to update password with tokens...')
+      
+      // Temporarily set session ONLY for password update
+      if (accessToken && refreshToken) {
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        })
+        
+        if (sessionError) {
+          console.error('Error setting temporary session:', sessionError)
+          throw sessionError
+        }
+      }
+
+      // Update password
       const { error } = await supabase.auth.updateUser({
         password: password
       })
@@ -98,7 +97,10 @@ export default function ResetPassword() {
         throw error
       }
 
-      console.log('Password updated successfully, user authenticated')
+      // IMPORTANT: Sign out immediately after password update for security
+      await supabase.auth.signOut()
+      
+      console.log('Password updated successfully, user signed out for security')
       setIsSuccess(true)
       toast({
         title: "Password Updated",
