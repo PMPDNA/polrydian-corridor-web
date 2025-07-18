@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator'
 import { Shield, Smartphone, Key, Trash2, CheckCircle, AlertTriangle } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { enrollMFA, verifyMFA, listMFAFactors, unenrollMFA } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 import QRCode from 'qrcode'
 
 interface MFAFactor {

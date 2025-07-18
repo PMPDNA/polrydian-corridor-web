@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 import { getUserDisplayName, isUserAdminSync, getUserRole, clearUserRoleCache } from '@/utils/userUtils'
 
 interface AuthContextType {
@@ -69,10 +69,13 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signUp = async (email: string, password: string) => {
+    const redirectUrl = `${window.location.origin}/`
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: redirectUrl,
         data: {
           display_name: email === 'polrydian@gmail.com' ? 'Patrick Misiewicz' : 'User',
           name: email === 'polrydian@gmail.com' ? 'Patrick Misiewicz' : 'User'

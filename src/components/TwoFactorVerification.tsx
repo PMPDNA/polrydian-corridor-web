@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Shield, ArrowLeft } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { challengeMFA, verifyMFA, listMFAFactors } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 
 interface TwoFactorVerificationProps {
   onCancel: () => void

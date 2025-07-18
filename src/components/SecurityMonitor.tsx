@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Shield, AlertTriangle, Clock, User, Eye, RefreshCw } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth'
 
 interface SecurityEvent {
@@ -12,8 +12,8 @@ interface SecurityEvent {
   user_id: string | null
   action: string
   details: any
-  ip_address: string
-  user_agent: string
+  ip_address: string | null
+  user_agent: string | null
   created_at: string
 }
 
@@ -36,7 +36,7 @@ export default function SecurityMonitor() {
 
       if (error) throw error
 
-      setEvents(data || [])
+      setEvents((data || []) as SecurityEvent[])
     } catch (err: any) {
       console.error('Error fetching security events:', err)
       setError('Failed to load security events')

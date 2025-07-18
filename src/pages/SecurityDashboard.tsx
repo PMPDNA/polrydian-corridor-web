@@ -17,7 +17,7 @@ import {
   Settings
 } from 'lucide-react'
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 import SecurityMonitor from '@/components/SecurityMonitor'
 
 interface SecurityMetrics {
