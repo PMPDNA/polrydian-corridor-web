@@ -21,8 +21,28 @@ export default function ResetPassword() {
 
   const accessToken = searchParams.get('access_token')
   const refreshToken = searchParams.get('refresh_token')
+  const type = searchParams.get('type')
+  const error = searchParams.get('error')
+  const errorDescription = searchParams.get('error_description')
 
   useEffect(() => {
+    console.log('Reset password page loaded with params:', {
+      accessToken: !!accessToken,
+      refreshToken: !!refreshToken,
+      type,
+      error,
+      errorDescription
+    })
+
+    if (error) {
+      toast({
+        title: "Reset Password Error",
+        description: errorDescription || error,
+        variant: "destructive",
+      })
+      return
+    }
+
     if (accessToken && refreshToken) {
       // Set the session with the tokens from the URL
       supabase.auth.setSession({
@@ -30,7 +50,7 @@ export default function ResetPassword() {
         refresh_token: refreshToken,
       })
     }
-  }, [accessToken, refreshToken])
+  }, [accessToken, refreshToken, type, error, errorDescription, toast])
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -78,8 +98,31 @@ export default function ResetPassword() {
     }
   }
 
-  if (!accessToken || !refreshToken) {
-    return <Navigate to="/admin" replace />
+  // Show the form if we have tokens OR if there's a recovery type
+  if ((!accessToken || !refreshToken) && type !== 'recovery') {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 pt-24 pb-12">
+          <Card className="max-w-md mx-auto">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
+                <KeyRound className="h-5 w-5" />
+                Invalid Reset Link
+              </CardTitle>
+              <CardDescription>
+                This password reset link is invalid or has expired.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="w-full">
+                <a href="/auth">Back to Login</a>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   if (isSuccess) {
