@@ -41,21 +41,24 @@ export default function AdminRoleManager() {
     setError('');
 
     try {
-      // First, find the user by email in profiles table
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('user_id, display_name')
-        .eq('display_name', email.split('@')[0]) // This is a simplified lookup
-        .single();
+      // Search for user by email using secure admin function
+      const { data: searchResult, error: searchError } = await supabase.functions.invoke('search-users', {
+        body: { searchTerm: email }
+      });
 
-      if (profileError) {
+      if (searchError || !searchResult?.users?.length) {
         throw new Error('User not found. Make sure the user has signed up first.');
+      }
+
+      const userToPromote = searchResult.users.find((u: any) => u.email === email);
+      if (!userToPromote) {
+        throw new Error('User not found with that exact email address.');
       }
 
       // Use the secure function to assign admin role
       const { data, error: assignError } = await supabase
         .rpc('assign_admin_role', {
-          target_user_id: profile.user_id
+          target_user_id: userToPromote.user_id
         });
 
       if (assignError) {
