@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +12,8 @@ import { emailSchema } from '@/lib/security'
 import AdminDashboard from './admin/Dashboard'
 
 export default function AdminPage() {
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -20,6 +23,38 @@ export default function AdminPage() {
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const { signIn, signUp, resetPassword, user, isAdmin, loading } = useSupabaseAuth()
   const { toast } = useToast()
+
+  // Check if this is a password reset redirect
+  useEffect(() => {
+    const accessToken = searchParams.get('access_token')
+    const refreshToken = searchParams.get('refresh_token')
+    const type = searchParams.get('type')
+    const error = searchParams.get('error')
+    
+    console.log('AdminPage loaded with auth params:', {
+      accessToken: !!accessToken,
+      refreshToken: !!refreshToken,
+      type,
+      error,
+      allParams: Object.fromEntries(searchParams.entries())
+    })
+
+    // If this looks like a password reset, redirect to the reset password page
+    if ((accessToken && refreshToken) || type === 'recovery' || type === 'signup') {
+      console.log('Detected password reset redirect, navigating to /reset-password')
+      const currentUrl = new URL(window.location.href)
+      navigate(`/reset-password${currentUrl.search}`, { replace: true })
+      return
+    }
+
+    if (error) {
+      toast({
+        title: "Authentication Error",
+        description: searchParams.get('error_description') || error,
+        variant: "destructive",
+      })
+    }
+  }, [searchParams, navigate, toast])
 
   // Show loading while checking auth
   if (loading) {

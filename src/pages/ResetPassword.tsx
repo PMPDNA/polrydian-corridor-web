@@ -116,7 +116,17 @@ export default function ResetPassword() {
   }
 
   // Show the form if we have tokens OR if there's a recovery type OR if URL has reset-related parameters
-  const hasResetParams = accessToken || refreshToken || type === 'recovery' || searchParams.has('token')
+  const hasResetParams = accessToken || refreshToken || type === 'recovery' || 
+                         type === 'signup' || searchParams.has('token') || 
+                         searchParams.has('token_hash')
+  
+  console.log('Reset password params check:', {
+    hasResetParams,
+    accessToken: !!accessToken,
+    refreshToken: !!refreshToken,
+    type,
+    allParams: Object.fromEntries(searchParams.entries())
+  })
   
   if (!hasResetParams) {
     console.log('No reset parameters found, redirecting to admin')
