@@ -91,52 +91,109 @@ serve(async (req) => {
     }
 
     if (action === 'sync_articles') {
-      // Fetch LinkedIn articles
-      const articlesResponse = await fetch('https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:PERSON_ID&projection=(elements*(id,activity,created,lastModified,text,content,commentary))', {
+      // Fetch LinkedIn articles using Posts API
+      const articlesResponse = await fetch('https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A{PERSON_ID})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING', {
         headers: {
           'Authorization': `Bearer ${linkedinAccessToken}`,
-          'X-Restli-Protocol-Version': '2.0.0'
+          'LinkedIn-Version': '202405'
         }
       });
 
       if (!articlesResponse.ok) {
-        throw new Error('Failed to fetch LinkedIn articles');
+        const errorText = await articlesResponse.text();
+        console.error('LinkedIn articles API error:', errorText);
+        throw new Error(`Failed to fetch LinkedIn articles: ${articlesResponse.status}`);
       }
 
       const articlesData = await articlesResponse.json();
 
-      // Process and store articles
+      // Process and store articles with engagement data
       for (const article of articlesData.elements || []) {
+        // Try to fetch engagement metrics
+        let engagement = { numLikes: 0, numComments: 0, numShares: 0, numViews: 0 };
+        
+        try {
+          const engagementResponse = await fetch(`https://api.linkedin.com/v2/socialActions/${article.id}`, {
+            headers: {
+              'Authorization': `Bearer ${linkedinAccessToken}`,
+              'LinkedIn-Version': '202405'
+            }
+          });
+
+          if (engagementResponse.ok) {
+            const engagementData = await engagementResponse.json();
+            engagement = {
+              numLikes: engagementData.numLikes || 0,
+              numComments: engagementData.numComments || 0, 
+              numShares: engagementData.numShares || 0,
+              numViews: engagementData.numViews || 0
+            };
+          }
+        } catch (engagementError) {
+          console.warn('Could not fetch engagement data for article:', article.id);
+        }
+
         await supabase
           .from('linkedin_articles')
           .upsert({
             linkedin_article_id: article.id,
-            title: article.content?.title || 'LinkedIn Article',
-            content: article.text?.text || '',
-            summary: article.commentary || '',
+            title: article.content?.title || article.commentary?.substring(0, 100) || 'LinkedIn Article',
+            content: article.content?.article?.title || article.commentary || '',
+            summary: article.commentary?.substring(0, 500) || '',
             published_at: new Date(article.created.time).toISOString(),
-            article_url: `https://www.linkedin.com/posts/activity-${article.activity}`,
+            article_url: `https://www.linkedin.com/feed/update/urn:li:activity:${article.id}`,
+            like_count: engagement.numLikes,
+            comment_count: engagement.numComments,
+            share_count: engagement.numShares,
+            view_count: engagement.numViews,
+            updated_at: new Date().toISOString()
           });
       }
     }
 
     if (action === 'sync_posts') {
-      // Fetch LinkedIn posts
-      const postsResponse = await fetch('https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:PERSON_ID', {
+      // Fetch LinkedIn posts using Posts API
+      const postsResponse = await fetch('https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A{PERSON_ID})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING', {
         headers: {
           'Authorization': `Bearer ${linkedinAccessToken}`,
-          'X-Restli-Protocol-Version': '2.0.0'
+          'LinkedIn-Version': '202405'
         }
       });
 
       if (!postsResponse.ok) {
-        throw new Error('Failed to fetch LinkedIn posts');
+        const errorText = await postsResponse.text();
+        console.error('LinkedIn posts API error:', errorText);
+        throw new Error(`Failed to fetch LinkedIn posts: ${postsResponse.status}`);
       }
 
       const postsData = await postsResponse.json();
 
-      // Process and store posts
+      // Process and store posts with engagement data
       for (const post of postsData.elements || []) {
+        // Try to fetch engagement metrics
+        let engagement = { numLikes: 0, numComments: 0, numShares: 0, numViews: 0 };
+        
+        try {
+          const engagementResponse = await fetch(`https://api.linkedin.com/v2/socialActions/${post.id}`, {
+            headers: {
+              'Authorization': `Bearer ${linkedinAccessToken}`,
+              'LinkedIn-Version': '202405'
+            }
+          });
+
+          if (engagementResponse.ok) {
+            const engagementData = await engagementResponse.json();
+            engagement = {
+              numLikes: engagementData.numLikes || 0,
+              numComments: engagementData.numComments || 0,
+              numShares: engagementData.numShares || 0,
+              numViews: engagementData.numViews || 0
+            };
+          }
+        } catch (engagementError) {
+          console.warn('Could not fetch engagement data for post:', post.id);
+        }
+
         await supabase
           .from('social_media_posts')
           .upsert({
@@ -144,9 +201,19 @@ serve(async (req) => {
             platform_post_id: post.id,
             post_type: 'post',
             title: post.content?.title || '',
-            content: post.text?.text || '',
-            post_url: `https://www.linkedin.com/posts/activity-${post.activity}`,
+            content: post.commentary || '',
+            post_url: `https://www.linkedin.com/feed/update/urn:li:activity:${post.id}`,
             published_at: new Date(post.created.time).toISOString(),
+            engagement_data: {
+              likes: engagement.numLikes,
+              comments: engagement.numComments,
+              shares: engagement.numShares,
+              views: engagement.numViews
+            },
+            approval_status: 'approved',
+            is_visible: true,
+            is_featured: engagement.numLikes > 50, // Auto-feature high engagement posts
+            updated_at: new Date().toISOString()
           });
       }
     }

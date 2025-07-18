@@ -79,14 +79,18 @@ serve(async (req) => {
       );
     }
 
-    // Fetch Instagram media for @miamistoic
-    const mediaResponse = await fetch(`https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,permalink,caption,timestamp,like_count,comments_count&access_token=${instagramAccessToken}`);
+    // Fetch Instagram media with comprehensive fields
+    const mediaResponse = await fetch(`https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,permalink,caption,timestamp,like_count,comments_count,insights.metric(impressions,reach,engagement)&access_token=${instagramAccessToken}`);
 
     if (!mediaResponse.ok) {
-      throw new Error('Failed to fetch Instagram media');
+      const errorText = await mediaResponse.text();
+      console.error('Instagram API error:', errorText);
+      throw new Error(`Failed to fetch Instagram media: ${mediaResponse.status}`);
     }
 
     const mediaData = await mediaResponse.json();
+    let postsProcessed = 0;
+    let galleryItemsAdded = 0;
 
     // Process and store Instagram posts
     for (const media of mediaData.data || []) {
@@ -94,28 +98,62 @@ serve(async (req) => {
       const hashtags = media.caption ? 
         media.caption.match(/#[\w]+/g)?.map((tag: string) => tag.slice(1)) || [] : [];
 
+      // Get insights data if available
+      const insights = media.insights?.data || [];
+      const impressions = insights.find((insight: any) => insight.name === 'impressions')?.values?.[0]?.value || 0;
+      const reach = insights.find((insight: any) => insight.name === 'reach')?.values?.[0]?.value || 0;
+      const engagement = insights.find((insight: any) => insight.name === 'engagement')?.values?.[0]?.value || 0;
+
+      // Store in social_media_posts table
       await supabase
         .from('social_media_posts')
         .upsert({
           platform: 'instagram',
           platform_post_id: media.id,
-          post_type: 'post',
+          post_type: media.media_type?.toLowerCase() || 'post',
           content: media.caption || '',
           image_url: media.media_url,
           post_url: media.permalink,
           published_at: media.timestamp,
           engagement_data: {
             likes: media.like_count || 0,
-            comments: media.comments_count || 0
+            comments: media.comments_count || 0,
+            impressions: impressions,
+            reach: reach,
+            engagement: engagement
           },
           hashtags: hashtags,
+          updated_at: new Date().toISOString()
         });
+
+      postsProcessed++;
+
+      // Also add to gallery if it's an image or video
+      if (media.media_type === 'IMAGE' || media.media_type === 'VIDEO') {
+        await supabase
+          .from('gallery')
+          .upsert({
+            title: media.caption?.substring(0, 100) || `Instagram ${media.media_type}`,
+            description: media.caption || '',
+            image_url: media.media_url,
+            thumbnail_url: media.thumbnail_url || media.media_url,
+            category: 'social_media',
+            instagram_post_id: media.id,
+            is_featured: media.like_count > 100, // Feature posts with high engagement
+            is_visible: true,
+            updated_at: new Date().toISOString()
+          });
+
+        galleryItemsAdded++;
+      }
     }
 
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'Instagram data synced successfully',
-      posts_synced: mediaData.data?.length || 0
+      posts_synced: postsProcessed,
+      gallery_items_added: galleryItemsAdded,
+      engagement_tracking: 'enabled'
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
