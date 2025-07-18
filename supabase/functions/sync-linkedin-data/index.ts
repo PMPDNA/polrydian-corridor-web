@@ -48,13 +48,14 @@ serve(async (req) => {
     }
 
     // Check if user has admin role
-    const { data: userRole, error: roleError } = await supabase
+    const { data: userRoles, error: roleError } = await supabase
       .from('user_roles')
       .select('role')
-      .eq('user_id', user.id)
-      .single();
+      .eq('user_id', user.id);
 
-    if (roleError || userRole?.role !== 'admin') {
+    const hasAdminRole = userRoles?.some(role => role.role === 'admin');
+
+    if (roleError || !hasAdminRole) {
       console.log('Access denied - admin role required');
       return new Response(
         JSON.stringify({ error: 'Admin access required' }),
