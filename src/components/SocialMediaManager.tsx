@@ -113,6 +113,23 @@ export const SocialMediaManager = () => {
     }
   };
 
+  // Test admin role function
+  const testAdminRole = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('test-admin-role', {
+        body: {}
+      });
+
+      if (error) throw error;
+
+      console.log('Admin role test result:', data);
+      alert(`Admin test result: ${JSON.stringify(data, null, 2)}`);
+    } catch (error: any) {
+      console.error('Error testing admin role:', error);
+      alert(`Admin test error: ${error.message}`);
+    }
+  };
+
   const syncInstagramPosts = async () => {
     setIsSyncing(true);
     try {
@@ -285,7 +302,15 @@ export const SocialMediaManager = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            <Button
+              onClick={testAdminRole}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Test Admin Role
+            </Button>
             <Button
               onClick={syncInstagramPosts}
               disabled={isSyncing}
