@@ -31,7 +31,8 @@ export default function ResetPassword() {
       refreshToken: !!refreshToken,
       type,
       error,
-      errorDescription
+      errorDescription,
+      allParams: Object.fromEntries(searchParams.entries())
     })
 
     if (error) {
@@ -48,9 +49,20 @@ export default function ResetPassword() {
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
+      }).then(({ error }) => {
+        if (error) {
+          console.error('Error setting session:', error)
+          toast({
+            title: "Session Error",
+            description: "Failed to authenticate reset session",
+            variant: "destructive",
+          })
+        } else {
+          console.log('Reset session established successfully')
+        }
       })
     }
-  }, [accessToken, refreshToken, type, error, errorDescription, toast])
+  }, [accessToken, refreshToken, type, error, errorDescription, toast, searchParams])
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,16 +88,21 @@ export default function ResetPassword() {
     setIsLoading(true)
 
     try {
+      console.log('Attempting to update password...')
       const { error } = await supabase.auth.updateUser({
         password: password
       })
       
-      if (error) throw error
+      if (error) {
+        console.error('Password update error:', error)
+        throw error
+      }
 
+      console.log('Password updated successfully, user authenticated')
       setIsSuccess(true)
       toast({
         title: "Password Updated",
-        description: "Your password has been successfully updated.",
+        description: "Your password has been successfully updated. You can now login with your new password.",
       })
     } catch (error: any) {
       toast({
@@ -98,8 +115,11 @@ export default function ResetPassword() {
     }
   }
 
-  // Show the form if we have tokens OR if there's a recovery type
-  if ((!accessToken || !refreshToken) && type !== 'recovery') {
+  // Show the form if we have tokens OR if there's a recovery type OR if URL has reset-related parameters
+  const hasResetParams = accessToken || refreshToken || type === 'recovery' || searchParams.has('token')
+  
+  if (!hasResetParams) {
+    console.log('No reset parameters found, redirecting to admin')
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
@@ -111,7 +131,7 @@ export default function ResetPassword() {
                 Invalid Reset Link
               </CardTitle>
               <CardDescription>
-                This password reset link is invalid or has expired.
+                This password reset link is invalid or has expired. Please request a new password reset.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -140,7 +160,7 @@ export default function ResetPassword() {
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <a href="/admin">Continue to Admin</a>
+              <a href="/admin">Continue to Admin Login</a>
             </Button>
           </CardContent>
         </Card>
