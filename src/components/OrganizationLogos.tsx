@@ -56,9 +56,9 @@ export const OrganizationLogos = () => {
     },
     {
       id: "18",
-      name: "Misiewicz Brothers Commercial Real Estate",
+      name: "Lee & Associates",
       category: 'business',
-      description: "Commercial real estate partnership specializing in warehouses, schools, and international hotels. Representing both buyers and sellers with deal mandates ranging from $20M to $500M."
+      description: "Commercial real estate specializing in warehouses, schools, and international hotels. Working with Sebastian Misiewicz, Principal. Representing both buyers and sellers with deal mandates ranging from $20M to $500M."
     }
   ]);
   const [isEditing, setIsEditing] = useState(false);
@@ -222,7 +222,25 @@ export const OrganizationLogos = () => {
                   {CardComponent}
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs p-3">
-                  <p className="text-sm">{org.description}</p>
+                  <div className="text-sm">
+                    {org.id === "18" ? (
+                      <>
+                        Commercial real estate specializing in warehouses, schools, and international hotels. Working with Sebastian Misiewicz,{" "}
+                        <a 
+                          href="https://www.citybiz.co/article/596460/lee-associates-appoints-sebastian-misiewicz-as-principal/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-accent hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Principal
+                        </a>
+                        . Representing both buyers and sellers with deal mandates ranging from $20M to $500M.
+                      </>
+                    ) : (
+                      org.description
+                    )}
+                  </div>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
