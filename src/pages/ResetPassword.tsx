@@ -120,13 +120,18 @@ export default function ResetPassword() {
   // Show the form if we have tokens OR if there's a recovery type OR if URL has reset-related parameters
   const hasResetParams = accessToken || refreshToken || type === 'recovery' || 
                          type === 'signup' || searchParams.has('token') || 
-                         searchParams.has('token_hash')
+                         searchParams.has('token_hash') || searchParams.has('access_token') ||
+                         searchParams.has('refresh_token')
   
   console.log('Reset password params check:', {
     hasResetParams,
     accessToken: !!accessToken,
     refreshToken: !!refreshToken,
     type,
+    hasToken: searchParams.has('token'),
+    hasTokenHash: searchParams.has('token_hash'),
+    hasAccessToken: searchParams.has('access_token'),
+    hasRefreshToken: searchParams.has('refresh_token'),
     allParams: Object.fromEntries(searchParams.entries())
   })
   
@@ -147,8 +152,15 @@ export default function ResetPassword() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="w-full">
-                <a href="/admin">Back to Admin Login</a>
+              <Button 
+                className="w-full"
+                onClick={async () => {
+                  // Ensure user is logged out before going to admin login
+                  await supabase.auth.signOut()
+                  window.location.href = '/admin'
+                }}
+              >
+                Back to Admin Login
               </Button>
             </CardContent>
           </Card>
@@ -171,8 +183,15 @@ export default function ResetPassword() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild className="w-full">
-              <a href="/admin">Continue to Admin Login</a>
+            <Button 
+              className="w-full"
+              onClick={async () => {
+                // Ensure user is logged out before going to admin login
+                await supabase.auth.signOut()
+                window.location.href = '/admin'
+              }}
+            >
+              Continue to Admin Login
             </Button>
           </CardContent>
         </Card>
