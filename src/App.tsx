@@ -52,30 +52,22 @@ const App = () => (
             <Route path="/articles" element={<Articles />} />
             <Route path="/admin" element={
               <ErrorBoundary>
-                <SupabaseProtectedRoute requireAdmin={true}>
-                  <AdminDashboard />
-                </SupabaseProtectedRoute>
+                <AdminDashboard />
               </ErrorBoundary>
             } />
             <Route path="/admin/profile" element={
               <ErrorBoundary>
-                <SupabaseProtectedRoute requireAdmin={true}>
-                  <ProfileManager />
-                </SupabaseProtectedRoute>
+                <ProfileManager />
               </ErrorBoundary>
             } />
             <Route path="/admin/social" element={
               <ErrorBoundary>
-                <SupabaseProtectedRoute requireAdmin={true}>
-                  <AdminSocial />
-                </SupabaseProtectedRoute>
+                <AdminSocial />
               </ErrorBoundary>
             } />
             <Route path="/admin/hero" element={
               <ErrorBoundary>
-                <SupabaseProtectedRoute requireAdmin={true}>
-                  <HeroEditor />
-                </SupabaseProtectedRoute>
+                <HeroEditor />
               </ErrorBoundary>
             } />
             <Route path="/profile" element={

@@ -14,15 +14,20 @@ interface AdminLayoutProps {
 export function AdminLayout({ children, title = "Admin Panel" }: AdminLayoutProps) {
   const { user, isAdmin, loading, displayName } = useSupabaseAuth()
 
+  // Show loading spinner while auth is being determined
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="text-sm text-muted-foreground">Loading admin panel...</p>
+        </div>
       </div>
     )
   }
 
-  if (!user || !isAdmin) {
+  // Only redirect after we're sure about auth state
+  if (!loading && (!user || !isAdmin)) {
     return <Navigate to="/auth" replace />
   }
 
