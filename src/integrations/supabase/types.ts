@@ -368,6 +368,10 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: boolean
       }
+      assign_initial_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           identifier_value: string
