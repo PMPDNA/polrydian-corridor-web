@@ -92,8 +92,27 @@ serve(async (req) => {
     }
 
     if (action === 'sync_articles') {
-      // Fetch LinkedIn articles using Posts API
-      const articlesResponse = await fetch('https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A{PERSON_ID})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING', {
+      console.log('🔍 Getting LinkedIn profile for person ID');
+      // First get the LinkedIn person ID
+      const profileResponse = await fetch('https://api.linkedin.com/v2/people/~', {
+        headers: {
+          'Authorization': `Bearer ${linkedinAccessToken}`,
+          'LinkedIn-Version': '202405'
+        }
+      });
+
+      if (!profileResponse.ok) {
+        const errorText = await profileResponse.text();
+        console.error('❌ Failed to get LinkedIn profile:', errorText);
+        throw new Error(`Failed to get LinkedIn profile: ${profileResponse.status}`);
+      }
+
+      const profileData = await profileResponse.json();
+      const personId = profileData.id;
+      console.log('✅ LinkedIn person ID retrieved:', personId);
+
+      // Fetch LinkedIn articles using Posts API with actual person ID
+      const articlesResponse = await fetch(`https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A${personId})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING`, {
         headers: {
           'Authorization': `Bearer ${linkedinAccessToken}`,
           'LinkedIn-Version': '202405'
@@ -153,8 +172,27 @@ serve(async (req) => {
     }
 
     if (action === 'sync_posts') {
-      // Fetch LinkedIn posts using Posts API
-      const postsResponse = await fetch('https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A{PERSON_ID})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING', {
+      console.log('🔍 Getting LinkedIn profile for person ID');
+      // First get the LinkedIn person ID
+      const profileResponse = await fetch('https://api.linkedin.com/v2/people/~', {
+        headers: {
+          'Authorization': `Bearer ${linkedinAccessToken}`,
+          'LinkedIn-Version': '202405'
+        }
+      });
+
+      if (!profileResponse.ok) {
+        const errorText = await profileResponse.text();
+        console.error('❌ Failed to get LinkedIn profile:', errorText);
+        throw new Error(`Failed to get LinkedIn profile: ${profileResponse.status}`);
+      }
+
+      const profileData = await profileResponse.json();
+      const personId = profileData.id;
+      console.log('✅ LinkedIn person ID retrieved:', personId);
+
+      // Fetch LinkedIn posts using Posts API with actual person ID
+      const postsResponse = await fetch(`https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A${personId})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING`, {
         headers: {
           'Authorization': `Bearer ${linkedinAccessToken}`,
           'LinkedIn-Version': '202405'

@@ -8,15 +8,21 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log('🚀 LinkedIn publish function started');
+  
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
+    console.log('📋 CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log('🔐 Starting authentication check');
+    
     // Verify authentication
     const authHeader = req.headers.get('authorization');
     if (!authHeader) {
+      console.log('❌ Missing authorization header');
       return new Response(
         JSON.stringify({ error: 'Authentication required' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -27,7 +33,14 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const linkedinAccessToken = Deno.env.get('LINKEDIN_ACCESS_TOKEN');
 
+    console.log('🔍 Environment check:', {
+      hasSupabaseUrl: !!supabaseUrl,
+      hasSupabaseKey: !!supabaseKey,
+      hasLinkedInToken: !!linkedinAccessToken
+    });
+
     if (!linkedinAccessToken) {
+      console.log('❌ LinkedIn access token not configured');
       throw new Error('LinkedIn access token not configured');
     }
 
@@ -39,11 +52,14 @@ serve(async (req) => {
     );
 
     if (authError || !user) {
+      console.log('❌ Authentication failed:', authError);
       return new Response(
         JSON.stringify({ error: 'Authentication failed' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('✅ User authenticated:', user.email);
 
     // Check if user has admin role
     const { data: userRoles, error: roleError } = await supabase
@@ -53,23 +69,36 @@ serve(async (req) => {
 
     const hasAdminRole = userRoles?.some(role => role.role === 'admin');
 
+    console.log('👤 User roles:', userRoles, 'hasAdmin:', hasAdminRole);
+
     if (roleError || !hasAdminRole) {
+      console.log('❌ Access denied - admin role required');
       return new Response(
         JSON.stringify({ error: 'Admin access required' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('📝 Parsing request body');
     const body = await req.json();
     const { content, title, article_url, image_url } = body;
 
+    console.log('📊 Request data:', {
+      hasContent: !!content,
+      hasTitle: !!title,
+      hasArticleUrl: !!article_url,
+      hasImageUrl: !!image_url
+    });
+
     if (!content) {
+      console.log('❌ Content is required');
       return new Response(
         JSON.stringify({ error: 'Content is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('🔍 Getting LinkedIn profile');
     // Get LinkedIn person ID
     const profileResponse = await fetch('https://api.linkedin.com/v2/people/~', {
       headers: {
@@ -79,11 +108,14 @@ serve(async (req) => {
     });
 
     if (!profileResponse.ok) {
-      throw new Error('Failed to get LinkedIn profile');
+      const errorText = await profileResponse.text();
+      console.log('❌ Failed to get LinkedIn profile:', errorText);
+      throw new Error(`Failed to get LinkedIn profile: ${profileResponse.status}`);
     }
 
     const profileData = await profileResponse.json();
     const personId = profileData.id;
+    console.log('✅ LinkedIn profile retrieved, person ID:', personId);
 
     // Prepare the post content
     let postContent = content;
@@ -93,6 +125,8 @@ serve(async (req) => {
     if (article_url) {
       postContent += `\n\nRead more: ${article_url}`;
     }
+
+    console.log('📝 Prepared post content length:', postContent.length);
 
     // Create LinkedIn post
     const postData = {
@@ -115,6 +149,7 @@ serve(async (req) => {
       postData.commentary += `\n\nImage: ${image_url}`;
     }
 
+    console.log('🚀 Publishing to LinkedIn');
     const publishResponse = await fetch('https://api.linkedin.com/v2/posts', {
       method: 'POST',
       headers: {
@@ -127,15 +162,17 @@ serve(async (req) => {
 
     if (!publishResponse.ok) {
       const errorText = await publishResponse.text();
-      console.error('LinkedIn publish error:', errorText);
-      throw new Error(`Failed to publish to LinkedIn: ${publishResponse.status}`);
+      console.error('❌ LinkedIn publish error:', errorText);
+      throw new Error(`Failed to publish to LinkedIn: ${publishResponse.status} - ${errorText}`);
     }
 
     const publishResult = await publishResponse.json();
     const postId = publishResult.id;
+    console.log('✅ Published to LinkedIn, post ID:', postId);
 
     // Store the published post in our database
-    await supabase
+    console.log('💾 Storing in database');
+    const { error: dbError } = await supabase
       .from('social_media_posts')
       .insert({
         platform: 'linkedin',
@@ -152,6 +189,14 @@ serve(async (req) => {
         is_featured: false
       });
 
+    if (dbError) {
+      console.log('⚠️ Database storage error:', dbError);
+      // Don't fail the whole request if database storage fails
+    } else {
+      console.log('✅ Stored in database successfully');
+    }
+
+    console.log('🎉 LinkedIn publish completed successfully');
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'Successfully published to LinkedIn',
@@ -162,9 +207,10 @@ serve(async (req) => {
     });
 
   } catch (error: any) {
-    console.error('Error publishing to LinkedIn:', error);
+    console.error('💥 Error publishing to LinkedIn:', error);
     return new Response(JSON.stringify({ 
-      error: error.message 
+      error: error.message,
+      details: 'Check the edge function logs for more information'
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
