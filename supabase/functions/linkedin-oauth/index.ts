@@ -65,7 +65,7 @@ serve(async (req) => {
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: code,
-          redirect_uri: 'http://localhost:3000/auth/callback',
+          redirect_uri: `${Deno.env.get('SUPABASE_URL')?.replace('//', '//').replace('.supabase.co', '.lovableproject.com')}/auth/callback`,
           client_id: clientId,
           client_secret: clientSecret,
         }),
