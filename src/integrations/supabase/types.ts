@@ -305,6 +305,42 @@ export type Database = {
         }
         Relationships: []
       }
+      social_media_credentials: {
+        Row: {
+          access_token_encrypted: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          platform: string
+          platform_user_id: string
+          profile_data: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token_encrypted?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          platform_user_id: string
+          profile_data?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token_encrypted?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          platform_user_id?: string
+          profile_data?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       social_media_posts: {
         Row: {
           approval_status: string | null

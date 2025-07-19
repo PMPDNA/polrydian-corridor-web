@@ -92,24 +92,29 @@ serve(async (req) => {
     }
 
     if (action === 'sync_articles') {
-      console.log('🔍 Getting LinkedIn profile for person ID');
-      // First get the LinkedIn person ID
-      const profileResponse = await fetch('https://api.linkedin.com/v2/people/~', {
-        headers: {
-          'Authorization': `Bearer ${linkedinAccessToken}`,
-          'LinkedIn-Version': '202405'
-        }
-      });
+      console.log('🔍 Getting LinkedIn credentials from database');
+      // Get LinkedIn credentials from database
+      const { data: credentials, error: credError } = await supabase
+        .from('social_media_credentials')
+        .select('platform_user_id, profile_data')
+        .eq('user_id', user.id)
+        .eq('platform', 'linkedin')
+        .eq('is_active', true)
+        .single();
 
-      if (!profileResponse.ok) {
-        const errorText = await profileResponse.text();
-        console.error('❌ Failed to get LinkedIn profile:', errorText);
-        throw new Error(`Failed to get LinkedIn profile: ${profileResponse.status}`);
+      if (credError || !credentials) {
+        console.error('❌ LinkedIn credentials not found in database:', credError);
+        return new Response(
+          JSON.stringify({ 
+            error: 'LinkedIn credentials not configured. Please set up your LinkedIn integration first.',
+            setup_required: true
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
 
-      const profileData = await profileResponse.json();
-      const personId = profileData.id;
-      console.log('✅ LinkedIn person ID retrieved:', personId);
+      const personId = credentials.platform_user_id;
+      console.log('✅ Using LinkedIn person ID from database:', personId);
 
       // Fetch LinkedIn articles using Posts API with actual person ID
       const articlesResponse = await fetch(`https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A${personId})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING`, {
@@ -172,24 +177,29 @@ serve(async (req) => {
     }
 
     if (action === 'sync_posts') {
-      console.log('🔍 Getting LinkedIn profile for person ID');
-      // First get the LinkedIn person ID
-      const profileResponse = await fetch('https://api.linkedin.com/v2/people/~', {
-        headers: {
-          'Authorization': `Bearer ${linkedinAccessToken}`,
-          'LinkedIn-Version': '202405'
-        }
-      });
+      console.log('🔍 Getting LinkedIn credentials from database');
+      // Get LinkedIn credentials from database
+      const { data: credentials, error: credError } = await supabase
+        .from('social_media_credentials')
+        .select('platform_user_id, profile_data')
+        .eq('user_id', user.id)
+        .eq('platform', 'linkedin')
+        .eq('is_active', true)
+        .single();
 
-      if (!profileResponse.ok) {
-        const errorText = await profileResponse.text();
-        console.error('❌ Failed to get LinkedIn profile:', errorText);
-        throw new Error(`Failed to get LinkedIn profile: ${profileResponse.status}`);
+      if (credError || !credentials) {
+        console.error('❌ LinkedIn credentials not found in database:', credError);
+        return new Response(
+          JSON.stringify({ 
+            error: 'LinkedIn credentials not configured. Please set up your LinkedIn integration first.',
+            setup_required: true
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
 
-      const profileData = await profileResponse.json();
-      const personId = profileData.id;
-      console.log('✅ LinkedIn person ID retrieved:', personId);
+      const personId = credentials.platform_user_id;
+      console.log('✅ Using LinkedIn person ID from database:', personId);
 
       // Fetch LinkedIn posts using Posts API with actual person ID
       const postsResponse = await fetch(`https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A${personId})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING`, {
