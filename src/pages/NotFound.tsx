@@ -1,8 +1,9 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 
 const NotFound = () => {
   const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     console.error(
@@ -12,13 +13,16 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
+        <h1 className="text-4xl font-bold mb-4 text-foreground">404</h1>
+        <p className="text-xl text-muted-foreground mb-4">Oops! Page not found</p>
+        <Link 
+          to={isAdminRoute ? "/admin" : "/"} 
+          className="text-primary hover:text-primary/80 underline"
+        >
+          {isAdminRoute ? "Return to Admin Panel" : "Return to Home"}
+        </Link>
       </div>
     </div>
   );
