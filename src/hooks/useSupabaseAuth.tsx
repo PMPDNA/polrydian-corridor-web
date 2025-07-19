@@ -106,7 +106,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/admin`
+    const redirectUrl = `${window.location.origin}/reset-password`
     console.log('Sending password reset to:', email, 'with redirect:', redirectUrl)
     
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
