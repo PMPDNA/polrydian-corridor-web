@@ -16,6 +16,7 @@ import { useArticles } from "@/hooks/useArticles";
 import { ArticleForm } from "@/components/ArticleForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { AdminLayout } from "@/layouts/AdminLayout";
 
 export default function ArticleManager() {
   const { articles, loading, createArticle, updateArticle, deleteArticle } = useArticles();
@@ -81,159 +82,163 @@ export default function ArticleManager() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
+      <AdminLayout title="Article Management">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Article Management</h1>
-          <p className="text-muted-foreground">Create, edit, and manage your articles</p>
-        </div>
-        
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Article
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New Article</DialogTitle>
-            </DialogHeader>
-            <ArticleForm onSave={handleSaveArticle} onCancel={handleCancel} />
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Search Articles</CardTitle>
-          <CardDescription>Find articles by title or content</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search articles..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+    <AdminLayout title="Article Management">
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Article Management</h1>
+            <p className="text-muted-foreground">Create, edit, and manage your articles</p>
           </div>
-        </CardContent>
-      </Card>
+          
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Article
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Create New Article</DialogTitle>
+              </DialogHeader>
+              <ArticleForm onSave={handleSaveArticle} onCancel={handleCancel} />
+            </DialogContent>
+          </Dialog>
+        </div>
 
-      <div className="grid gap-4">
-        {filteredArticles.length === 0 ? (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center text-muted-foreground">
-                {searchTerm ? "No articles found matching your search." : "No articles yet. Create your first article!"}
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredArticles.map((article) => (
-            <Card key={article.id}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Search Articles</CardTitle>
+            <CardDescription>Find articles by title or content</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search articles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-4">
+          {filteredArticles.length === 0 ? (
+            <Card>
               <CardContent className="pt-6">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-lg font-semibold">{article.title}</h3>
-                      <Badge className={getStatusColor(article.status)}>
-                        {article.status}
-                      </Badge>
-                    </div>
-                    
-                    <p className="text-muted-foreground mb-3 line-clamp-2">
-                      {article.content.substring(0, 150)}...
-                    </p>
-                    
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        Created: {new Date(article.created_at).toLocaleDateString()}
-                      </div>
-                      {article.updated_at !== article.created_at && (
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          Updated: {new Date(article.updated_at).toLocaleDateString()}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
-                        <DialogHeader>
-                          <DialogTitle>{article.title}</DialogTitle>
-                        </DialogHeader>
-                        <div className="prose dark:prose-invert max-w-none">
-                          <div dangerouslySetInnerHTML={{ __html: article.content }} />
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                    
-                    <Dialog open={editingArticle?.id === article.id} onOpenChange={(open) => !open && setEditingArticle(null)}>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setEditingArticle(article)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
-                        <DialogHeader>
-                          <DialogTitle>Edit Article</DialogTitle>
-                        </DialogHeader>
-                        <ArticleForm 
-                          article={{
-                            id: article.id,
-                            title: article.title,
-                            content: article.content,
-                            excerpt: article.content.substring(0, 150),
-                            category: "Strategy" as const,
-                            heroImage: "",
-                            publishDate: new Date(article.created_at).toISOString().split('T')[0],
-                            readTime: 5,
-                            linkedinUrl: "",
-                            featured: false
-                          }}
-                          onSave={handleSaveArticle} 
-                          onCancel={handleCancel}
-                        />
-                      </DialogContent>
-                    </Dialog>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteArticle(article.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                <div className="text-center text-muted-foreground">
+                  {searchTerm ? "No articles found matching your search." : "No articles yet. Create your first article!"}
                 </div>
               </CardContent>
             </Card>
-          ))
-        )}
+          ) : (
+            filteredArticles.map((article) => (
+              <Card key={article.id}>
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-semibold">{article.title}</h3>
+                        <Badge className={getStatusColor(article.status)}>
+                          {article.status}
+                        </Badge>
+                      </div>
+                      
+                      <p className="text-muted-foreground mb-3 line-clamp-2">
+                        {article.content.substring(0, 150)}...
+                      </p>
+                      
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          Created: {new Date(article.created_at).toLocaleDateString()}
+                        </div>
+                        {article.updated_at !== article.created_at && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            Updated: {new Date(article.updated_at).toLocaleDateString()}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>{article.title}</DialogTitle>
+                          </DialogHeader>
+                          <div className="prose dark:prose-invert max-w-none">
+                            <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Dialog open={editingArticle?.id === article.id} onOpenChange={(open) => !open && setEditingArticle(null)}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setEditingArticle(article)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl">
+                          <DialogHeader>
+                            <DialogTitle>Edit Article</DialogTitle>
+                          </DialogHeader>
+                          <ArticleForm 
+                            article={{
+                              id: article.id,
+                              title: article.title,
+                              content: article.content,
+                              excerpt: article.content.substring(0, 150),
+                              category: "Strategy" as const,
+                              heroImage: "",
+                              publishDate: new Date(article.created_at).toISOString().split('T')[0],
+                              readTime: 5,
+                              linkedinUrl: "",
+                              featured: false
+                            }}
+                            onSave={handleSaveArticle} 
+                            onCancel={handleCancel}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteArticle(article.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
