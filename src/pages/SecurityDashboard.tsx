@@ -195,16 +195,6 @@ export default function SecurityDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Rate Limit Violations</CardTitle>
-              <Lock className="h-4 w-4 text-orange-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{metrics?.rate_limit_violations || 0}</div>
-              <p className="text-xs text-muted-foreground">Blocked suspicious attempts</p>
-            </CardContent>
-          </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
