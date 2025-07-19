@@ -77,10 +77,8 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       options: {
         emailRedirectTo: redirectUrl,
         data: {
-          display_name: email === 'patrick.misiewicz@polrydian.com' ? 'Patrick Misiewicz' : 
-                       email === 'polrydian@gmail.com' ? 'Patrick Misiewicz' : 'User',
-          name: email === 'patrick.misiewicz@polrydian.com' ? 'Patrick Misiewicz' : 
-                email === 'polrydian@gmail.com' ? 'Patrick Misiewicz' : 'User'
+          display_name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+          name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1)
         }
       }
     })

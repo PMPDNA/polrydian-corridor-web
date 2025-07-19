@@ -19,10 +19,7 @@ export const getUserDisplayName = (user: any) => {
     return sanitizeText(user.user_metadata.name)
   }
   
-  // Extract name from email for known admin users
-  if (user.email === 'polrydian@gmail.com') {
-    return 'Patrick Misiewicz'
-  }
+  // Remove hardcoded email checks for security
   
   // Default to extracting username from email
   if (user.email) {
