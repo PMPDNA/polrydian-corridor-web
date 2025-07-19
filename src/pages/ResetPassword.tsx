@@ -185,11 +185,7 @@ export default function ResetPassword() {
             <CardContent>
               <Button 
                 className="w-full"
-                onClick={async () => {
-                  // Ensure user is logged out before going to admin login
-                  await supabase.auth.signOut()
-                  window.location.href = '/admin'
-                }}
+                onClick={() => window.location.href = '/admin'}
               >
                 Back to Admin Login
               </Button>

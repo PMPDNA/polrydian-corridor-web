@@ -12,7 +12,7 @@ import { authRateLimit } from '@/lib/security-headers'
 import TwoFactorVerification from './TwoFactorVerification'
 
 export default function SupabaseLogin() {
-  const [email, setEmail] = useState('')  // Remove auto-population
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
