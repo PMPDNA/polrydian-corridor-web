@@ -19,26 +19,53 @@ export default function ResetPassword() {
   const [isSuccess, setIsSuccess] = useState(false)
   const { toast } = useToast()
 
+  // Get params from URL query string
   const accessToken = searchParams.get('access_token')
   const refreshToken = searchParams.get('refresh_token')
   const type = searchParams.get('type')
   const error = searchParams.get('error')
   const errorDescription = searchParams.get('error_description')
+  
+  // Also check for hash-based parameters (Supabase sometimes uses fragments)
+  const [hashParams, setHashParams] = useState<URLSearchParams | null>(null)
+  
+  useEffect(() => {
+    // Parse hash fragment for tokens
+    const hash = window.location.hash.substring(1) // Remove the '#'
+    if (hash) {
+      const hashSearchParams = new URLSearchParams(hash)
+      setHashParams(hashSearchParams)
+      console.log('Found hash params:', Object.fromEntries(hashSearchParams.entries()))
+    }
+  }, [])
+  
+  // Get tokens from either query params or hash
+  const finalAccessToken = accessToken || hashParams?.get('access_token')
+  const finalRefreshToken = refreshToken || hashParams?.get('refresh_token')
+  const finalType = type || hashParams?.get('type')
+  const finalError = error || hashParams?.get('error')
+  const finalErrorDescription = errorDescription || hashParams?.get('error_description')
 
   useEffect(() => {
     console.log('Reset password page loaded with params:', {
-      accessToken: !!accessToken,
-      refreshToken: !!refreshToken,
-      type,
-      error,
-      errorDescription,
-      allParams: Object.fromEntries(searchParams.entries())
+      queryAccessToken: !!accessToken,
+      queryRefreshToken: !!refreshToken,
+      queryType: type,
+      queryError: error,
+      hashAccessToken: !!hashParams?.get('access_token'),
+      hashRefreshToken: !!hashParams?.get('refresh_token'),
+      hashType: hashParams?.get('type'),
+      hashError: hashParams?.get('error'),
+      finalAccessToken: !!finalAccessToken,
+      finalRefreshToken: !!finalRefreshToken,
+      allQueryParams: Object.fromEntries(searchParams.entries()),
+      allHashParams: hashParams ? Object.fromEntries(hashParams.entries()) : null
     })
 
-    if (error) {
+    if (finalError) {
       toast({
         title: "Reset Password Error",
-        description: errorDescription || error,
+        description: finalErrorDescription || finalError,
         variant: "destructive",
       })
       return
@@ -46,7 +73,7 @@ export default function ResetPassword() {
 
     // DO NOT automatically set session - we'll only use tokens for password update
     // This prevents auto-login security issue
-  }, [error, errorDescription, toast, searchParams])
+  }, [finalError, finalErrorDescription, toast, searchParams, hashParams])
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,10 +102,10 @@ export default function ResetPassword() {
       console.log('Attempting to update password with tokens...')
       
       // Temporarily set session ONLY for password update
-      if (accessToken && refreshToken) {
+      if (finalAccessToken && finalRefreshToken) {
         const { error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          access_token: finalAccessToken,
+          refresh_token: finalRefreshToken,
         })
         
         if (sessionError) {
@@ -118,21 +145,25 @@ export default function ResetPassword() {
   }
 
   // Show the form if we have tokens OR if there's a recovery type OR if URL has reset-related parameters
-  const hasResetParams = accessToken || refreshToken || type === 'recovery' || 
-                         type === 'signup' || searchParams.has('token') || 
+  const hasResetParams = finalAccessToken || finalRefreshToken || finalType === 'recovery' || 
+                         finalType === 'signup' || searchParams.has('token') || 
                          searchParams.has('token_hash') || searchParams.has('access_token') ||
-                         searchParams.has('refresh_token')
+                         searchParams.has('refresh_token') || hashParams?.has('access_token') ||
+                         hashParams?.has('refresh_token') || hashParams?.has('token')
   
   console.log('Reset password params check:', {
     hasResetParams,
-    accessToken: !!accessToken,
-    refreshToken: !!refreshToken,
-    type,
-    hasToken: searchParams.has('token'),
-    hasTokenHash: searchParams.has('token_hash'),
-    hasAccessToken: searchParams.has('access_token'),
-    hasRefreshToken: searchParams.has('refresh_token'),
-    allParams: Object.fromEntries(searchParams.entries())
+    queryAccessToken: !!accessToken,
+    queryRefreshToken: !!refreshToken,
+    queryType: type,
+    hashAccessToken: !!hashParams?.get('access_token'),
+    hashRefreshToken: !!hashParams?.get('refresh_token'),
+    hashType: hashParams?.get('type'),
+    finalAccessToken: !!finalAccessToken,
+    finalRefreshToken: !!finalRefreshToken,
+    finalType,
+    allQueryParams: Object.fromEntries(searchParams.entries()),
+    allHashParams: hashParams ? Object.fromEntries(hashParams.entries()) : null
   })
   
   if (!hasResetParams) {
