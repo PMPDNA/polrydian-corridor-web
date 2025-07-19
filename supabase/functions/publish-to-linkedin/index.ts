@@ -31,18 +31,11 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const linkedinAccessToken = Deno.env.get('LINKEDIN_ACCESS_TOKEN');
 
     console.log('🔍 Environment check:', {
       hasSupabaseUrl: !!supabaseUrl,
-      hasSupabaseKey: !!supabaseKey,
-      hasLinkedInToken: !!linkedinAccessToken
+      hasSupabaseKey: !!supabaseKey
     });
-
-    if (!linkedinAccessToken) {
-      console.log('❌ LinkedIn access token not configured');
-      throw new Error('LinkedIn access token not configured');
-    }
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -102,7 +95,7 @@ serve(async (req) => {
     // Get LinkedIn credentials from database
     const { data: credentials, error: credError } = await supabase
       .from('social_media_credentials')
-      .select('platform_user_id, profile_data')
+      .select('platform_user_id, profile_data, access_token_encrypted')
       .eq('user_id', user.id)
       .eq('platform', 'linkedin')
       .eq('is_active', true)
@@ -120,7 +113,21 @@ serve(async (req) => {
     }
 
     const personId = credentials.platform_user_id;
+    const linkedinAccessToken = credentials.access_token_encrypted || Deno.env.get('LINKEDIN_ACCESS_TOKEN');
+    
     console.log('✅ Using LinkedIn person ID from database:', personId);
+    console.log('🔐 Access token available:', !!linkedinAccessToken);
+
+    if (!linkedinAccessToken) {
+      console.log('❌ LinkedIn access token not found in database or environment');
+      return new Response(
+        JSON.stringify({ 
+          error: 'LinkedIn access token not configured. Please configure your LinkedIn access token.',
+          setup_required: true
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Prepare the post content
     let postContent = content;

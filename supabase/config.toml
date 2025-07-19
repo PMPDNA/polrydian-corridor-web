@@ -8,3 +8,6 @@ verify_jwt = true
 
 [functions.publish-to-instagram]
 verify_jwt = true
+
+[functions.test-function]
+verify_jwt = false
