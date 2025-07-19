@@ -68,6 +68,14 @@ export const SocialMediaManager = () => {
     category: 'general',
     instagram_post_id: ''
   });
+  const [publishForm, setPublishForm] = useState({
+    platform: 'linkedin',
+    title: '',
+    content: '',
+    image_url: '',
+    article_url: ''
+  });
+  const [isPublishing, setIsPublishing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -291,6 +299,111 @@ export const SocialMediaManager = () => {
     }
   };
 
+  const publishToSocial = async () => {
+    if (!publishForm.content.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Content is required for publishing.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsPublishing(true);
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error('You must be logged in to publish content');
+      }
+
+      const functionName = publishForm.platform === 'linkedin' ? 'publish-to-linkedin' : 'publish-to-instagram';
+      
+      const { data, error } = await supabase.functions.invoke(functionName, {
+        body: {
+          title: publishForm.title,
+          content: publishForm.content,
+          image_url: publishForm.image_url || null,
+          article_url: publishForm.article_url || null,
+          caption: publishForm.content // For Instagram
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      toast({
+        title: 'Success',
+        description: `Successfully published to ${publishForm.platform}!`,
+      });
+
+      // Reset form
+      setPublishForm({
+        platform: 'linkedin',
+        title: '',
+        content: '',
+        image_url: '',
+        article_url: ''
+      });
+
+      // Reload posts to show the new published content
+      loadSocialPosts();
+    } catch (error: any) {
+      console.error('Error publishing to social media:', error);
+      toast({
+        title: 'Error',
+        description: error.message || `Failed to publish to ${publishForm.platform}.`,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const shareArticleToSocial = async (articleId: string, platform: 'linkedin' | 'instagram') => {
+    try {
+      // First, get the article details
+      const { data: article, error: articleError } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('id', articleId)
+        .single();
+
+      if (articleError || !article) {
+        throw new Error('Article not found');
+      }
+
+      // Prepare content for sharing
+      const content = `${article.title}\n\n${article.content.substring(0, 500)}${article.content.length > 500 ? '...' : ''}`;
+      const articleUrl = `${window.location.origin}/articles/${articleId}`;
+
+      setPublishForm({
+        platform,
+        title: article.title,
+        content,
+        image_url: '',
+        article_url: articleUrl
+      });
+
+      toast({
+        title: 'Article Loaded',
+        description: `Article content loaded for ${platform} sharing. Review and publish below.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to load article for sharing.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Sync Controls */}
@@ -368,9 +481,115 @@ export const SocialMediaManager = () => {
             </ul>
           </div>
         </CardContent>
-      </Card>
+        </Card>
 
-      {/* Mobile Photo Upload */}
+        {/* Publishing to Social Media */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Publish to Social Media
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="platform">Platform</Label>
+                <select
+                  id="platform"
+                  value={publishForm.platform}
+                  onChange={(e) => setPublishForm({ ...publishForm, platform: e.target.value as 'linkedin' | 'instagram' })}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="linkedin">LinkedIn</option>
+                  <option value="instagram">Instagram</option>
+                </select>
+              </div>
+              
+              <div>
+                <Label htmlFor="title">Title (Optional)</Label>
+                <Input
+                  id="title"
+                  value={publishForm.title}
+                  onChange={(e) => setPublishForm({ ...publishForm, title: e.target.value })}
+                  placeholder="Post title..."
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="content">Content *</Label>
+              <Textarea
+                id="content"
+                value={publishForm.content}
+                onChange={(e) => setPublishForm({ ...publishForm, content: e.target.value })}
+                placeholder="Write your post content here..."
+                rows={4}
+                className="resize-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="image_url">Image URL (Optional)</Label>
+                <Input
+                  id="image_url"
+                  value={publishForm.image_url}
+                  onChange={(e) => setPublishForm({ ...publishForm, image_url: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="article_url">Article URL (Optional)</Label>
+                <Input
+                  id="article_url"
+                  value={publishForm.article_url}
+                  onChange={(e) => setPublishForm({ ...publishForm, article_url: e.target.value })}
+                  placeholder="https://example.com/article"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button 
+                onClick={publishToSocial} 
+                disabled={isPublishing || !publishForm.content.trim()}
+                className="flex items-center gap-2"
+              >
+                {isPublishing ? (
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                ) : publishForm.platform === 'linkedin' ? (
+                  <Linkedin className="h-4 w-4" />
+                ) : (
+                  <Instagram className="h-4 w-4" />
+                )}
+                {isPublishing ? 'Publishing...' : `Publish to ${publishForm.platform}`}
+              </Button>
+
+              {publishForm.content && (
+                <Button 
+                  variant="outline"
+                  onClick={() => setPublishForm({ 
+                    platform: 'linkedin',
+                    title: '',
+                    content: '',
+                    image_url: '',
+                    article_url: ''
+                  })}
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+
+            <div className="text-sm text-muted-foreground">
+              <p><strong>Note:</strong> Instagram requires an image for posts. LinkedIn accepts text-only posts.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Mobile Photo Upload */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

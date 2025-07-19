@@ -2,3 +2,9 @@ project_id = "qemtvnwemcpzhvbwjbsk"
 
 [functions.linkedin-oauth]
 verify_jwt = true
+
+[functions.publish-to-linkedin]
+verify_jwt = true
+
+[functions.publish-to-instagram]
+verify_jwt = true
