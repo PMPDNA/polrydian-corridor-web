@@ -33,7 +33,6 @@ export const passwordSchema = z.string()
   .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
   .regex(/[0-9]/, 'Password must contain at least one number')
   .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
-  .refine(val => val !== '123456789!', 'Cannot use default temporary password')
 
 export const emailSchema = z.string()
   .email('Invalid email address')

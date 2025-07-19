@@ -78,14 +78,7 @@ export default function SupabaseLogin() {
         throw new Error(errorMessage)
       }
 
-      // Check if using temporary password
-      if (password === '123456789!') {
-        toast({
-          title: "Temporary Password Detected",
-          description: "Please change your password in the Security tab for security.",
-          variant: "destructive",
-        })
-      }
+      // Security: Password validation is handled by the schema
 
       toast({
         title: "Welcome back!",

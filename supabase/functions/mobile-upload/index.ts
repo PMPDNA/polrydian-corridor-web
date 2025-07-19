@@ -65,6 +65,26 @@ serve(async (req) => {
     const category = formData.get('category') as string || 'general';
     const instagramPostId = formData.get('instagram_post_id') as string;
 
+    // Input validation and sanitization
+    if (title && title.length > 200) {
+      return new Response(
+        JSON.stringify({ error: 'Title must be less than 200 characters' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (description && description.length > 1000) {
+      return new Response(
+        JSON.stringify({ error: 'Description must be less than 1000 characters' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Sanitize text inputs
+    const sanitizedTitle = title?.replace(/[<>]/g, '').trim() || file.name;
+    const sanitizedDescription = description?.replace(/[<>]/g, '').trim() || '';
+    const sanitizedCategory = category?.replace(/[<>]/g, '').trim() || 'general';
+
     if (!file) {
       throw new Error('No file provided');
     }
@@ -116,11 +136,11 @@ serve(async (req) => {
     const { data: galleryItem, error: dbError } = await supabase
       .from('gallery')
       .insert({
-        title: title || file.name,
-        description,
+        title: sanitizedTitle,
+        description: sanitizedDescription,
         image_url: publicUrl,
         thumbnail_url: thumbnailUrl,
-        category,
+        category: sanitizedCategory,
         instagram_post_id: instagramPostId,
         uploaded_by: user.id // Use authenticated user's ID
       })
