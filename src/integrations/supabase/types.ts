@@ -146,6 +146,45 @@ export type Database = {
         }
         Relationships: []
       }
+      data_processing_log: {
+        Row: {
+          action: string
+          created_at: string
+          data_type: string
+          id: string
+          legal_basis: string
+          purpose: string
+          retention_period: string | null
+          third_parties: Json | null
+          user_id: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          data_type: string
+          id?: string
+          legal_basis: string
+          purpose: string
+          retention_period?: string | null
+          third_parties?: Json | null
+          user_id?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          data_type?: string
+          id?: string
+          legal_basis?: string
+          purpose?: string
+          retention_period?: string | null
+          third_parties?: Json | null
+          user_id?: string | null
+          visitor_id?: string | null
+        }
+        Relationships: []
+      }
       gallery: {
         Row: {
           category: string | null
@@ -188,6 +227,51 @@ export type Database = {
           title?: string
           updated_at?: string
           uploaded_by?: string | null
+        }
+        Relationships: []
+      }
+      gdpr_deletion_requests: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          ip_address: unknown | null
+          processed_at: string | null
+          processed_by: string | null
+          reason: string | null
+          request_type: string
+          requested_data: Json | null
+          status: string
+          updated_at: string
+          visitor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip_address?: unknown | null
+          processed_at?: string | null
+          processed_by?: string | null
+          reason?: string | null
+          request_type: string
+          requested_data?: Json | null
+          status?: string
+          updated_at?: string
+          visitor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip_address?: unknown | null
+          processed_at?: string | null
+          processed_by?: string | null
+          reason?: string | null
+          request_type?: string
+          requested_data?: Json | null
+          status?: string
+          updated_at?: string
+          visitor_id?: string | null
         }
         Relationships: []
       }
@@ -398,6 +482,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_consent: {
+        Row: {
+          consent_date: string
+          consent_given: boolean
+          consent_type: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          legal_basis: string | null
+          purpose: string
+          updated_at: string
+          visitor_id: string
+          withdrawal_date: string | null
+        }
+        Insert: {
+          consent_date?: string
+          consent_given?: boolean
+          consent_type: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          legal_basis?: string | null
+          purpose: string
+          updated_at?: string
+          visitor_id: string
+          withdrawal_date?: string | null
+        }
+        Update: {
+          consent_date?: string
+          consent_given?: boolean
+          consent_type?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          legal_basis?: string | null
+          purpose?: string
+          updated_at?: string
+          visitor_id?: string
+          withdrawal_date?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -416,6 +542,72 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      visitor_analytics: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          id: string
+          ip_address: unknown | null
+          language: string | null
+          os: string | null
+          page_url: string
+          page_views: number | null
+          referrer: string | null
+          screen_resolution: string | null
+          session_id: string
+          timezone: string | null
+          updated_at: string
+          user_agent: string | null
+          visit_duration: number | null
+          visitor_id: string
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          language?: string | null
+          os?: string | null
+          page_url: string
+          page_views?: number | null
+          referrer?: string | null
+          screen_resolution?: string | null
+          session_id: string
+          timezone?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          visit_duration?: number | null
+          visitor_id: string
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          language?: string | null
+          os?: string | null
+          page_url?: string
+          page_views?: number | null
+          referrer?: string | null
+          screen_resolution?: string | null
+          session_id?: string
+          timezone?: string | null
+          updated_at?: string
+          user_agent?: string | null
+          visit_duration?: number | null
+          visitor_id?: string
         }
         Relationships: []
       }
