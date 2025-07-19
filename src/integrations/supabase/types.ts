@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_configuration: {
+        Row: {
+          created_at: string
+          id: string
+          setting_name: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_name: string
+          setting_value: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_name?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           content: string
@@ -379,6 +403,10 @@ export type Database = {
           window_minutes?: number
         }
         Returns: boolean
+      }
+      get_admin_emails: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       get_current_user_role: {
         Args: Record<PropertyKey, never>

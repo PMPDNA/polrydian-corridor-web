@@ -29,7 +29,7 @@ export const SECURITY_CONFIG = {
     'report-uri': ["/api/csp-report"]
   },
 
-  // OTP Security settings (reduced to 3 minutes for better security)
+  // OTP Security settings (optimized to 3 minutes for better security)
   OTP_EXPIRY_MINUTES: 3,
   
   // Session security

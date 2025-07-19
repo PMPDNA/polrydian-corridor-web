@@ -16,6 +16,7 @@ import {
   Edit,
 } from "lucide-react"
 import { Link } from "react-router-dom"
+import AdminConfigManager from "@/components/AdminConfigManager"
 
 const quickActions = [
   {
@@ -199,6 +200,12 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Security Configuration */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Security Configuration</h3>
+          <AdminConfigManager />
         </div>
       </div>
     </AdminLayout>
