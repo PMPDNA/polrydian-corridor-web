@@ -21,8 +21,8 @@ export const getClientIP = (): string | null => {
     if (value) return value.split(',')[0].trim()
   }
   
-  // Fallback - not a real IP but useful for tracking
-  return 'client-session'
+  // Return null instead of invalid IP string
+  return null
 }
 
 // Log security events with enhanced tracking
