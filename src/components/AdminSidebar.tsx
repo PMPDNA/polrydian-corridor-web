@@ -34,6 +34,7 @@ import {
 
 const contentItems = [
   { title: "Hero Section", url: "/admin/hero", icon: Home },
+  { title: "Manage Articles", url: "/admin/articles", icon: FileText },
   // More content editors coming soon
 ]
 

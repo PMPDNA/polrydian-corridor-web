@@ -21,6 +21,7 @@ import AdminPage from "./pages/AdminPage";
 
 import AdminSocial from "./pages/admin/SocialMedia";
 import HeroEditor from "./pages/admin/HeroEditor";
+import ArticleManager from "./pages/admin/ArticleManager";
 
 import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
@@ -67,6 +68,13 @@ const App = () => (
             <Route path="/admin/hero" element={
               <ErrorBoundary>
                 <HeroEditor />
+              </ErrorBoundary>
+            } />
+            <Route path="/admin/articles" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <ArticleManager />
+                </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
             <Route path="/profile" element={
