@@ -21,7 +21,7 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-  const { signIn, signUp, resetPassword, user, isAdmin, loading } = useSupabaseAuth()
+  const { signIn, signUp, resetPassword, signOut, user, isAdmin, loading } = useSupabaseAuth()
   const { toast } = useToast()
 
   // Check if this is a password reset redirect
@@ -87,12 +87,19 @@ export default function AdminPage() {
               Administrator privileges required to access this area.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Button 
-              onClick={() => window.location.href = '/'}
+              onClick={() => navigate('/')}
               className="w-full"
             >
               Return to Website
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={signOut}
+              className="w-full"
+            >
+              Sign Out
             </Button>
           </CardContent>
         </Card>
