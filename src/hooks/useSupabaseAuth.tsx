@@ -63,10 +63,14 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
       setLoading(false)
       
-      // Clear MFA requirement if user has proper AAL2 (completed 2FA)
-      if ((session as any)?.user?.aal === 'aal2') {
-        console.log('User has completed 2FA (AAL2), clearing MFA requirement')
-        setNeedsMFA(false)
+      // Only clear MFA requirement if user has AAL2 (completed MFA)
+      if (session?.user) {
+        if ((session as any).user.aal === 'aal2') {
+          console.log('User has completed MFA (AAL2), clearing needsMFA flag');
+          setNeedsMFA(false);
+        }
+      } else {
+        setNeedsMFA(false);
       }
       
       // Clear role cache when user changes
@@ -96,37 +100,45 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    
-    // Enhanced security logging
-    if (error) {
-      const { logFailedAuth } = await import('@/lib/security-monitoring')
-      await logFailedAuth(email, error.message)
-    } else if (data.user) {
-      const { logSuccessfulAuth } = await import('@/lib/security-monitoring')
-      await logSuccessfulAuth(data.user.id, 'email')
-    }
-    
-    // Check if user has 2FA enabled and needs verification
-    if (data.user && !error) {
-      try {
-        const { listMFAFactors } = await import('@/lib/supabase')
-        const factors = await listMFAFactors()
-        
-        // If user has TOTP factors but the session doesn't have proper AAL2, they need to verify
-        if (factors.totp && factors.totp.length > 0 && (data.session as any)?.user?.aal !== 'aal2') {
-          // User needs to complete 2FA verification
-          return { data: { ...data, needsMFA: true }, error }
-        }
-      } catch (mfaError) {
-        console.warn('Could not check MFA status:', mfaError)
+    try {
+      console.log('Attempting sign in for:', email);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      console.log('Sign in successful, checking for MFA factors');
+      
+      // Always check if user has MFA factors after successful password login
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      const totpFactor = factors?.totp?.find(factor => factor.status === 'verified');
+      
+      if (totpFactor) {
+        console.log('User has MFA factor, requiring MFA verification');
+        setNeedsMFA(true);
+        // Do not complete the login process yet
+      } else {
+        console.log('No MFA required, login complete');
+        setNeedsMFA(false);
       }
+
+      return { data, error: null };
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      
+      // Enhanced security logging  
+      try {
+        const { logFailedAuth } = await import('@/lib/security-monitoring')
+        await logFailedAuth(email, error.message)
+      } catch (logError) {
+        console.warn('Failed to log auth attempt:', logError)
+      }
+      
+      return { data: null, error };
     }
-    
-    return { data, error }
   }
 
   const resetPassword = async (email: string) => {

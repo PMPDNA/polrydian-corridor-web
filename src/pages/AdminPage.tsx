@@ -67,32 +67,25 @@ export default function AdminPage() {
     )
   }
 
-  // If user is authenticated and is admin, show the admin dashboard
-  if (user && isAdmin && !needsMFA) {
-    return <AdminDashboard />
+  // First check: user must be logged in
+  if (!user) {
+    // Show login form (handled below)
   }
-
-  // Show 2FA overlay if needed
-  if (user && needsMFA) {
+  // Second check: if user has MFA, require completion
+  else if (needsMFA) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="p-8 text-center text-muted-foreground">
-          Completing authentication...
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <TwoFactorVerification 
           onSuccess={() => {
-            console.log('2FA success callback triggered')
-            setNeedsMFA(false)
-            // Force a complete refresh to ensure proper state
-            window.location.href = '/admin'
+            console.log('2FA verification successful');
+            // The auth state change will handle clearing needsMFA
           }} 
         />
       </div>
-    )
+    );
   }
-
-  // If user is authenticated but not admin, show access denied
-  if (user && !isAdmin) {
+  // Third check: user must be admin (after MFA if required)
+  else if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md">
@@ -123,6 +116,10 @@ export default function AdminPage() {
         </Card>
       </div>
     )
+  }
+  // Fourth check: if all checks pass, show admin dashboard
+  else if (user && isAdmin && !needsMFA) {
+    return <AdminDashboard />
   }
 
   // Show login form if not authenticated

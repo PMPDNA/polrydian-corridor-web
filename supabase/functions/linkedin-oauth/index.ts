@@ -60,8 +60,8 @@ serve(async (req) => {
         throw new Error('LinkedIn client secret not configured')
       }
 
-      // Use HTTP to match LinkedIn app configuration
-      const redirectUri = 'https://polrydian.com'
+      // Use HTTPS to match LinkedIn app configuration  
+      const redirectUri = 'https://polrydian.com/auth/callback'
       
       console.log('Using redirect URI:', redirectUri)
 

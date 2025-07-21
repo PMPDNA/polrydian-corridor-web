@@ -32,6 +32,11 @@ export function AdminLayout({ children, title = "Admin Panel" }: AdminLayoutProp
     return <Navigate to="/admin" replace />
   }
 
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = '/';
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -57,7 +62,7 @@ export function AdminLayout({ children, title = "Admin Panel" }: AdminLayoutProp
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={signOut}
+                onClick={handleSignOut}
                 className="flex items-center gap-2"
               >
                 <LogOut className="h-3 w-3" />

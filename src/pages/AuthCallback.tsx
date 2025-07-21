@@ -22,19 +22,47 @@ export const AuthCallback = () => {
       const errorDescription = searchParams.get('error_description');
       const state = searchParams.get('state');
 
-      // Check if this is a LinkedIn callback by looking for specific parameters
-      const isLinkedInCallback = code && !state && window.location.pathname === '/auth/callback';
-      
-      // If this is just the main domain redirect from LinkedIn, wait for manual token processing
-      if (window.location.pathname === '/' && code && !state) {
-        // This is the redirect from LinkedIn to the main domain
-        // We need to process this manually or show instructions
-        setStatus('success');
-        setMessage('LinkedIn authorization received. Please check with your administrator to complete the setup.');
-        toast({
-          title: "LinkedIn Authorization Received",
-          description: "The authorization code has been received. Contact your administrator to complete the integration.",
-        });
+      // Check if this is a LinkedIn callback
+      if (code && window.location.pathname === '/auth/callback') {
+        setStatus('loading');
+        setMessage('Processing LinkedIn authorization...');
+        
+        try {
+          // Call the LinkedIn OAuth edge function to exchange code for token
+          const response = await supabase.functions.invoke('linkedin-oauth', {
+            body: { 
+              code,
+              action: 'exchange_token' 
+            }
+          });
+
+          const result = response.data;
+          
+          if (result.success) {
+            setStatus('success');
+            setMessage('LinkedIn connected successfully! You can close this window.');
+            toast({
+              title: "LinkedIn Connected",
+              description: "Your LinkedIn account has been successfully connected.",
+            });
+            
+            // Close the window after a delay
+            setTimeout(() => {
+              window.close();
+            }, 2000);
+          } else {
+            throw new Error(result.error || 'Failed to connect LinkedIn');
+          }
+        } catch (error) {
+          console.error('LinkedIn OAuth error:', error);
+          setStatus('error');
+          setMessage(`Failed to connect LinkedIn: ${error.message}`);
+          toast({
+            title: "LinkedIn Connection Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
         return;
       }
 
