@@ -356,6 +356,39 @@ export type Database = {
         }
         Relationships: []
       }
+      outbound_shares: {
+        Row: {
+          article_id: string | null
+          created_at: string | null
+          error_msg: string | null
+          id: string
+          post_urn: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          article_id?: string | null
+          created_at?: string | null
+          error_msg?: string | null
+          id?: string
+          post_urn?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          article_id?: string | null
+          created_at?: string | null
+          error_msg?: string | null
+          id?: string
+          post_urn?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
