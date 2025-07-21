@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth'
+import TwoFactorVerification from '@/components/TwoFactorVerification'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Shield, Eye, EyeOff, Mail, Lock, KeyRound, UserPlus } from 'lucide-react'
+import { Shield, Eye, EyeOff, Mail, Lock, KeyRound } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { emailSchema } from '@/lib/security'
 import AdminDashboard from './admin/Dashboard'
@@ -16,12 +17,10 @@ export default function AdminPage() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [isSignUp, setIsSignUp] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
-  const { signIn, signUp, resetPassword, signOut, user, isAdmin, loading } = useSupabaseAuth()
+  const { signIn, resetPassword, signOut, user, isAdmin, loading, needsMFA, setNeedsMFA } = useSupabaseAuth()
   const { toast } = useToast()
 
   // Check if this is a password reset redirect
@@ -66,6 +65,11 @@ export default function AdminPage() {
         </div>
       </div>
     )
+  }
+
+  // If user needs 2FA verification, show the 2FA form
+  if (needsMFA) {
+    return <TwoFactorVerification onCancel={() => setNeedsMFA(false)} />
   }
 
   // If user is authenticated and is admin, show the admin dashboard
@@ -142,47 +146,15 @@ export default function AdminPage() {
         return
       }
 
-      if (isSignUp) {
-        if (password !== confirmPassword) {
-          toast({
-            title: "Password Mismatch",
-            description: "Passwords do not match.",
-            variant: "destructive",
-          })
-          return
-        }
-
-        if (password.length < 8) {
-          toast({
-            title: "Password Too Short",
-            description: "Password must be at least 8 characters long.",
-            variant: "destructive",
-          })
-          return
-        }
-
-        const { error } = await signUp(email, password)
-        if (error) {
-          toast({
-            title: "Signup Failed",
-            description: error.message,
-            variant: "destructive",
-          })
-        } else {
-          toast({
-            title: "Account Created",
-            description: "Please check your email to verify your account.",
-          })
-        }
-      } else {
-        const { error } = await signIn(email, password)
-        if (error) {
-          toast({
-            title: "Login Failed",
-            description: error.message,
-            variant: "destructive",
-          })
-        }
+      const { data, error } = await signIn(email, password)
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error.message,
+          variant: "destructive",
+        })
+      } else if (data?.needsMFA) {
+        setNeedsMFA(true)
       }
     } catch (error) {
       toast({
@@ -203,14 +175,12 @@ export default function AdminPage() {
             <Shield className="h-8 w-8 text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold">
-            {showForgotPassword ? 'Reset Password' : isSignUp ? 'Create Admin Account' : 'Admin Login'}
+            {showForgotPassword ? 'Reset Password' : 'Admin Login'}
           </CardTitle>
           <CardDescription>
             {showForgotPassword 
               ? "Enter your email to receive reset instructions" 
-              : isSignUp 
-                ? "Create your admin account to get started" 
-                : "Sign in to access the admin panel"
+              : "Sign in to access the admin panel"
             }
           </CardDescription>
         </CardHeader>
@@ -233,56 +203,36 @@ export default function AdminPage() {
             </div>
 
             {!showForgotPassword && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="flex items-center gap-2">
-                    <Lock className="h-4 w-4" />
-                    Password
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
-                      required
-                      className="h-11 pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="flex items-center gap-2">
+                  <Lock className="h-4 w-4" />
+                  Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                    className="h-11 pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
-
-                {isSignUp && (
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="flex items-center gap-2">
-                      <Lock className="h-4 w-4" />
-                      Confirm Password
-                    </Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirm your password"
-                      required
-                      className="h-11"
-                    />
-                  </div>
-                )}
-              </>
+              </div>
             )}
 
             <Button
@@ -300,11 +250,6 @@ export default function AdminPage() {
                   <KeyRound className="h-4 w-4 mr-2" />
                   Send Reset Email
                 </>
-              ) : isSignUp ? (
-                <>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Create Account
-                </>
               ) : (
                 <>
                   <Shield className="h-4 w-4 mr-2" />
@@ -314,56 +259,28 @@ export default function AdminPage() {
             </Button>
           </form>
 
-          <div className="space-y-4">
-            {!showForgotPassword && (
-              <div className="text-center">
+          <p className="text-center">
+            {showForgotPassword ? (
+              <>
+                Remember your password?{' '}
                 <Button
-                  type="button"
                   variant="link"
-                  onClick={() => setShowForgotPassword(true)}
-                  className="text-sm"
+                  onClick={() => setShowForgotPassword(false)}
+                  className="p-0 h-auto text-primary"
                 >
-                  Forgot your password?
+                  Back to Login
                 </Button>
-              </div>
+              </>
+            ) : (
+              <Button
+                variant="link"
+                onClick={() => setShowForgotPassword(true)}
+                className="p-0 h-auto text-primary"
+              >
+                Forgot password?
+              </Button>
             )}
-
-            {showForgotPassword && (
-              <div className="text-center">
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={() => {
-                    setShowForgotPassword(false)
-                    setEmail('')
-                  }}
-                  className="text-sm"
-                >
-                  Back to Sign In
-                </Button>
-              </div>
-            )}
-
-            {!showForgotPassword && (
-              <div className="text-center">
-                <span className="text-sm text-muted-foreground">
-                  {isSignUp ? "Already have an account?" : "Need an account?"}
-                </span>
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={() => {
-                    setIsSignUp(!isSignUp)
-                    setPassword('')
-                    setConfirmPassword('')
-                  }}
-                  className="text-sm ml-1"
-                >
-                  {isSignUp ? "Sign In" : "Create Account"}
-                </Button>
-              </div>
-            )}
-          </div>
+          </p>
 
           <Alert>
             <Shield className="h-4 w-4" />

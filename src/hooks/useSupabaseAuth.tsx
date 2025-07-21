@@ -13,6 +13,8 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<any>
   isAdmin: boolean
   displayName: string
+  needsMFA: boolean
+  setNeedsMFA: (value: boolean) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -22,6 +24,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [needsMFA, setNeedsMFA] = useState(false)
 
   const displayName = getUserDisplayName(user)
 
@@ -100,6 +103,22 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       await logSuccessfulAuth(data.user.id, 'email')
     }
     
+    // Check if user has 2FA enabled and needs verification
+    if (data.user && !error) {
+      try {
+        const { listMFAFactors } = await import('@/lib/supabase')
+        const factors = await listMFAFactors()
+        
+        // If user has TOTP factors but the session doesn't have proper AAL2, they need to verify
+        if (factors.totp && factors.totp.length > 0 && (data.session as any)?.user?.aal !== 'aal2') {
+          // User needs to complete 2FA verification
+          return { data: { ...data, needsMFA: true }, error }
+        }
+      } catch (mfaError) {
+        console.warn('Could not check MFA status:', mfaError)
+      }
+    }
+    
     return { data, error }
   }
 
@@ -127,6 +146,8 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     resetPassword,
     isAdmin,
     displayName,
+    needsMFA,
+    setNeedsMFA,
   }
 
   return (
