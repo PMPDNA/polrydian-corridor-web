@@ -41,73 +41,112 @@ Deno.serve(async (req) => {
   // CORS (if needed)
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  const url = new URL(req.url);
-  const pathname = url.pathname;
-  const authCode = url.searchParams.get("code");
-  const state = url.searchParams.get("state"); // optional
+  try {
+    let authCode: string | null = null;
+    let state: string | null = null;
 
-  // we only handle redirect here
-  if (!pathname.endsWith("/auth/callback") || !authCode) {
+    // Handle both direct redirect and function call
+    if (req.method === "GET") {
+      // Direct redirect from LinkedIn
+      const url = new URL(req.url);
+      authCode = url.searchParams.get("code");
+      state = url.searchParams.get("state");
+    } else if (req.method === "POST") {
+      // Function call from frontend
+      const body = await req.json();
+      authCode = body.code;
+      state = body.state;
+    }
+
+    if (!authCode) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Missing code parameter" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // 1️⃣ exchange code → access_token
+    console.log('Exchanging authorization code for access token...');
+    const params = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: authCode,
+      redirect_uri: "https://polrydian.com/auth/callback",
+      client_id: Deno.env.get("LINKEDIN_CLIENT_ID")!,
+      client_secret: Deno.env.get("LINKEDIN_CLIENT_SECRET")!
+    });
+
+    const tokenRes = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString()
+    });
+
+    if (!tokenRes.ok) {
+      const err = await tokenRes.text();
+      console.error('Token exchange failed:', err);
+      return new Response(
+        JSON.stringify({ success: false, error: "Token exchange failed", detail: err }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const tokenJson: {
+      access_token: string;
+      refresh_token?: string;
+      expires_in: number;
+    } = await tokenRes.json();
+    console.log('Token exchange successful, expires in:', tokenJson.expires_in);
+
+    // 2️⃣ pull user's person URN (needed for publishing)
+    const meRes = await fetch("https://api.linkedin.com/v2/me", {
+      headers: { Authorization: `Bearer ${tokenJson.access_token}` }
+    });
+    
+    if (!meRes.ok) {
+      const err = await meRes.text();
+      console.error('Profile fetch failed:', err);
+      return new Response(
+        JSON.stringify({ success: false, error: "Failed to fetch LinkedIn profile", detail: err }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    const meJson = await meRes.json();         // → { id: "abc123", localizedFirstName:… }
+    const personUrn = `urn:li:person:${meJson.id}`;
+    console.log('LinkedIn profile fetched for person:', personUrn);
+
+    // 3️⃣ store in DB (we use anon user 00000000-0000-0000-0000-000000000000 for now)
+    await storeToken(
+      "00000000-0000-0000-0000-000000000000",  // <- replace with auth.uid() if session attached
+      tokenJson.access_token,
+      tokenJson.refresh_token ?? "",
+      tokenJson.expires_in,
+      personUrn
+    );
+    console.log('Credentials stored successfully in database');
+
+    // 4️⃣ return JSON the front-end expects
+    const body = {
+      success: true,
+      personId: personUrn,
+      expiresIn: tokenJson.expires_in
+    };
+
+    return new Response(JSON.stringify(body), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+
+  } catch (error) {
+    console.error('LinkedIn OAuth error:', error);
     return new Response(
-      JSON.stringify({ success: false, error: "Missing code parameter" }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ 
+        success: false, 
+        error: error.message || 'OAuth process failed' 
+      }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
+      }
     );
   }
-
-  // 1️⃣ exchange code → access_token
-  const params = new URLSearchParams({
-    grant_type: "authorization_code",
-    code: authCode,
-    redirect_uri: "https://polrydian.com/auth/callback",
-    client_id: Deno.env.get("LINKEDIN_CLIENT_ID")!,
-    client_secret: Deno.env.get("LINKEDIN_CLIENT_SECRET")!
-  });
-
-  const tokenRes = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params.toString()
-  });
-
-  if (!tokenRes.ok) {
-    const err = await tokenRes.text();
-    return new Response(
-      JSON.stringify({ success: false, error: "Token exchange failed", detail: err }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-
-  const tokenJson: {
-    access_token: string;
-    refresh_token?: string;
-    expires_in: number;
-  } = await tokenRes.json();
-
-  // 2️⃣ pull user's person URN (needed for publishing)
-  const meRes = await fetch("https://api.linkedin.com/v2/me", {
-    headers: { Authorization: `Bearer ${tokenJson.access_token}` }
-  });
-  const meJson = await meRes.json();         // → { id: "abc123", localizedFirstName:… }
-  const personUrn = `urn:li:person:${meJson.id}`;
-
-  // 3️⃣ store in DB (we use anon user 00000000-0000-0000-0000-000000000000 for now)
-  await storeToken(
-    "00000000-0000-0000-0000-000000000000",  // <- replace with auth.uid() if session attached
-    tokenJson.access_token,
-    tokenJson.refresh_token ?? "",
-    tokenJson.expires_in,
-    personUrn
-  );
-
-  // 4️⃣ return JSON the front-end expects
-  const body = {
-    success: true,
-    personId: personUrn,
-    expiresIn: tokenJson.expires_in
-  };
-
-  return new Response(JSON.stringify(body), {
-    status: 200,
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-});
