@@ -1,20 +1,21 @@
 project_id = "qemtvnwemcpzhvbwjbsk"
 
+[auth]
+enabled = true
+site_url = "https://polrydian.com"
+additional_redirect_urls = ["https://d85f6385-6c6d-437f-978b-9196bd33e526.lovableproject.com"]
+
 [functions.sync-linkedin-feed]
-verify_jwt = false
+verify_jwt = true
 
+[functions.share-to-linkedin]
+verify_jwt = true
 
-[functions.publish-to-linkedin]
+[functions.linkedin-oauth]
 verify_jwt = true
 
 [functions.publish-to-instagram]
 verify_jwt = true
 
 [functions.test-function]
-verify_jwt = false
-
-[functions.linkedin-oauth]
-verify_jwt = false
-
-[functions.linkedin-integration]
 verify_jwt = false

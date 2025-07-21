@@ -54,15 +54,15 @@ export const ArticleShareButtons = ({
       const shareContent = `${title}\n\n${content.substring(0, 400)}${content.length > 400 ? '...' : ''}`;
       const articleUrl = `${window.location.origin}/articles/${articleId}`;
 
-      const functionName = platform === 'linkedin' ? 'publish-to-linkedin' : 'publish-to-instagram';
+      const functionName = platform === 'linkedin' ? 'share-to-linkedin' : 'publish-to-instagram';
       
       const { data, error } = await supabase.functions.invoke(functionName, {
         body: {
-          article_id: articleId,
+          articleId: articleId,
           title: title,
           content: shareContent,
-          article_url: articleUrl,
-          caption: shareContent // For Instagram
+          message: shareContent, // Use this as the primary message
+          caption: shareContent // For Instagram compatibility
         },
         headers: {
           Authorization: `Bearer ${session.access_token}`,

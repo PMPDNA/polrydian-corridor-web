@@ -7,8 +7,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to decrypt tokens (simplified - in production use proper encryption)
+function decryptToken(encryptedToken: string): string {
+  // For now, assume tokens are stored as-is (implement proper decryption later)
+  return encryptedToken;
+}
+
 serve(async (req) => {
-  console.log('🚀 LinkedIn publish function started');
+  console.log('🚀 LinkedIn share function started');
   
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -74,20 +80,19 @@ serve(async (req) => {
 
     console.log('📝 Parsing request body');
     const body = await req.json();
-    const { content, title, article_url, image_url, article_id } = body;
+    const { articleId, title, content, message } = body;
 
     console.log('📊 Request data:', {
-      hasContent: !!content,
+      hasArticleId: !!articleId,
       hasTitle: !!title,
-      hasArticleUrl: !!article_url,
-      hasImageUrl: !!image_url,
-      hasArticleId: !!article_id
+      hasContent: !!content,
+      hasMessage: !!message
     });
 
-    if (!content) {
-      console.log('❌ Content is required');
+    if (!content && !message) {
+      console.log('❌ Content or message is required');
       return new Response(
-        JSON.stringify({ error: 'Content is required' }),
+        JSON.stringify({ error: 'Content or message is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -96,7 +101,7 @@ serve(async (req) => {
     // Get LinkedIn credentials from database
     const { data: credentials, error: credError } = await supabase
       .from('social_media_credentials')
-      .select('platform_user_id, profile_data, access_token_encrypted')
+      .select('platform_user_id, access_token_encrypted, refresh_token_encrypted, expires_at, is_active')
       .eq('user_id', user.id)
       .eq('platform', 'linkedin')
       .eq('is_active', true)
@@ -114,76 +119,81 @@ serve(async (req) => {
     }
 
     const personId = credentials.platform_user_id;
-    const linkedinAccessToken = credentials.access_token_encrypted || Deno.env.get('LINKEDIN_ACCESS_TOKEN');
+    
+    // Simple token decryption (implement proper decryption in production)
+    const accessToken = decryptToken(credentials.access_token_encrypted);
     
     console.log('✅ Using LinkedIn person ID from database:', personId);
-    console.log('🔐 Access token available:', !!linkedinAccessToken);
+    console.log('🔐 Access token available:', !!accessToken);
 
-    if (!linkedinAccessToken) {
-      console.log('❌ LinkedIn access token not found in database or environment');
-      return new Response(
-        JSON.stringify({ 
-          error: 'LinkedIn access token not configured. Please configure your LinkedIn access token.',
-          setup_required: true
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Check if token needs refresh
+    const now = new Date();
+    const expiresAt = new Date(credentials.expires_at);
+    const tenMinutesFromNow = new Date(now.getTime() + 10 * 60 * 1000);
+
+    if (expiresAt <= tenMinutesFromNow) {
+      console.log('⚠️ Token expires soon but continuing with current token');
+      // In production, implement token refresh here
     }
 
     // Prepare the post content
-    let postContent = content;
-    if (title) {
+    let postContent = message || content;
+    if (title && !message) {
       postContent = `${title}\n\n${content}`;
     }
-    if (article_url) {
-      postContent += `\n\nRead more: ${article_url}`;
+
+    // Add article URL if provided and it's a proper URL
+    if (articleId) {
+      const baseUrl = req.headers.get('origin') || 'https://polrydian.com';
+      const articleUrl = `${baseUrl}/articles/${articleId}`;
+      postContent += `\n\nRead more: ${articleUrl}`;
     }
 
     console.log('📝 Prepared post content length:', postContent.length);
 
-    // Create LinkedIn post
-    const postData = {
-      "author": `urn:li:person:${personId}`,
-      "commentary": postContent,
-      "visibility": "PUBLIC",
-      "distribution": {
-        "feedDistribution": "MAIN_FEED",
-        "targetEntities": [],
-        "thirdPartyDistributionChannels": []
+    // Create LinkedIn share using the new shares API
+    const shareData = {
+      "owner": `urn:li:person:${personId}`,
+      "text": {
+        "text": postContent
       },
-      "lifecycleState": "PUBLISHED",
-      "isReshareDisabledByAuthor": false
+      "distribution": {
+        "linkedInDistributionTarget": {}
+      }
     };
 
-    // Add image if provided
-    if (image_url) {
-      // For now, we'll include the image URL in the commentary
-      // Full image upload would require additional LinkedIn API calls
-      postData.commentary += `\n\nImage: ${image_url}`;
-    }
-
-    console.log('🚀 Publishing to LinkedIn');
-    const publishResponse = await fetch('https://api.linkedin.com/v2/posts', {
+    console.log('🚀 Sharing to LinkedIn');
+    const shareResponse = await fetch('https://api.linkedin.com/v2/shares', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${linkedinAccessToken}`,
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
         'LinkedIn-Version': '202405'
       },
-      body: JSON.stringify(postData)
+      body: JSON.stringify(shareData)
     });
 
-    if (!publishResponse.ok) {
-      const errorText = await publishResponse.text();
-      console.error('❌ LinkedIn publish error:', errorText);
-      throw new Error(`Failed to publish to LinkedIn: ${publishResponse.status} - ${errorText}`);
+    if (!shareResponse.ok) {
+      const errorText = await shareResponse.text();
+      console.error('❌ LinkedIn share error:', errorText);
+      
+      // If 401, mark credentials as inactive
+      if (shareResponse.status === 401) {
+        await supabase
+          .from('social_media_credentials')
+          .update({ is_active: false })
+          .eq('user_id', user.id)
+          .eq('platform', 'linkedin');
+      }
+      
+      throw new Error(`Failed to share to LinkedIn: ${shareResponse.status} - ${errorText}`);
     }
 
-    const publishResult = await publishResponse.json();
-    const postId = publishResult.id;
-    console.log('✅ Published to LinkedIn, post ID:', postId);
+    const shareResult = await shareResponse.json();
+    const shareId = shareResult.id;
+    console.log('✅ Shared to LinkedIn, share ID:', shareId);
 
-    // Store the published post in our database and outbound shares tracking
+    // Store the shared post in our database and outbound shares tracking
     console.log('💾 Storing in database');
     
     // First store in social_media_posts
@@ -191,12 +201,11 @@ serve(async (req) => {
       .from('social_media_posts')
       .insert({
         platform: 'linkedin',
-        platform_post_id: postId,
-        post_type: 'published_post',
+        platform_post_id: shareId,
+        post_type: 'shared_article',
         title: title || '',
-        content: content,
-        image_url: image_url || null,
-        post_url: `https://www.linkedin.com/feed/update/urn:li:activity:${postId}`,
+        content: postContent,
+        post_url: `https://www.linkedin.com/feed/update/${shareId}`,
         published_at: new Date().toISOString(),
         engagement_data: {},
         approval_status: 'approved',
@@ -209,8 +218,8 @@ serve(async (req) => {
       .from('outbound_shares')
       .insert({
         user_id: user.id,
-        article_id: article_id || null,
-        post_urn: postId,
+        article_id: articleId || null,
+        post_urn: shareId,
         status: 'success'
       });
 
@@ -227,18 +236,18 @@ serve(async (req) => {
       console.log('✅ Stored in outbound_shares successfully');
     }
 
-    console.log('🎉 LinkedIn publish completed successfully');
+    console.log('🎉 LinkedIn share completed successfully');
     return new Response(JSON.stringify({ 
       success: true, 
-      message: 'Successfully published to LinkedIn',
-      post_id: postId,
-      post_url: `https://www.linkedin.com/feed/update/urn:li:activity:${postId}`
+      message: 'Successfully shared to LinkedIn',
+      post_id: shareId,
+      post_url: `https://www.linkedin.com/feed/update/${shareId}`
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error: any) {
-    console.error('💥 Error publishing to LinkedIn:', error);
+    console.error('💥 Error sharing to LinkedIn:', error);
     return new Response(JSON.stringify({ 
       error: error.message,
       details: 'Check the edge function logs for more information'

@@ -205,27 +205,35 @@ export const SocialMediaManager = () => {
   const syncLinkedInFeed = async () => {
     setIsSyncing(true);
     try {
-      console.log('Starting LinkedIn feed sync...');
-      const { data, error } = await supabase.functions.invoke('sync-linkedin-feed');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      console.log('LinkedIn feed sync response:', { data, error });
-      
-      if (error) {
-        console.error('LinkedIn feed sync error:', error);
-        throw error;
+      if (sessionError || !session) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Please log in to sync LinkedIn feed.',
+          variant: 'destructive',
+        });
+        return;
       }
-      
-      // Reload both social posts and check for new LinkedIn posts
-      await loadSocialPosts();
+
+      const { data, error } = await supabase.functions.invoke('sync-linkedin-feed', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
       toast({
         title: 'Success',
         description: `LinkedIn feed synced! ${data?.inserted || 0} posts processed.`,
       });
+      await loadSocialPosts();
     } catch (error: any) {
-      console.error('Error syncing LinkedIn feed:', error);
       toast({
         title: 'Error',
-        description: `Failed to sync LinkedIn feed: ${error.message || 'Check credentials and try again.'}`,
+        description: error.message || 'Failed to sync LinkedIn feed.',
         variant: 'destructive',
       });
     } finally {
