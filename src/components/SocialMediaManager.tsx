@@ -26,6 +26,7 @@ import {
   X,
   Clock
 } from 'lucide-react';
+import { LinkedInConnectionStatus } from './LinkedInConnectionStatus';
 
 interface SocialPost {
   id: string;
@@ -450,40 +451,13 @@ export const SocialMediaManager = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Linkedin className="h-5 w-5" />
-            LinkedIn Integration Setup
+            LinkedIn Integration
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="bg-muted/50 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Step 1: LinkedIn OAuth Authorization</h4>
-            <p className="text-sm text-muted-foreground mb-3">
-              Click the button below to authorize LinkedIn access. You'll be redirected to LinkedIn to grant permissions.
-            </p>
-            <Button
-              onClick={() => {
-                const redirectUri = `${window.location.origin}/auth/callback`
-                const clientId = '78z20ojmlvz2ks' // TODO: Move to environment variable
-                const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=profile%20email%20w_member_social`;
-                window.open(authUrl, '_blank');
-              }}
-              className="flex items-center gap-2"
-            >
-              <Linkedin className="h-4 w-4" />
-              Authorize LinkedIn Access
-            </Button>
-          </div>
-          
-          <div className="bg-muted/50 p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Step 2: After Authorization</h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• After clicking "Allow" on LinkedIn, you'll get an access token</li>
-              <li>• Check the browser console for the token</li>
-              <li>• Copy the token and add it to Supabase Edge Function Secrets</li>
-              <li>• Secret name: <code className="bg-background px-1 rounded">LINKEDIN_ACCESS_TOKEN</code></li>
-            </ul>
-          </div>
+          <LinkedInConnectionStatus />
         </CardContent>
-        </Card>
+      </Card>
 
         {/* Publishing to Social Media */}
         <Card>
