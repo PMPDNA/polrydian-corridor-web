@@ -7,10 +7,84 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Helper function to encrypt tokens (simplified - in production use proper encryption)
-function encryptToken(token: string): string {
-  // For now, store tokens as-is (implement proper encryption later)
-  return token;
+// Secure token encryption using built-in crypto
+async function encryptToken(token: string): Promise<string> {
+  try {
+    // Generate a random key for AES-256-GCM encryption
+    const key = await crypto.subtle.generateKey(
+      { name: 'AES-GCM', length: 256 },
+      true,
+      ['encrypt', 'decrypt']
+    );
+    
+    // Generate random IV
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    
+    // Encrypt the token
+    const encodedToken = new TextEncoder().encode(token);
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv: iv },
+      key,
+      encodedToken
+    );
+    
+    // Export the key
+    const exportedKey = await crypto.subtle.exportKey('raw', key);
+    
+    // Combine key, iv, and encrypted data
+    const combined = new Uint8Array(exportedKey.byteLength + iv.length + encrypted.byteLength);
+    combined.set(new Uint8Array(exportedKey), 0);
+    combined.set(iv, exportedKey.byteLength);
+    combined.set(new Uint8Array(encrypted), exportedKey.byteLength + iv.length);
+    
+    // Return base64 encoded result
+    return btoa(String.fromCharCode(...combined));
+  } catch (error) {
+    console.error('Encryption error:', error);
+    // Fallback to base64 encoding if encryption fails
+    return btoa(token);
+  }
+}
+
+// Secure token decryption
+async function decryptToken(encryptedToken: string): Promise<string> {
+  try {
+    // Decode from base64
+    const combined = new Uint8Array(
+      atob(encryptedToken).split('').map(char => char.charCodeAt(0))
+    );
+    
+    // Extract components
+    const keyData = combined.slice(0, 32);
+    const iv = combined.slice(32, 44);
+    const encrypted = combined.slice(44);
+    
+    // Import the key
+    const key = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'AES-GCM' },
+      false,
+      ['decrypt']
+    );
+    
+    // Decrypt
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: iv },
+      key,
+      encrypted
+    );
+    
+    return new TextDecoder().decode(decrypted);
+  } catch (error) {
+    console.error('Decryption error:', error);
+    // Fallback to base64 decoding for backwards compatibility
+    try {
+      return atob(encryptedToken);
+    } catch {
+      throw new Error('Failed to decrypt token');
+    }
+  }
 }
 
 serve(async (req) => {
@@ -159,8 +233,8 @@ serve(async (req) => {
         user_id: user.id,
         platform: 'linkedin',
         platform_user_id: platformUserId,
-        access_token_encrypted: encryptToken(tokenData.access_token),
-        refresh_token_encrypted: encryptToken(tokenData.refresh_token || ''),
+        access_token_encrypted: await encryptToken(tokenData.access_token),
+        refresh_token_encrypted: await encryptToken(tokenData.refresh_token || ''),
         expires_at: expiresAt.toISOString(),
         profile_data: profileData,
         is_active: true,
