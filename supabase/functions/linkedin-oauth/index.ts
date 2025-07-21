@@ -1,4 +1,11 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+
+// Initialize Supabase client
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+);
 
 Deno.serve(async (req) => {
   console.log("LinkedIn OAuth function called");
@@ -12,39 +19,25 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Step 1: Check environment variables
-    const clientId = Deno.env.get("LINKEDIN_CLIENT_ID");
-    const clientSecret = Deno.env.get("LINKEDIN_CLIENT_SECRET");
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    // Get credentials
+    const clientId = Deno.env.get("LINKEDIN_CLIENT_ID")!;
+    const clientSecret = Deno.env.get("LINKEDIN_CLIENT_SECRET")!;
 
-    console.log("Environment check:");
-    console.log("- Client ID:", clientId ? "present" : "missing");
-    console.log("- Client Secret:", clientSecret ? "present" : "missing");
-    console.log("- Supabase URL:", supabaseUrl ? "present" : "missing");
-    console.log("- Supabase Key:", supabaseKey ? "present" : "missing");
-
-    if (!clientId || !clientSecret) {
-      throw new Error("LinkedIn credentials not configured");
-    }
-
-    // Step 2: Parse request body
+    // Parse request
     const body = await req.json().catch(() => ({}));
     const { code } = body;
-
-    console.log("Request body parsed, code:", code ? "present" : "missing");
 
     if (!code) {
       return jsonResponse({ success: false, error: "Missing authorization code" }, 400);
     }
 
-    // Step 3: Determine redirect URI
+    // Get redirect URI
     const origin = req.headers.get('origin') || 'https://polrydian.com';
     const redirectUri = `${origin}/auth/callback`;
     
-    console.log("Redirect URI:", redirectUri);
+    console.log("Starting OAuth flow with redirect URI:", redirectUri);
 
-    // Step 4: Try token exchange
+    // Step 1: Exchange code for token
     const tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken";
     const params = new URLSearchParams({
       grant_type: "authorization_code",
@@ -54,7 +47,7 @@ Deno.serve(async (req) => {
       client_secret: clientSecret,
     });
 
-    console.log("Making token request...");
+    console.log("Exchanging code for token...");
 
     const tokenResponse = await fetch(tokenUrl, {
       method: "POST",
@@ -63,8 +56,6 @@ Deno.serve(async (req) => {
       },
       body: params.toString(),
     });
-
-    console.log("Token response status:", tokenResponse.status);
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
@@ -75,18 +66,64 @@ Deno.serve(async (req) => {
     const tokenData = await tokenResponse.json();
     console.log("Token exchange successful");
 
+    // Step 2: Get LinkedIn profile
+    console.log("Fetching LinkedIn profile...");
+    
+    const profileResponse = await fetch("https://api.linkedin.com/v2/me", {
+      headers: {
+        "Authorization": `Bearer ${tokenData.access_token}`,
+      },
+    });
+
+    if (!profileResponse.ok) {
+      const errorText = await profileResponse.text();
+      console.error("Profile fetch failed:", errorText);
+      throw new Error(`LinkedIn profile fetch failed: ${errorText}`);
+    }
+
+    const profile = await profileResponse.json();
+    console.log("Profile fetched successfully for user:", profile.id);
+
+    // Step 3: Store credentials in database
+    console.log("Storing credentials in database...");
+    
+    const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
+
+    const { error } = await supabase
+      .from("social_media_credentials")
+      .upsert({
+        user_id: "00000000-0000-0000-0000-000000000000",
+        platform: "linkedin",
+        platform_user_id: profile.id,
+        access_token_encrypted: tokenData.access_token,
+        refresh_token_encrypted: tokenData.refresh_token || "",
+        expires_at: expiresAt,
+        profile_data: profile,
+        is_active: true
+      });
+
+    if (error) {
+      console.error("Database error:", error);
+      throw new Error(`Failed to store credentials: ${error.message}`);
+    }
+
+    console.log("LinkedIn OAuth completed successfully");
+
     return jsonResponse({
       success: true,
-      message: "Token exchange completed",
-      hasAccessToken: !!tokenData.access_token
+      personId: `urn:li:person:${profile.id}`,
+      profile: {
+        id: profile.id,
+        firstName: profile.localizedFirstName,
+        lastName: profile.localizedLastName
+      }
     });
 
   } catch (error) {
-    console.error("Error:", error);
+    console.error("LinkedIn OAuth error:", error);
     return jsonResponse({ 
       success: false, 
-      error: error.message || String(error),
-      stack: error.stack
+      error: error.message || String(error)
     }, 500);
   }
 });
