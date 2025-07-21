@@ -8,6 +8,7 @@
 //--------------------------------------------------------------
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { corsHeaders } from "../_shared/cors.ts";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -50,6 +51,11 @@ async function upsertToken({
 /* ------------------------------------------------------------------------ */
 
 Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   const url  = new URL(req.url);
   const code = url.searchParams.get("code");
 
@@ -151,6 +157,9 @@ async function fetchMe(access: string) {
 function json(obj: unknown, status = 200) {
   return new Response(JSON.stringify(obj), {
     status,
-    headers: { "Content-Type": "application/json" }
+    headers: { 
+      ...corsHeaders,
+      "Content-Type": "application/json" 
+    }
   });
 }
