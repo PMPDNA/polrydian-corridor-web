@@ -277,55 +277,46 @@ export type Database = {
       }
       linkedin_articles: {
         Row: {
-          article_url: string | null
-          comment_count: number | null
-          content: string | null
-          created_at: string
+          content: string
+          created_at: string | null
           id: string
           is_migrated: boolean | null
-          like_count: number | null
-          linkedin_article_id: string
+          linkedin_id: string
           migrated_article_id: string | null
           published_at: string | null
-          share_count: number | null
-          summary: string | null
+          synced_at: string | null
           title: string
-          updated_at: string
-          view_count: number | null
+          updated_at: string | null
+          user_id: string
+          visibility: string | null
         }
         Insert: {
-          article_url?: string | null
-          comment_count?: number | null
-          content?: string | null
-          created_at?: string
+          content: string
+          created_at?: string | null
           id?: string
           is_migrated?: boolean | null
-          like_count?: number | null
-          linkedin_article_id: string
+          linkedin_id: string
           migrated_article_id?: string | null
           published_at?: string | null
-          share_count?: number | null
-          summary?: string | null
+          synced_at?: string | null
           title: string
-          updated_at?: string
-          view_count?: number | null
+          updated_at?: string | null
+          user_id: string
+          visibility?: string | null
         }
         Update: {
-          article_url?: string | null
-          comment_count?: number | null
-          content?: string | null
-          created_at?: string
+          content?: string
+          created_at?: string | null
           id?: string
           is_migrated?: boolean | null
-          like_count?: number | null
-          linkedin_article_id?: string
+          linkedin_id?: string
           migrated_article_id?: string | null
           published_at?: string | null
-          share_count?: number | null
-          summary?: string | null
+          synced_at?: string | null
           title?: string
-          updated_at?: string
-          view_count?: number | null
+          updated_at?: string | null
+          user_id?: string
+          visibility?: string | null
         }
         Relationships: []
       }
