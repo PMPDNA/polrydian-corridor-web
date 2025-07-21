@@ -1,26 +1,37 @@
 // supabase/functions/linkedin-oauth/index.ts
-// -------------------------------------------
-// ENV you must define in Supabase      (Settings ▸ Secrets)
-// LINKEDIN_CLIENT_ID        e.g. "86abcxyz123"
-// LINKEDIN_CLIENT_SECRET    e.g. "p0q9r8s7t6u5…"
-// -------------------------------------------
+//--------------------------------------------------------------
+//  Secrets you must set in Supabase:
+//    LINKEDIN_CLIENT_ID
+//    LINKEDIN_CLIENT_SECRET
+//    SUPABASE_URL
+//    SUPABASE_SERVICE_ROLE_KEY
+//--------------------------------------------------------------
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders } from "../_shared/cors.ts";       // shared CORS helper
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
-// tiny helper – encrypt token with Supabase built-in pgcrypto (or swap for KMS)
-async function storeToken(
-  userId: string,
-  accessToken: string,
-  refreshToken: string,
-  expiresIn: number,
-  personUrn: string
-) {
+const CLIENT_ID     = Deno.env.get("LINKEDIN_CLIENT_ID")!;
+const CLIENT_SECRET = Deno.env.get("LINKEDIN_CLIENT_SECRET")!;
+const REDIRECT_URI  = "https://polrydian.com/auth/callback";   // **MUST match LI dev-portal**
+
+/* ---------- helper ------------------------------------------------------- */
+async function upsertToken({
+  userId,
+  personUrn,
+  access,
+  refresh,
+  expiresIn
+}: {
+  userId: string;
+  personUrn: string;
+  access: string;
+  refresh?: string;
+  expiresIn: number;
+}) {
   const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
   const { error } = await supabase
@@ -28,130 +39,118 @@ async function storeToken(
     .upsert({
       user_id: userId,
       platform: "linkedin",
-      access_token_encrypted: accessToken,   // <- swap for encrypted string in prod
-      refresh_token_encrypted: refreshToken,
-      expires_at: expiresAt,
-      platform_user_id: personUrn
+      platform_user_id: personUrn,
+      access_token_encrypted: access,       // encrypt in prod
+      refresh_token_encrypted: refresh ?? "",
+      expires_at: expiresAt
     });
 
   if (error) throw error;
 }
+/* ------------------------------------------------------------------------ */
 
 Deno.serve(async (req) => {
-  // CORS (if needed)
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const url  = new URL(req.url);
+  const code = url.searchParams.get("code");
 
-  try {
-    // Handle GET request - just return HTML to close the popup
-    if (req.method === "GET") {
-      return new Response(
-        '<html><body><script>window.close();</script><p>You may close this tab.</p></body></html>',
-        { headers: { ...corsHeaders, "Content-Type": "text/html" } }
-      );
+  // ───────────────────────────────────────────────────────────── GET (browser redirect)
+  if (req.method === "GET" && code) {
+    try {
+      const token = await exchangeCodeForToken(code);
+      const me    = await fetchMe(token.access_token);
+      const urn   = `urn:li:person:${me.id}`;
+
+      // unauthenticated for now – use "service" user uuid
+      await upsertToken({
+        userId: "00000000-0000-0000-0000-000000000000",
+        personUrn: urn,
+        access: token.access_token,
+        refresh: token.refresh_token,
+        expiresIn: token.expires_in
+      });
+
+      return json({ success: true, personId: urn });
+    } catch (e) {
+      console.error("LinkedIn OAuth error (GET):", e);
+      return json({ success: false, error: String(e) }, 500);
     }
-
-    // Handle POST request - actual OAuth processing
-    if (req.method !== "POST") {
-      return new Response(
-        JSON.stringify({ success: false, error: "Method not allowed" }),
-        { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const body = await req.json();
-    const authCode = body.code;
-    const state = body.state;
-
-    if (!authCode) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Missing code parameter" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // 1️⃣ exchange code → access_token
-    console.log('Exchanging authorization code for access token...');
-    const params = new URLSearchParams({
-      grant_type: "authorization_code",
-      code: authCode,
-      redirect_uri: "https://polrydian.com/auth/callback",
-      client_id: Deno.env.get("LINKEDIN_CLIENT_ID")!,
-      client_secret: Deno.env.get("LINKEDIN_CLIENT_SECRET")!
-    });
-
-    const tokenRes = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString()
-    });
-
-    if (!tokenRes.ok) {
-      const err = await tokenRes.text();
-      console.error('Token exchange failed:', err);
-      return new Response(
-        JSON.stringify({ success: false, error: "Token exchange failed", detail: err }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const tokenJson: {
-      access_token: string;
-      refresh_token?: string;
-      expires_in: number;
-    } = await tokenRes.json();
-    console.log('Token exchange successful, expires in:', tokenJson.expires_in);
-
-    // 2️⃣ pull user's person URN (needed for publishing)
-    const meRes = await fetch("https://api.linkedin.com/v2/me", {
-      headers: { Authorization: `Bearer ${tokenJson.access_token}` }
-    });
-    
-    if (!meRes.ok) {
-      const err = await meRes.text();
-      console.error('Profile fetch failed:', err);
-      return new Response(
-        JSON.stringify({ success: false, error: "Failed to fetch LinkedIn profile", detail: err }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-    
-    const meJson = await meRes.json();         // → { id: "abc123", localizedFirstName:… }
-    const personUrn = `urn:li:person:${meJson.id}`;
-    console.log('LinkedIn profile fetched for person:', personUrn);
-
-    // 3️⃣ store in DB (we use anon user 00000000-0000-0000-0000-000000000000 for now)
-    await storeToken(
-      "00000000-0000-0000-0000-000000000000",  // <- replace with auth.uid() if session attached
-      tokenJson.access_token,
-      tokenJson.refresh_token ?? "",
-      tokenJson.expires_in,
-      personUrn
-    );
-    console.log('Credentials stored successfully in database');
-
-    // 4️⃣ return JSON the front-end expects
-    const body = {
-      success: true,
-      personId: personUrn,
-      expiresIn: tokenJson.expires_in
-    };
-
-    return new Response(JSON.stringify(body), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    });
-
-  } catch (error) {
-    console.error('LinkedIn OAuth error:', error);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message || 'OAuth process failed' 
-      }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      }
-    );
   }
-});
+
+  // ───────────────────────────────────────────────────────────── POST (front-end fetch)
+  if (req.method === "POST") {
+    const body = await req.json().catch(() => ({}));
+    if (!body.code) return json({ success:false, error:"Missing code" }, 400);
+
+    try {
+      const token = await exchangeCodeForToken(body.code);
+      const me    = await fetchMe(token.access_token);
+      const urn   = `urn:li:person:${me.id}`;
+
+      // in POST we may have a logged-in session header
+      const userId =
+        req.headers.get("x-user-uuid") ?? // custom header you can send
+        "00000000-0000-0000-0000-000000000000";
+
+      await upsertToken({
+        userId,
+        personUrn: urn,
+        access: token.access_token,
+        refresh: token.refresh_token,
+        expiresIn: token.expires_in
+      });
+
+      return json({ success: true, personId: urn });
+    } catch (e) {
+      console.error("LinkedIn OAuth error (POST):", e);
+      return json({ success: false, error: String(e) }, 500);
+    }
+  }
+
+  // Anything else
+  return new Response("Not found", { status: 404 });
+}); // <<—— the missing closing bracket you hit before
+
+/* ---------- helpers ----------------------------------------------------- */
+async function exchangeCodeForToken(code: string) {
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    code,
+    redirect_uri: REDIRECT_URI,
+    client_id: CLIENT_ID,
+    client_secret: CLIENT_SECRET
+  });
+
+  const res = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+  });
+
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`LinkedIn token exchange failed: ${txt}`);
+  }
+  return res.json() as Promise<{
+    access_token: string;
+    refresh_token?: string;
+    expires_in: number;
+  }>;
+}
+
+async function fetchMe(access: string) {
+  const res = await fetch("https://api.linkedin.com/v2/me", {
+    headers: { Authorization: `Bearer ${access}` }
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`LinkedIn profile test failed: ${txt}`);
+  }
+  return res.json() as Promise<{ id: string }>;
+}
+
+function json(obj: unknown, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json" }
+  });
+}
