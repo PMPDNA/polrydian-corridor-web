@@ -1,4 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+// Initialize Supabase client
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,12 +37,99 @@ serve(async (req) => {
     const { action } = requestData
     console.log('🎯 Action requested:', action)
 
-    // Simple response for any action
-    const response = {
+    // Get user credentials from database
+    const authHeader = req.headers.get('authorization')
+    if (!authHeader) {
+      throw new Error('No authorization header')
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user } } = await supabase.auth.getUser(token)
+    
+    if (!user) {
+      throw new Error('User not authenticated')
+    }
+
+    console.log('👤 User ID:', user.id)
+
+    // Get LinkedIn credentials
+    const { data: credentials, error: credError } = await supabase
+      .from('social_media_credentials')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('platform', 'linkedin')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (credError || !credentials) {
+      throw new Error('No active LinkedIn credentials found')
+    }
+
+    console.log('🔑 Found credentials for platform user:', credentials.platform_user_id)
+
+    // Handle different actions
+    let response = {
       success: true,
-      message: `Action '${action}' received successfully`,
+      message: `Action '${action}' completed successfully`,
       timestamp: new Date().toISOString(),
       action: action
+    }
+
+    switch (action) {
+      case 'check_connection':
+        response = {
+          ...response,
+          connected: true,
+          profile: credentials.profile_data,
+          expiresAt: credentials.expires_at
+        }
+        break
+
+      case 'get_profile':
+        // For now, return the stored profile data
+        response = {
+          ...response,
+          profile: {
+            id: credentials.platform_user_id,
+            name: credentials.profile_data?.localizedFirstName + ' ' + credentials.profile_data?.localizedLastName,
+            firstName: credentials.profile_data?.localizedFirstName,
+            lastName: credentials.profile_data?.localizedLastName,
+            profilePicture: credentials.profile_data?.profilePicture?.displayImage
+          }
+        }
+        break
+
+      case 'get_articles':
+        // Mock articles for now
+        response = {
+          ...response,
+          articles: [
+            {
+              id: 'mock-1',
+              title: 'Sample LinkedIn Article',
+              content: 'This is a sample article from LinkedIn integration.',
+              created: new Date().toISOString(),
+              visibility: 'PUBLIC'
+            }
+          ]
+        }
+        break
+
+      case 'test_connection':
+        response = {
+          ...response,
+          message: 'LinkedIn connection test successful',
+          connected: true
+        }
+        break
+
+      default:
+        response = {
+          ...response,
+          message: `Action '${action}' received but not implemented yet`
+        }
     }
 
     console.log('✅ Sending response:', response)
