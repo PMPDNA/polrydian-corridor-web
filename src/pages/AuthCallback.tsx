@@ -48,8 +48,8 @@ export const AuthCallback = () => {
       setMessage('Processing LinkedIn authorization...');
       
       try {
-        // Test with simple function first
-        const { data, error: functionError } = await supabase.functions.invoke('linkedin-test', {
+        // Send code to LinkedIn OAuth function
+        const { data, error: functionError } = await supabase.functions.invoke('linkedin-oauth', {
           body: { code }
         });
 
