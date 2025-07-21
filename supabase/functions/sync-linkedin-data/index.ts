@@ -161,17 +161,15 @@ serve(async (req) => {
         await supabase
           .from('linkedin_articles')
           .upsert({
-            linkedin_article_id: article.id,
+            user_id: user.id,
+            linkedin_id: article.id,
             title: article.content?.title || article.commentary?.substring(0, 100) || 'LinkedIn Article',
             content: article.content?.article?.title || article.commentary || '',
-            summary: article.commentary?.substring(0, 500) || '',
+            visibility: article.visibility || 'PUBLIC',
             published_at: new Date(article.created.time).toISOString(),
-            article_url: `https://www.linkedin.com/feed/update/urn:li:activity:${article.id}`,
-            like_count: engagement.numLikes,
-            comment_count: engagement.numComments,
-            share_count: engagement.numShares,
-            view_count: engagement.numViews,
             updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'linkedin_id'
           });
       }
     }
@@ -261,8 +259,10 @@ serve(async (req) => {
             },
             approval_status: 'approved',
             is_visible: true,
-            is_featured: engagement.numLikes > 50, // Auto-feature high engagement posts
+            is_featured: engagement.numLikes > 50,
             updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'platform_post_id'
           });
       }
     }
