@@ -43,27 +43,24 @@ export const AuthCallback = () => {
         return;
       }
 
-      // Check if user is authenticated and admin
-      if (!user || !isAdmin) {
-        setStatus('error');
-        setMessage('Admin access required for LinkedIn integration');
-        toast({
-          title: "Access Denied",
-          description: "Only administrators can set up LinkedIn integration",
-          variant: "destructive",
-        });
-        return;
-      }
+      // Note: We'll let the edge function handle admin authentication
+      // since the user might not be logged in at callback time
 
       try {
         setMessage('Exchanging authorization code for access token...');
         
-        // Call the LinkedIn OAuth edge function
+        // Call the LinkedIn OAuth edge function with auth header if available
+        const headers: any = {}
+        if (session?.access_token) {
+          headers.Authorization = `Bearer ${session.access_token}`
+        }
+
         const { data, error: functionError } = await supabase.functions.invoke('linkedin-oauth', {
           body: {
             code: code,
             action: 'exchange_token'
-          }
+          },
+          headers
         });
 
         if (functionError) {
@@ -104,10 +101,8 @@ export const AuthCallback = () => {
       }
     };
 
-    // Only process if we have a session
-    if (session !== null) {
-      handleLinkedInCallback();
-    }
+    // Process immediately, don't wait for session
+    handleLinkedInCallback();
   }, [searchParams, navigate, toast, user, session, isAdmin]);
 
   const getIcon = () => {
