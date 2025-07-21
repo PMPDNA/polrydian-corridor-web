@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.test-function]
 verify_jwt = false
+
+[functions.linkedin-test]
+verify_jwt = false
