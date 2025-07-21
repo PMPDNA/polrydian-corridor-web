@@ -58,6 +58,7 @@ export const ArticleShareButtons = ({
       
       const { data, error } = await supabase.functions.invoke(functionName, {
         body: {
+          article_id: articleId,
           title: title,
           content: shareContent,
           article_url: articleUrl,

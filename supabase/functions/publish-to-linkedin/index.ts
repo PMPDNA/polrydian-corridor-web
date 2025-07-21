@@ -74,13 +74,14 @@ serve(async (req) => {
 
     console.log('📝 Parsing request body');
     const body = await req.json();
-    const { content, title, article_url, image_url } = body;
+    const { content, title, article_url, image_url, article_id } = body;
 
     console.log('📊 Request data:', {
       hasContent: !!content,
       hasTitle: !!title,
       hasArticleUrl: !!article_url,
-      hasImageUrl: !!image_url
+      hasImageUrl: !!image_url,
+      hasArticleId: !!article_id
     });
 
     if (!content) {
@@ -182,8 +183,10 @@ serve(async (req) => {
     const postId = publishResult.id;
     console.log('✅ Published to LinkedIn, post ID:', postId);
 
-    // Store the published post in our database
+    // Store the published post in our database and outbound shares tracking
     console.log('💾 Storing in database');
+    
+    // First store in social_media_posts
     const { error: dbError } = await supabase
       .from('social_media_posts')
       .insert({
@@ -201,11 +204,27 @@ serve(async (req) => {
         is_featured: false
       });
 
+    // Then store in outbound_shares for tracking
+    const { error: shareError } = await supabase
+      .from('outbound_shares')
+      .insert({
+        user_id: user.id,
+        article_id: article_id || null,
+        post_urn: postId,
+        status: 'success'
+      });
+
     if (dbError) {
       console.log('⚠️ Database storage error:', dbError);
       // Don't fail the whole request if database storage fails
     } else {
-      console.log('✅ Stored in database successfully');
+      console.log('✅ Stored in social_media_posts successfully');
+    }
+
+    if (shareError) {
+      console.log('⚠️ Outbound share tracking error:', shareError);
+    } else {
+      console.log('✅ Stored in outbound_shares successfully');
     }
 
     console.log('🎉 LinkedIn publish completed successfully');
