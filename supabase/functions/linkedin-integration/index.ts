@@ -105,7 +105,8 @@ serve(async (req) => {
 
     const linkedinToken = credential.access_token_encrypted
 
-    const { action, ...params } = await req.json()
+    const requestBody = await req.json()
+    const { action, ...params } = requestBody
 
     switch (action) {
       case 'check_connection':
