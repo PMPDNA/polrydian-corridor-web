@@ -8,7 +8,7 @@ const supabase = createClient(
 );
 
 Deno.serve(async (req) => {
-  console.log("LinkedIn OAuth function called");
+  console.log("=== LinkedIn OAuth function called ===");
   
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -20,37 +20,57 @@ Deno.serve(async (req) => {
 
   try {
     // Get credentials
-    const clientId = Deno.env.get("LINKEDIN_CLIENT_ID")!;
-    const clientSecret = Deno.env.get("LINKEDIN_CLIENT_SECRET")!;
+    const clientId = Deno.env.get("LINKEDIN_CLIENT_ID");
+    const clientSecret = Deno.env.get("LINKEDIN_CLIENT_SECRET");
+
+    console.log("Environment check:");
+    console.log("- Client ID exists:", !!clientId);
+    console.log("- Client Secret exists:", !!clientSecret);
+
+    if (!clientId || !clientSecret) {
+      console.error("Missing LinkedIn credentials");
+      return jsonResponse({ 
+        success: false, 
+        error: "LinkedIn credentials not configured properly" 
+      }, 500);
+    }
 
     // Parse request
     const body = await req.json().catch(() => ({}));
     const { code } = body;
 
-    console.log("Received code:", code ? "present" : "missing");
+    console.log("Request parsing:");
+    console.log("- Code received:", !!code);
+    console.log("- Code length:", code ? code.length : 0);
 
     if (!code) {
-      return jsonResponse({ success: false, error: "Missing authorization code" }, 400);
+      console.error("No authorization code provided");
+      return jsonResponse({ 
+        success: false, 
+        error: "Missing authorization code. Please try the LinkedIn authorization again." 
+      }, 400);
     }
 
-    // Get the authenticated user ID from the Authorization header
+    // Get user ID from auth header
     const authHeader = req.headers.get('authorization');
-    let userId = "00000000-0000-0000-0000-000000000000"; // fallback
+    let userId = "00000000-0000-0000-0000-000000000000";
+
+    console.log("Auth header check:");
+    console.log("- Auth header exists:", !!authHeader);
 
     if (authHeader) {
       try {
-        // Extract the JWT token and decode it to get the user ID
         const token = authHeader.replace('Bearer ', '');
         const { data: { user }, error } = await supabase.auth.getUser(token);
         
         if (user && !error) {
           userId = user.id;
-          console.log("Using authenticated user ID:", userId);
+          console.log("- User ID extracted:", userId);
         } else {
-          console.log("Could not get user from token, using fallback ID");
+          console.log("- Auth error:", error?.message);
         }
       } catch (error) {
-        console.log("Error getting user from token:", error);
+        console.log("- Auth extraction error:", error);
       }
     }
 
@@ -58,7 +78,10 @@ Deno.serve(async (req) => {
     const origin = req.headers.get('origin') || 'https://polrydian.com';
     const redirectUri = `${origin}/auth/callback`;
     
-    console.log("Using redirect URI:", redirectUri);
+    console.log("OAuth setup:");
+    console.log("- Origin:", origin);
+    console.log("- Redirect URI:", redirectUri);
+    console.log("- Client ID:", clientId);
 
     // Exchange code for token
     const tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken";
@@ -70,7 +93,7 @@ Deno.serve(async (req) => {
       client_secret: clientSecret,
     });
 
-    console.log("Making token request...");
+    console.log("Making LinkedIn token request...");
 
     const tokenResponse = await fetch(tokenUrl, {
       method: "POST",
@@ -80,20 +103,34 @@ Deno.serve(async (req) => {
       body: params.toString(),
     });
 
-    console.log("Token response status:", tokenResponse.status);
+    console.log("Token response:", tokenResponse.status, tokenResponse.statusText);
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error("Token exchange failed:", errorText);
+      console.error("LinkedIn token exchange failed:", errorText);
+      
+      // Parse LinkedIn error for better user feedback
+      let userMessage = "LinkedIn authorization failed. Please try connecting again.";
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.error_description) {
+          userMessage = errorJson.error_description;
+        }
+      } catch (e) {
+        // Use raw error text if not JSON
+        userMessage = errorText;
+      }
+
       return jsonResponse({
         success: false,
-        error: `LinkedIn token exchange failed: ${errorText}`,
+        error: userMessage,
+        details: errorText,
         status: tokenResponse.status
       }, 400);
     }
 
     const tokenData = await tokenResponse.json();
-    console.log("Token exchange successful");
+    console.log("Token exchange successful, expires in:", tokenData.expires_in);
 
     // Get LinkedIn profile
     console.log("Fetching LinkedIn profile...");
@@ -104,19 +141,22 @@ Deno.serve(async (req) => {
       },
     });
 
+    console.log("Profile response:", profileResponse.status);
+
     if (!profileResponse.ok) {
       const errorText = await profileResponse.text();
       console.error("Profile fetch failed:", errorText);
       return jsonResponse({
         success: false,
-        error: `LinkedIn profile fetch failed: ${errorText}`
+        error: "Failed to fetch LinkedIn profile. Please try again.",
+        details: errorText
       }, 400);
     }
 
     const profile = await profileResponse.json();
-    console.log("Profile fetched successfully for user:", profile.id);
+    console.log("Profile fetched for:", profile.localizedFirstName, profile.localizedLastName);
 
-    // Store credentials in database with the correct user ID
+    // Store credentials
     console.log("Storing credentials for user:", userId);
     
     const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
@@ -138,11 +178,12 @@ Deno.serve(async (req) => {
       console.error("Database error:", dbError);
       return jsonResponse({
         success: false,
-        error: `Failed to store credentials: ${dbError.message}`
+        error: "Failed to save LinkedIn connection. Please try again.",
+        details: dbError.message
       }, 500);
     }
 
-    console.log("LinkedIn OAuth completed successfully");
+    console.log("=== LinkedIn OAuth completed successfully ===");
 
     return jsonResponse({
       success: true,
@@ -155,10 +196,11 @@ Deno.serve(async (req) => {
     });
 
   } catch (error) {
-    console.error("Error:", error);
+    console.error("=== Unexpected error ===:", error);
     return jsonResponse({ 
       success: false, 
-      error: error.message || String(error),
+      error: "An unexpected error occurred. Please try again.",
+      details: error.message,
       stack: error.stack
     }, 500);
   }
