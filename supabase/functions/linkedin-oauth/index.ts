@@ -1,4 +1,11 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
+
+// Initialize Supabase client
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+);
 
 Deno.serve(async (req) => {
   console.log("LinkedIn OAuth function called");
@@ -24,6 +31,27 @@ Deno.serve(async (req) => {
 
     if (!code) {
       return jsonResponse({ success: false, error: "Missing authorization code" }, 400);
+    }
+
+    // Get the authenticated user ID from the Authorization header
+    const authHeader = req.headers.get('authorization');
+    let userId = "00000000-0000-0000-0000-000000000000"; // fallback
+
+    if (authHeader) {
+      try {
+        // Extract the JWT token and decode it to get the user ID
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user }, error } = await supabase.auth.getUser(token);
+        
+        if (user && !error) {
+          userId = user.id;
+          console.log("Using authenticated user ID:", userId);
+        } else {
+          console.log("Could not get user from token, using fallback ID");
+        }
+      } catch (error) {
+        console.log("Error getting user from token:", error);
+      }
     }
 
     // Get redirect URI
@@ -65,14 +93,65 @@ Deno.serve(async (req) => {
     }
 
     const tokenData = await tokenResponse.json();
-    console.log("Token exchange successful, access token length:", tokenData.access_token?.length || 0);
+    console.log("Token exchange successful");
 
-    // Just return the token exchange success for now
+    // Get LinkedIn profile
+    console.log("Fetching LinkedIn profile...");
+    
+    const profileResponse = await fetch("https://api.linkedin.com/v2/me", {
+      headers: {
+        "Authorization": `Bearer ${tokenData.access_token}`,
+      },
+    });
+
+    if (!profileResponse.ok) {
+      const errorText = await profileResponse.text();
+      console.error("Profile fetch failed:", errorText);
+      return jsonResponse({
+        success: false,
+        error: `LinkedIn profile fetch failed: ${errorText}`
+      }, 400);
+    }
+
+    const profile = await profileResponse.json();
+    console.log("Profile fetched successfully for user:", profile.id);
+
+    // Store credentials in database with the correct user ID
+    console.log("Storing credentials for user:", userId);
+    
+    const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
+
+    const { error: dbError } = await supabase
+      .from("social_media_credentials")
+      .upsert({
+        user_id: userId,
+        platform: "linkedin",
+        platform_user_id: profile.id,
+        access_token_encrypted: tokenData.access_token,
+        refresh_token_encrypted: tokenData.refresh_token || "",
+        expires_at: expiresAt,
+        profile_data: profile,
+        is_active: true
+      });
+
+    if (dbError) {
+      console.error("Database error:", dbError);
+      return jsonResponse({
+        success: false,
+        error: `Failed to store credentials: ${dbError.message}`
+      }, 500);
+    }
+
+    console.log("LinkedIn OAuth completed successfully");
+
     return jsonResponse({
       success: true,
-      message: "Token exchange completed successfully",
-      hasAccessToken: !!tokenData.access_token,
-      expiresIn: tokenData.expires_in
+      personId: `urn:li:person:${profile.id}`,
+      profile: {
+        id: profile.id,
+        firstName: profile.localizedFirstName,
+        lastName: profile.localizedLastName
+      }
     });
 
   } catch (error) {
