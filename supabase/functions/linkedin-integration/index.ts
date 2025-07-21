@@ -87,7 +87,7 @@ serve(async (req) => {
       .select('role')
       .eq('user_id', user.id)
       .eq('role', 'admin')
-      .single()
+      .maybeSingle()
 
     console.log('Role check result:', { userRoles: !!userRoles, roleError: !!roleError })
 
