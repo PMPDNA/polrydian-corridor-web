@@ -20,6 +20,23 @@ export const AuthCallback = () => {
       const code = searchParams.get('code');
       const error = searchParams.get('error');
       const errorDescription = searchParams.get('error_description');
+      const state = searchParams.get('state');
+
+      // Check if this is a LinkedIn callback by looking for specific parameters
+      const isLinkedInCallback = code && !state && window.location.pathname === '/auth/callback';
+      
+      // If this is just the main domain redirect from LinkedIn, wait for manual token processing
+      if (window.location.pathname === '/' && code && !state) {
+        // This is the redirect from LinkedIn to the main domain
+        // We need to process this manually or show instructions
+        setStatus('success');
+        setMessage('LinkedIn authorization received. Please check with your administrator to complete the setup.');
+        toast({
+          title: "LinkedIn Authorization Received",
+          description: "The authorization code has been received. Contact your administrator to complete the integration.",
+        });
+        return;
+      }
 
       if (error) {
         setStatus('error');

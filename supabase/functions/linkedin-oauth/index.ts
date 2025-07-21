@@ -61,7 +61,7 @@ serve(async (req) => {
       }
 
       // Use HTTP to match LinkedIn app configuration
-      const redirectUri = 'http://polrydian.com/auth/callback'
+      const redirectUri = 'https://polrydian.com'
       
       console.log('Using redirect URI:', redirectUri)
 
