@@ -11,6 +11,7 @@ import { LinkedInFeed } from "@/components/LinkedInFeed";
 import { OrganizationLogos } from "@/components/OrganizationLogos";
 import { PromotionalPopup } from "@/components/PromotionalPopup";
 import Footer from "@/components/Footer";
+import { GDPRConsentManager } from "@/components/GDPRConsentManager";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Index = () => {
@@ -66,6 +67,7 @@ const Index = () => {
       <Footer />
       <PerformanceMonitor />
       <PromotionalPopup />
+      <GDPRConsentManager />
     </div>
   );
 };

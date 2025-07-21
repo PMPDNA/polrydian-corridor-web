@@ -320,6 +320,42 @@ export type Database = {
         }
         Relationships: []
       }
+      linkedin_posts: {
+        Row: {
+          author: string | null
+          created_at: string | null
+          id: string
+          is_visible: boolean | null
+          media_url: string | null
+          message: string | null
+          post_url: string | null
+          raw_data: Json | null
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string | null
+          id: string
+          is_visible?: boolean | null
+          media_url?: string | null
+          message?: string | null
+          post_url?: string | null
+          raw_data?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          media_url?: string | null
+          message?: string | null
+          post_url?: string | null
+          raw_data?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -384,33 +420,39 @@ export type Database = {
         Row: {
           access_token_encrypted: string | null
           created_at: string
+          expires_at: string | null
           id: string
           is_active: boolean | null
           platform: string
           platform_user_id: string
           profile_data: Json | null
+          refresh_token_encrypted: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           access_token_encrypted?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           is_active?: boolean | null
           platform: string
           platform_user_id: string
           profile_data?: Json | null
+          refresh_token_encrypted?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           access_token_encrypted?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           is_active?: boolean | null
           platform?: string
           platform_user_id?: string
           profile_data?: Json | null
+          refresh_token_encrypted?: string | null
           updated_at?: string
           user_id?: string
         }

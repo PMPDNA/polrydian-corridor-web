@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe2, Zap, Clock } from "lucide-react";
 import polrydianHeroBg from "@/assets/polrydian-hero-bg.jpg";
 import { PolrydianLogo } from "@/components/PolrydianLogo";
+import { ProofChips } from "@/components/ProofChips";
 import CalendlyPopup from "./CalendlyPopup";
 
 export const Hero = () => {
@@ -56,17 +57,17 @@ export const Hero = () => {
             </a>
             <CalendlyPopup
               calendlyUrl="https://calendly.com/patrickmisiewicz/consultation"
-              buttonText="Schedule Consultation"
-              variant="outline"
+              buttonText="BOOK A STRATEGY SESSION"
+              variant="default"
               size="lg"
-              className="text-lg px-8 py-6 border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+              className="bg-accent text-white px-8 py-6 text-lg hover:bg-accent/90"
             />
             <CalendlyPopup
               calendlyUrl="https://calendly.com/patrickmisiewicz/emergency-consultation"
-              buttonText="Emergency Meeting ($500)"
-              variant="destructive"
+              buttonText="Rapid-Response Brief ($500)"
+              variant="outline"
               size="lg"
-              className="text-lg px-8 py-6"
+              className="text-lg px-8 py-6 border-accent text-accent hover:bg-accent hover:text-accent-foreground"
               prefill={{
                 customAnswers: {
                   "emergency_fee": "500",
@@ -79,6 +80,9 @@ export const Hero = () => {
             Emergency meetings available if I'm available • Last minute fee applies
           </p>
         </div>
+        
+        {/* Proof Elements */}
+        <ProofChips />
 
       </div>
 

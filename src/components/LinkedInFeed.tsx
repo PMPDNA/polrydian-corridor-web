@@ -26,17 +26,27 @@ export const LinkedInFeed = () => {
 
   const loadLinkedInData = async () => {
     try {
-      // Load LinkedIn articles from database
-      const { data: articles, error } = await supabase
-        .from('linkedin_articles')
+      // Load LinkedIn posts from the new linkedin_posts table
+      const { data: posts, error } = await supabase
+        .from('linkedin_posts')
         .select('*')
-        .eq('visibility', 'PUBLIC')
-        .order('published_at', { ascending: false })
+        .eq('is_visible', true)
+        .order('created_at', { ascending: false })
         .limit(6);
 
       if (error) throw error;
 
-      setPosts(articles || []);
+      // Transform the data to match the expected format
+      const transformedPosts = posts?.map(post => ({
+        id: post.id,
+        title: post.message?.substring(0, 100) + '...' || 'LinkedIn Post',
+        content: post.message || '',
+        published_at: post.created_at,
+        visibility: 'PUBLIC',
+        linkedin_id: post.id
+      })) || [];
+
+      setPosts(transformedPosts);
     } catch (error) {
       console.error('Error loading LinkedIn data:', error);
     } finally {
