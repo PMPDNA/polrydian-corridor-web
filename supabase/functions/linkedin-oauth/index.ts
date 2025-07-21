@@ -50,74 +50,89 @@ async function upsertToken({
 /* ------------------------------------------------------------------------ */
 
 Deno.serve(async (req) => {
+  console.log("LinkedIn OAuth starting...");
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  const url  = new URL(req.url);
-  const code = url.searchParams.get("code");
-  
-  // Determine redirect URI from request origin
-  const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || 'https://polrydian.com';
-  const redirectUri = `${origin}/auth/callback`;
+  try {
+    const url  = new URL(req.url);
+    const code = url.searchParams.get("code");
+    
+    // Determine redirect URI from request origin
+    const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || 'https://polrydian.com';
+    const redirectUri = `${origin}/auth/callback`;
+    
+    console.log("Request method:", req.method);
+    console.log("Origin:", origin);
+    console.log("Redirect URI:", redirectUri);
+    console.log("Code from URL:", code);
 
-  // ───────────────────────────────────────────────────────────── GET (browser redirect)
-  if (req.method === "GET" && code) {
-    try {
-      const token = await exchangeCodeForToken(code, redirectUri);
-      const me    = await fetchMe(token.access_token);
-      const urn   = `urn:li:person:${me.id}`;
+    // ───────────────────────────────────────────────────────────── GET (browser redirect)
+    if (req.method === "GET" && code) {
+      try {
+        const token = await exchangeCodeForToken(code, redirectUri);
+        const me    = await fetchMe(token.access_token);
+        const urn   = `urn:li:person:${me.id}`;
 
-      // unauthenticated for now – use "service" user uuid
-      await upsertToken({
-        userId: "00000000-0000-0000-0000-000000000000",
-        personUrn: urn,
-        access: token.access_token,
-        refresh: token.refresh_token,
-        expiresIn: token.expires_in
-      });
+        // unauthenticated for now – use "service" user uuid
+        await upsertToken({
+          userId: "00000000-0000-0000-0000-000000000000",
+          personUrn: urn,
+          access: token.access_token,
+          refresh: token.refresh_token,
+          expiresIn: token.expires_in
+        });
 
-      return json({ success: true, personId: urn });
-    } catch (e) {
-      console.error("LinkedIn OAuth error (GET):", e);
-      return json({ success: false, error: String(e) }, 500);
+        return json({ success: true, personId: urn });
+      } catch (e) {
+        console.error("LinkedIn OAuth error (GET):", e);
+        return json({ success: false, error: String(e) }, 500);
+      }
     }
-  }
 
-  // ───────────────────────────────────────────────────────────── POST (front-end fetch)
-  if (req.method === "POST") {
-    const body = await req.json().catch(() => ({}));
-    if (!body.code) return json({ success:false, error:"Missing code" }, 400);
+    // ───────────────────────────────────────────────────────────── POST (front-end fetch)
+    if (req.method === "POST") {
+      const body = await req.json().catch(() => ({}));
+      if (!body.code) return json({ success:false, error:"Missing code" }, 400);
 
-    try {
-      const token = await exchangeCodeForToken(body.code, redirectUri);
-      const me    = await fetchMe(token.access_token);
-      const urn   = `urn:li:person:${me.id}`;
+      console.log("POST code:", body.code);
 
-      // in POST we may have a logged-in session header
-      const userId =
-        req.headers.get("x-user-uuid") ?? // custom header you can send
-        "00000000-0000-0000-0000-000000000000";
+      try {
+        const token = await exchangeCodeForToken(body.code, redirectUri);
+        const me    = await fetchMe(token.access_token);
+        const urn   = `urn:li:person:${me.id}`;
 
-      await upsertToken({
-        userId,
-        personUrn: urn,
-        access: token.access_token,
-        refresh: token.refresh_token,
-        expiresIn: token.expires_in
-      });
+        // in POST we may have a logged-in session header
+        const userId =
+          req.headers.get("x-user-uuid") ?? // custom header you can send
+          "00000000-0000-0000-0000-000000000000";
 
-      return json({ success: true, personId: urn });
-    } catch (e) {
-      console.error("LinkedIn OAuth error (POST):", e);
-      return json({ success: false, error: String(e) }, 500);
+        await upsertToken({
+          userId,
+          personUrn: urn,
+          access: token.access_token,
+          refresh: token.refresh_token,
+          expiresIn: token.expires_in
+        });
+
+        return json({ success: true, personId: urn });
+      } catch (e) {
+        console.error("LinkedIn OAuth error (POST):", e);
+        return json({ success: false, error: String(e) }, 500);
+      }
     }
-  }
 
-  // Anything else
-  return new Response("Not found", { status: 404 });
-}); // <<—— the missing closing bracket you hit before
+    // Anything else
+    return new Response("Not found", { status: 404 });
+    
+  } catch (error) {
+    console.error("LinkedIn OAuth function error:", error);
+    return json({ success: false, error: String(error) }, 500);
+  }
+});
 
 /* ---------- helpers ----------------------------------------------------- */
 async function exchangeCodeForToken(code: string, redirectUri: string) {
