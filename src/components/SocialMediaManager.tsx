@@ -461,7 +461,7 @@ export const SocialMediaManager = () => {
             </p>
             <Button
               onClick={() => {
-                const redirectUri = 'https://polrydian.com/auth/callback'
+                const redirectUri = 'http://polrydian.com/auth/callback'
                 const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78z20ojmlvz2ks&redirect_uri=${encodeURIComponent(redirectUri)}&scope=profile%20email%20w_member_social`;
                 window.open(authUrl, '_blank');
               }}

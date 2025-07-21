@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import SupabaseProtectedRoute from "@/components/SupabaseProtectedRoute";
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -34,7 +35,11 @@ import { ScrollToTop } from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // Initialize session timeout monitoring
+  useSessionTimeout();
+  
+  return (
   <QueryClientProvider client={queryClient}>
     <ErrorBoundary>
       <TooltipProvider>
@@ -113,6 +118,7 @@ const App = () => (
       </TooltipProvider>
     </ErrorBoundary>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
