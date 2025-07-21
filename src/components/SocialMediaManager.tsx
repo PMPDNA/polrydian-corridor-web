@@ -202,6 +202,37 @@ export const SocialMediaManager = () => {
     }
   };
 
+  const syncLinkedInFeed = async () => {
+    setIsSyncing(true);
+    try {
+      console.log('Starting LinkedIn feed sync...');
+      const { data, error } = await supabase.functions.invoke('sync-linkedin-feed');
+      
+      console.log('LinkedIn feed sync response:', { data, error });
+      
+      if (error) {
+        console.error('LinkedIn feed sync error:', error);
+        throw error;
+      }
+      
+      // Reload both social posts and check for new LinkedIn posts
+      await loadSocialPosts();
+      toast({
+        title: 'Success',
+        description: `LinkedIn feed synced! ${data?.inserted || 0} posts processed.`,
+      });
+    } catch (error: any) {
+      console.error('Error syncing LinkedIn feed:', error);
+      toast({
+        title: 'Error',
+        description: `Failed to sync LinkedIn feed: ${error.message || 'Check credentials and try again.'}`,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleMobileUpload = async () => {
     if (!selectedFile) return;
 
@@ -416,15 +447,7 @@ export const SocialMediaManager = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-3 gap-4">
-            <Button
-              onClick={testAdminRole}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Test Admin Role
-            </Button>
+          <div className="grid md:grid-cols-2 gap-4">
             <Button
               onClick={syncInstagramPosts}
               disabled={isSyncing}
@@ -434,13 +457,35 @@ export const SocialMediaManager = () => {
               {isSyncing ? 'Syncing...' : 'Sync Instagram (@miamistoic)'}
             </Button>
             <Button
-              onClick={syncLinkedInPosts}
+              onClick={syncLinkedInFeed}
               disabled={isSyncing}
               variant="outline"
               className="flex items-center gap-2"
             >
               <Linkedin className="h-4 w-4" />
-              {isSyncing ? 'Syncing...' : 'Sync LinkedIn Posts'}
+              {isSyncing ? 'Syncing...' : 'Sync LinkedIn Feed'}
+            </Button>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-4">
+            <Button
+              onClick={testAdminRole}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Test Admin Role
+            </Button>
+            <Button
+              onClick={syncLinkedInPosts}
+              disabled={isSyncing}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <Linkedin className="h-4 w-4" />
+              {isSyncing ? 'Syncing...' : 'Sync LinkedIn (Legacy)'}
             </Button>
           </div>
         </CardContent>

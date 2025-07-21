@@ -1,5 +1,8 @@
 project_id = "qemtvnwemcpzhvbwjbsk"
 
+[functions.sync-linkedin-feed]
+verify_jwt = false
+
 
 [functions.publish-to-linkedin]
 verify_jwt = true
