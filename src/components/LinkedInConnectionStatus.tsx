@@ -26,18 +26,24 @@ export const LinkedInConnectionStatus = () => {
 
   const checkLinkedInConnection = async () => {
     try {
-      const { data, error } = await supabase
-        .from('social_media_credentials')
-        .select('*')
-        .eq('platform', 'linkedin')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1);
+      const { data, error } = await supabase.functions.invoke('linkedin-integration', {
+        body: { action: 'check_connection' }
+      });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error checking LinkedIn connection:', error);
+        return;
+      }
 
-      if (data && data.length > 0) {
-        setCredentials(data[0] as LinkedInCredential);
+      if (data && data.connected) {
+        setCredentials({
+          id: 'from-api',
+          platform_user_id: data.profile?.id || '',
+          profile_data: data.profile,
+          expires_at: data.expiresAt,
+          is_active: true,
+          created_at: new Date().toISOString()
+        });
       }
     } catch (error: any) {
       console.error('Error checking LinkedIn connection:', error);

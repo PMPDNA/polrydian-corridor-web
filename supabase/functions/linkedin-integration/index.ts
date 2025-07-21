@@ -88,9 +88,18 @@ serve(async (req) => {
       throw new Error('Admin access required')
     }
 
-    const { action } = await req.json()
+    const { action, ...params } = await req.json()
 
     switch (action) {
+      case 'check_connection':
+        return await checkConnection(user.id, supabase)
+      
+      case 'refresh_token':
+        return await refreshToken(user.id, supabase)
+      
+      case 'test_connection':
+        return await testConnection(user.id, supabase)
+      
       case 'get_profile':
         return await getLinkedInProfile(linkedinToken)
       
@@ -278,4 +287,177 @@ async function publishToLinkedIn(accessToken: string, content: string, title?: s
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     }
   )
+}
+
+async function checkConnection(userId: string, supabase: any) {
+  try {
+    // Check for LinkedIn credentials in the database
+    const { data: credentials, error } = await supabase
+      .from('social_media_credentials')
+      .select('*')
+      .eq('platform', 'linkedin')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error("Database error:", error);
+      throw new Error("Database error");
+    }
+
+    if (!credentials || credentials.length === 0) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          connected: false, 
+          message: "No LinkedIn connection found" 
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const credential = credentials[0];
+    const isExpired = new Date(credential.expires_at) < new Date();
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        connected: true,
+        expired: isExpired,
+        profile: credential.profile_data,
+        expiresAt: credential.expires_at
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error("Check connection error:", error);
+    throw error;
+  }
+}
+
+async function refreshToken(userId: string, supabase: any) {
+  try {
+    // Get current credentials
+    const { data: credentials, error } = await supabase
+      .from('social_media_credentials')
+      .select('*')
+      .eq('platform', 'linkedin')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (error || !credentials || credentials.length === 0) {
+      throw new Error("No credentials found");
+    }
+
+    const credential = credentials[0];
+    
+    if (!credential.refresh_token_encrypted) {
+      throw new Error("No refresh token available");
+    }
+
+    // LinkedIn refresh token request
+    const tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken";
+    const params = new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: credential.refresh_token_encrypted,
+      client_id: Deno.env.get("LINKEDIN_CLIENT_ID")!,
+      client_secret: Deno.env.get("LINKEDIN_CLIENT_SECRET")!,
+    });
+
+    const response = await fetch(tokenUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params.toString(),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Token refresh failed:", errorText);
+      throw new Error("Token refresh failed");
+    }
+
+    const tokenData = await response.json();
+    const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
+
+    // Update credentials with new token
+    const { error: updateError } = await supabase
+      .from('social_media_credentials')
+      .update({
+        access_token_encrypted: tokenData.access_token,
+        refresh_token_encrypted: tokenData.refresh_token || credential.refresh_token_encrypted,
+        expires_at: expiresAt
+      })
+      .eq('id', credential.id);
+
+    if (updateError) {
+      console.error("Update error:", updateError);
+      throw new Error("Failed to update credentials");
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, message: "Token refreshed successfully" }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error("Refresh token error:", error);
+    throw error;
+  }
+}
+
+async function testConnection(userId: string, supabase: any) {
+  try {
+    // Get current credentials from database
+    const { data: credentials, error } = await supabase
+      .from('social_media_credentials')
+      .select('*')
+      .eq('platform', 'linkedin')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (error || !credentials || credentials.length === 0) {
+      throw new Error("No credentials found");
+    }
+
+    const credential = credentials[0];
+
+    // Test the access token by making a LinkedIn API call
+    const profileResponse = await fetch("https://api.linkedin.com/v2/me", {
+      headers: {
+        "Authorization": `Bearer ${credential.access_token_encrypted}`,
+      },
+    });
+
+    if (profileResponse.status === 401) {
+      // Token expired, try to refresh
+      console.log("Token expired, attempting refresh...");
+      await refreshToken(userId, supabase);
+      return new Response(
+        JSON.stringify({ success: true, message: "Connection tested and token refreshed" }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!profileResponse.ok) {
+      const errorText = await profileResponse.text();
+      throw new Error(`LinkedIn API error: ${errorText}`);
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, message: "Connection is working" }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error("Test connection error:", error);
+    throw error;
+  }
 }
