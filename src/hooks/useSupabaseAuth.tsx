@@ -58,9 +58,16 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state change:', _event, (session as any)?.user?.aal)
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
+      
+      // Clear MFA requirement if user has proper AAL2 (completed 2FA)
+      if ((session as any)?.user?.aal === 'aal2') {
+        console.log('User has completed 2FA (AAL2), clearing MFA requirement')
+        setNeedsMFA(false)
+      }
       
       // Clear role cache when user changes
       if (session?.user?.id) {

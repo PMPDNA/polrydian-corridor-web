@@ -68,20 +68,26 @@ export default function AdminPage() {
   }
 
   // If user is authenticated and is admin, show the admin dashboard
-  if (user && isAdmin) {
+  if (user && isAdmin && !needsMFA) {
+    return <AdminDashboard />
+  }
+
+  // Show 2FA overlay if needed
+  if (user && needsMFA) {
     return (
-      <>
-        <AdminDashboard />
-        {needsMFA && (
-          <TwoFactorVerification 
-            onSuccess={() => {
-              setNeedsMFA(false)
-              // Force a page refresh to ensure admin panel loads properly
-              window.location.reload()
-            }} 
-          />
-        )}
-      </>
+      <div className="min-h-screen bg-background">
+        <div className="p-8 text-center text-muted-foreground">
+          Completing authentication...
+        </div>
+        <TwoFactorVerification 
+          onSuccess={() => {
+            console.log('2FA success callback triggered')
+            setNeedsMFA(false)
+            // Force a complete refresh to ensure proper state
+            window.location.href = '/admin'
+          }} 
+        />
+      </div>
     )
   }
 
@@ -162,7 +168,10 @@ export default function AdminPage() {
           variant: "destructive",
         })
       } else if (data?.needsMFA) {
+        console.log('Setting needsMFA to true - user needs 2FA verification')
         setNeedsMFA(true)
+      } else {
+        console.log('Login successful without 2FA needed')
       }
     } catch (error) {
       toast({

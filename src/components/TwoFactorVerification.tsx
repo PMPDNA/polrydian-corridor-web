@@ -58,15 +58,24 @@ export default function TwoFactorVerification({ onSuccess }: TwoFactorVerificati
 
     setIsLoading(true)
     try {
-      await verifyMFA(factorId, challengeId, verificationCode)
+      const mfaResponse = await verifyMFA(factorId, challengeId, verificationCode)
+      
+      console.log('MFA verification response:', mfaResponse)
+      
+      // The MFA verification should automatically update the session
+      // Force a session refresh to ensure the auth state is updated
+      const { data: session } = await supabase.auth.getSession()
+      console.log('Session after MFA:', session)
       
       toast({
         title: "Welcome back!",
         description: "Two-factor authentication successful.",
       })
       
-      // Call success callback to proceed to admin panel
-      onSuccess()
+      // Small delay to ensure session is updated, then call success
+      setTimeout(() => {
+        onSuccess()
+      }, 100)
     } catch (error: any) {
       toast({
         title: "Verification Failed",
