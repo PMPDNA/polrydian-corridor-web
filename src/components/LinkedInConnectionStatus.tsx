@@ -26,6 +26,29 @@ export const LinkedInConnectionStatus = () => {
 
   const checkLinkedInConnection = async () => {
     try {
+      // Check database for stored credentials first
+      const { data: dbCredentials, error: dbError } = await supabase
+        .from('social_media_credentials')
+        .select('*')
+        .eq('platform', 'linkedin')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (dbCredentials && !dbError) {
+        setCredentials({
+          id: dbCredentials.id,
+          platform_user_id: dbCredentials.platform_user_id,
+          profile_data: dbCredentials.profile_data,
+          expires_at: dbCredentials.expires_at,
+          is_active: dbCredentials.is_active,
+          created_at: dbCredentials.created_at
+        });
+        return;
+      }
+
+      // If no database credentials, try the edge function
       const { data, error } = await supabase.functions.invoke('linkedin-integration', {
         body: { action: 'check_connection' }
       });
