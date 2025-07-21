@@ -51,13 +51,19 @@ serve(async (req) => {
   }
 
   try {
+    console.log('=== LinkedIn Integration Function Called ===')
+    
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseKey)
 
+    console.log('Supabase client initialized')
+
     // Verify user authentication
     const authHeader = req.headers.get('Authorization')
+    console.log('Auth header exists:', !!authHeader)
+    
     if (!authHeader) {
       throw new Error('No authorization header')
     }
@@ -66,23 +72,34 @@ serve(async (req) => {
       authHeader.replace('Bearer ', '')
     )
 
+    console.log('User authentication result:', { user: !!user, error: !!authError })
+
     if (authError || !user) {
+      console.error('Auth error:', authError)
       throw new Error('Invalid user token')
     }
 
+    console.log('User ID:', user.id)
+
     // Check if user is admin
-    const { data: userRoles } = await supabase
+    const { data: userRoles, error: roleError } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
       .eq('role', 'admin')
       .single()
 
+    console.log('Role check result:', { userRoles: !!userRoles, roleError: !!roleError })
+
     if (!userRoles) {
+      console.error('Role error:', roleError)
       throw new Error('Admin access required')
     }
 
+    console.log('Admin access confirmed')
+
     // Get user's LinkedIn credentials
+    console.log('Looking for LinkedIn credentials...')
     const { data: credentials, error: credError } = await supabase
       .from('social_media_credentials')
       .select('access_token_encrypted, expires_at, is_active')
@@ -92,6 +109,16 @@ serve(async (req) => {
       .order('created_at', { ascending: false })
       .limit(1)
 
+    console.log('Credentials lookup result:', { 
+      found: !!credentials && credentials.length > 0, 
+      count: credentials?.length || 0,
+      error: !!credError 
+    })
+
+    if (credError) {
+      console.error('Credential error:', credError)
+    }
+
     if (credError || !credentials || credentials.length === 0) {
       throw new Error('No LinkedIn connection found. Please connect your LinkedIn account first.')
     }
@@ -99,13 +126,21 @@ serve(async (req) => {
     const credential = credentials[0]
     const isExpired = new Date(credential.expires_at) < new Date()
     
+    console.log('Token status:', { 
+      expiresAt: credential.expires_at, 
+      isExpired,
+      hasToken: !!credential.access_token_encrypted 
+    })
+    
     if (isExpired) {
       throw new Error('LinkedIn token has expired. Please reconnect your LinkedIn account.')
     }
 
     const linkedinToken = credential.access_token_encrypted
 
+    console.log('Parsing request body...')
     const requestBody = await req.json()
+    console.log('Request body:', requestBody)
     const { action, ...params } = requestBody
 
     switch (action) {
