@@ -57,9 +57,8 @@ serve(async (req) => {
         throw new Error('LinkedIn client secret not configured')
       }
 
-      // Get the current domain from the request
-      const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || 'https://polrydian.com'
-      const redirectUri = `${origin}/auth/callback`
+      // Use the specific Polrydian domain for LinkedIn OAuth
+      const redirectUri = 'https://polrydian.com/auth/callback'
       
       console.log('Using redirect URI:', redirectUri)
 
