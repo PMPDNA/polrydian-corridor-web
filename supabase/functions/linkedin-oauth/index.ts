@@ -1,11 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
-
-// Initialize Supabase client
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-);
 
 Deno.serve(async (req) => {
   console.log("LinkedIn OAuth function called");
@@ -84,30 +77,8 @@ Deno.serve(async (req) => {
     const profile = await profileResponse.json();
     console.log("Profile fetched successfully for user:", profile.id);
 
-    // Step 3: Store credentials in database
-    console.log("Storing credentials in database...");
-    
-    const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
-
-    const { error } = await supabase
-      .from("social_media_credentials")
-      .upsert({
-        user_id: "00000000-0000-0000-0000-000000000000",
-        platform: "linkedin",
-        platform_user_id: profile.id,
-        access_token_encrypted: tokenData.access_token,
-        refresh_token_encrypted: tokenData.refresh_token || "",
-        expires_at: expiresAt,
-        profile_data: profile,
-        is_active: true
-      });
-
-    if (error) {
-      console.error("Database error:", error);
-      throw new Error(`Failed to store credentials: ${error.message}`);
-    }
-
-    console.log("LinkedIn OAuth completed successfully");
+    // Skip database storage for now - just return success
+    console.log("LinkedIn OAuth completed successfully (without database storage)");
 
     return jsonResponse({
       success: true,
@@ -116,7 +87,8 @@ Deno.serve(async (req) => {
         id: profile.id,
         firstName: profile.localizedFirstName,
         lastName: profile.localizedLastName
-      }
+      },
+      message: "OAuth completed - database storage will be added separately"
     });
 
   } catch (error) {
