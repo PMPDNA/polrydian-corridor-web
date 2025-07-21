@@ -1,143 +1,113 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+// supabase/functions/linkedin-oauth/index.ts
+// -------------------------------------------
+// ENV you must define in Supabase      (Settings ▸ Secrets)
+// LINKEDIN_CLIENT_ID        e.g. "86abcxyz123"
+// LINKEDIN_CLIENT_SECRET    e.g. "p0q9r8s7t6u5…"
+// -------------------------------------------
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { corsHeaders } from "../_shared/cors.ts";       // shared CORS helper
+
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+);
+
+// tiny helper – encrypt token with Supabase built-in pgcrypto (or swap for KMS)
+async function storeToken(
+  userId: string,
+  accessToken: string,
+  refreshToken: string,
+  expiresIn: number,
+  personUrn: string
+) {
+  const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+
+  const { error } = await supabase
+    .from("social_media_credentials")
+    .upsert({
+      user_id: userId,
+      platform: "linkedin",
+      access_token_encrypted: accessToken,   // <- swap for encrypted string in prod
+      refresh_token_encrypted: refreshToken,
+      expires_at: expiresAt,
+      platform_user_id: personUrn
+    });
+
+  if (error) throw error;
 }
 
-serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+Deno.serve(async (req) => {
+  // CORS (if needed)
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  try {
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    const supabase = createClient(supabaseUrl, supabaseKey)
+  const url = new URL(req.url);
+  const pathname = url.pathname;
+  const authCode = url.searchParams.get("code");
+  const state = url.searchParams.get("state"); // optional
 
-    // Verify user authentication - make this optional for callback flow
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      console.log('No authorization header provided - this might be from callback flow')
-      // For now, let's allow the callback to proceed without auth
-      // In production, you'd want to implement a more secure flow
-    } else {
-      const { data: { user }, error: authError } = await supabase.auth.getUser(
-        authHeader.replace('Bearer ', '')
-      )
-
-      if (authError || !user) {
-        console.error('Invalid user token:', authError)
-        // Don't throw error, just log it for now
-      } else {
-        // Check if user is admin
-        const { data: userRoles } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .eq('role', 'admin')
-          .single()
-
-        if (!userRoles) {
-          throw new Error('Admin access required')
-        }
-      }
-    }
-
-    const { code, action } = await req.json()
-
-    if (action === 'exchange_token') {
-      console.log('Exchanging authorization code for access token...')
-
-      // LinkedIn OAuth 2.0 token exchange
-      const clientId = '78z20ojmlvz2ks'
-      const clientSecret = Deno.env.get('LINKEDIN_CLIENT_SECRET')
-
-      if (!clientSecret) {
-        throw new Error('LinkedIn client secret not configured')
-      }
-
-      // Use the exact redirect URI configured in LinkedIn app
-      const redirectUri = 'https://polrydian.com/auth/callback'
-      console.log('Using redirect URI:', redirectUri)
-
-      const tokenResponse = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          code: code,
-          redirect_uri: redirectUri,
-          client_id: clientId,
-          client_secret: clientSecret,
-        }),
-      })
-
-      const tokenData = await tokenResponse.json()
-      console.log('Token exchange response:', tokenData)
-
-      if (!tokenResponse.ok) {
-        throw new Error(`LinkedIn token exchange failed: ${JSON.stringify(tokenData)}`)
-      }
-
-      if (!tokenData.access_token) {
-        throw new Error('No access token received from LinkedIn')
-      }
-
-      // Test the access token by fetching user profile
-      const profileResponse = await fetch('https://api.linkedin.com/v2/people/~', {
-        headers: {
-          'Authorization': `Bearer ${tokenData.access_token}`,
-        },
-      })
-
-      const profileData = await profileResponse.json()
-      console.log('LinkedIn profile test:', profileData)
-
-      if (!profileResponse.ok) {
-        throw new Error(`LinkedIn API test failed: ${JSON.stringify(profileData)}`)
-      }
-
-      // Store the access token securely (you'll need to set this up in Supabase secrets manually)
-      console.log('✅ LinkedIn OAuth successful!')
-      console.log('Access Token (store this in Supabase secrets as LINKEDIN_ACCESS_TOKEN):', tokenData.access_token)
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          message: 'LinkedIn OAuth completed successfully',
-          profile: profileData,
-          token_info: {
-            expires_in: tokenData.expires_in,
-            scope: tokenData.scope,
-          },
-          instructions: 'Access token logged to console. Store it as LINKEDIN_ACCESS_TOKEN secret in Supabase.'
-        }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      )
-    }
-
-    throw new Error('Invalid action')
-
-  } catch (error) {
-    console.error('LinkedIn OAuth error:', error)
+  // we only handle redirect here
+  if (!pathname.endsWith("/auth/callback") || !authCode) {
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message,
-        details: 'Check the edge function logs for more information'
-      }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    )
+      JSON.stringify({ success: false, error: "Missing code parameter" }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
-})
+
+  // 1️⃣ exchange code → access_token
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    code: authCode,
+    redirect_uri: "https://polrydian.com/auth/callback",
+    client_id: Deno.env.get("LINKEDIN_CLIENT_ID")!,
+    client_secret: Deno.env.get("LINKEDIN_CLIENT_SECRET")!
+  });
+
+  const tokenRes = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+  });
+
+  if (!tokenRes.ok) {
+    const err = await tokenRes.text();
+    return new Response(
+      JSON.stringify({ success: false, error: "Token exchange failed", detail: err }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  const tokenJson: {
+    access_token: string;
+    refresh_token?: string;
+    expires_in: number;
+  } = await tokenRes.json();
+
+  // 2️⃣ pull user's person URN (needed for publishing)
+  const meRes = await fetch("https://api.linkedin.com/v2/me", {
+    headers: { Authorization: `Bearer ${tokenJson.access_token}` }
+  });
+  const meJson = await meRes.json();         // → { id: "abc123", localizedFirstName:… }
+  const personUrn = `urn:li:person:${meJson.id}`;
+
+  // 3️⃣ store in DB (we use anon user 00000000-0000-0000-0000-000000000000 for now)
+  await storeToken(
+    "00000000-0000-0000-0000-000000000000",  // <- replace with auth.uid() if session attached
+    tokenJson.access_token,
+    tokenJson.refresh_token ?? "",
+    tokenJson.expires_in,
+    personUrn
+  );
+
+  // 4️⃣ return JSON the front-end expects
+  const body = {
+    success: true,
+    personId: personUrn,
+    expiresIn: tokenJson.expires_in
+  };
+
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
+});
