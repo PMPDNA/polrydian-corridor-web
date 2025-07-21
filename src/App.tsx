@@ -30,7 +30,7 @@ import Search from "./pages/Search";
 
 import NotFound from "./pages/NotFound";
 import CookieConsent from "./components/CookieConsent";
-import ScrollIndicator from "./components/ScrollIndicator";
+
 import { ScrollToTop } from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
@@ -111,7 +111,7 @@ const App = () => {
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <ScrollIndicator />
+          
           <ScrollToTop />
           <CookieConsent />
         </BrowserRouter>

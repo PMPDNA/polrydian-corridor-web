@@ -4,7 +4,7 @@ import { About } from "@/components/About";
 import { Services } from "@/components/Services";
 import { Experience } from "@/components/Experience";
 import { Contact } from "@/components/Contact";
-import SectionNavigator from "@/components/SectionNavigator";
+
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { SocialMediaFeed } from "@/components/SocialMediaFeed";
 import { LinkedInFeed } from "@/components/LinkedInFeed";
@@ -17,12 +17,6 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 const Index = () => {
   const { track } = useAnalytics();
 
-  const sections = [
-    { id: "hero", title: "Home" },
-    { id: "services", title: "Services" },
-    { id: "experience", title: "Experience" },
-    { id: "contact", title: "Contact" }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -63,7 +57,7 @@ const Index = () => {
         </section>
       </main>
       
-      <SectionNavigator sections={sections} />
+      
       <Footer />
       <PerformanceMonitor />
       <PromotionalPopup />
