@@ -1,7 +1,5 @@
 project_id = "qemtvnwemcpzhvbwjbsk"
 
-[functions.linkedin-oauth]
-verify_jwt = true
 
 [functions.publish-to-linkedin]
 verify_jwt = true
@@ -10,7 +8,4 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.test-function]
-verify_jwt = false
-
-[functions.linkedin-test]
 verify_jwt = false
