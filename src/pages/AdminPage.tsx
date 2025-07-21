@@ -67,14 +67,22 @@ export default function AdminPage() {
     )
   }
 
-  // If user needs 2FA verification, show the 2FA form
-  if (needsMFA) {
-    return <TwoFactorVerification onCancel={() => setNeedsMFA(false)} />
-  }
-
   // If user is authenticated and is admin, show the admin dashboard
   if (user && isAdmin) {
-    return <AdminDashboard />
+    return (
+      <>
+        <AdminDashboard />
+        {needsMFA && (
+          <TwoFactorVerification 
+            onSuccess={() => {
+              setNeedsMFA(false)
+              // Force a page refresh to ensure admin panel loads properly
+              window.location.reload()
+            }} 
+          />
+        )}
+      </>
+    )
   }
 
   // If user is authenticated but not admin, show access denied

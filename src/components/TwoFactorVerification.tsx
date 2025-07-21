@@ -10,10 +10,10 @@ import { challengeMFA, verifyMFA, listMFAFactors } from '@/lib/supabase'
 import { supabase } from '@/integrations/supabase/client'
 
 interface TwoFactorVerificationProps {
-  onCancel: () => void
+  onSuccess: () => void
 }
 
-export default function TwoFactorVerification({ onCancel }: TwoFactorVerificationProps) {
+export default function TwoFactorVerification({ onSuccess }: TwoFactorVerificationProps) {
   const [verificationCode, setVerificationCode] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [challengeId, setChallengeId] = useState('')
@@ -36,7 +36,6 @@ export default function TwoFactorVerification({ onCancel }: TwoFactorVerificatio
           description: "Please set up two-factor authentication first.",
           variant: "destructive",
         })
-        onCancel()
         return
       }
 
@@ -50,7 +49,6 @@ export default function TwoFactorVerification({ onCancel }: TwoFactorVerificatio
         description: error.message,
         variant: "destructive",
       })
-      onCancel()
     }
   }
 
@@ -66,6 +64,9 @@ export default function TwoFactorVerification({ onCancel }: TwoFactorVerificatio
         title: "Welcome back!",
         description: "Two-factor authentication successful.",
       })
+      
+      // Call success callback to proceed to admin panel
+      onSuccess()
     } catch (error: any) {
       toast({
         title: "Verification Failed",
@@ -79,7 +80,7 @@ export default function TwoFactorVerification({ onCancel }: TwoFactorVerificatio
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 p-3 w-fit rounded-full bg-primary/10">
@@ -114,25 +115,13 @@ export default function TwoFactorVerification({ onCancel }: TwoFactorVerificatio
               />
             </div>
             
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isLoading}
-                className="gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </Button>
-              <Button 
-                type="submit" 
-                className="flex-1" 
-                disabled={isLoading || verificationCode.length !== 6}
-              >
-                {isLoading ? 'Verifying...' : 'Verify & Sign In'}
-              </Button>
-            </div>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading || verificationCode.length !== 6}
+            >
+              {isLoading ? 'Verifying...' : 'Verify & Sign In'}
+            </Button>
           </form>
         </CardContent>
       </Card>

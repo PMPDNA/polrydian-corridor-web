@@ -132,7 +132,7 @@ export default function SupabaseLogin() {
   }
 
   if (needsMFA) {
-    return <TwoFactorVerification onCancel={() => setNeedsMFA(false)} />
+    return <TwoFactorVerification onSuccess={() => setNeedsMFA(false)} />
   }
 
   if (showForgotPassword) {
