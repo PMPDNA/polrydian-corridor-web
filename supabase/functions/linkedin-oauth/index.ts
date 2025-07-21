@@ -132,46 +132,24 @@ Deno.serve(async (req) => {
     const tokenData = await tokenResponse.json();
     console.log("Token exchange successful, expires in:", tokenData.expires_in);
 
-    // Get LinkedIn profile
-    console.log("Fetching LinkedIn profile...");
-    
-    const profileResponse = await fetch("https://api.linkedin.com/v2/me", {
-      headers: {
-        "Authorization": `Bearer ${tokenData.access_token}`,
-      },
-    });
-
-    console.log("Profile response:", profileResponse.status);
-
-    if (!profileResponse.ok) {
-      const errorText = await profileResponse.text();
-      console.error("Profile fetch failed:", errorText);
-      return jsonResponse({
-        success: false,
-        error: "Failed to fetch LinkedIn profile. Please try again.",
-        details: errorText
-      }, 400);
-    }
-
-    const profile = await profileResponse.json();
-    console.log("Profile fetched for:", profile.localizedFirstName, profile.localizedLastName);
-
-    // Store credentials
+    // Store credentials first - this is the critical part for maintaining connection
     console.log("Storing credentials for user:", userId);
     
     const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
-
+    
     const { error: dbError } = await supabase
       .from("social_media_credentials")
       .upsert({
         user_id: userId,
         platform: "linkedin",
-        platform_user_id: profile.id,
+        platform_user_id: "linkedin_user", // Will update with actual ID if profile fetch succeeds
         access_token_encrypted: tokenData.access_token,
         refresh_token_encrypted: tokenData.refresh_token || "",
         expires_at: expiresAt,
-        profile_data: profile,
+        profile_data: {},
         is_active: true
+      }, {
+        onConflict: 'user_id,platform'
       });
 
     if (dbError) {
@@ -181,6 +159,44 @@ Deno.serve(async (req) => {
         error: "Failed to save LinkedIn connection. Please try again.",
         details: dbError.message
       }, 500);
+    }
+
+    console.log("Credentials stored successfully");
+
+    // Try to get LinkedIn profile (optional - connection works without it)
+    let profile = { id: 'linkedin_user', localizedFirstName: 'LinkedIn', localizedLastName: 'User' };
+    
+    try {
+      console.log("Fetching LinkedIn profile...");
+      
+      const profileResponse = await fetch("https://api.linkedin.com/v2/people/(id~)", {
+        headers: {
+          "Authorization": `Bearer ${tokenData.access_token}`,
+        },
+      });
+
+      console.log("Profile response:", profileResponse.status);
+
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        profile = profileData;
+        console.log("Profile fetched for:", profile.localizedFirstName, profile.localizedLastName);
+        
+        // Update credentials with profile data
+        await supabase
+          .from("social_media_credentials")
+          .update({
+            platform_user_id: profile.id,
+            profile_data: profile
+          })
+          .eq('user_id', userId)
+          .eq('platform', 'linkedin');
+      } else {
+        const errorText = await profileResponse.text();
+        console.log("Profile fetch failed (continuing anyway):", errorText);
+      }
+    } catch (profileError) {
+      console.log("Profile fetch error (continuing anyway):", profileError);
     }
 
     console.log("=== LinkedIn OAuth completed successfully ===");
