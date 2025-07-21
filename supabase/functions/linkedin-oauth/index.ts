@@ -42,21 +42,25 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    let authCode: string | null = null;
-    let state: string | null = null;
-
-    // Handle both direct redirect and function call
+    // Handle GET request - just return HTML to close the popup
     if (req.method === "GET") {
-      // Direct redirect from LinkedIn
-      const url = new URL(req.url);
-      authCode = url.searchParams.get("code");
-      state = url.searchParams.get("state");
-    } else if (req.method === "POST") {
-      // Function call from frontend
-      const body = await req.json();
-      authCode = body.code;
-      state = body.state;
+      return new Response(
+        '<html><body><script>window.close();</script><p>You may close this tab.</p></body></html>',
+        { headers: { ...corsHeaders, "Content-Type": "text/html" } }
+      );
     }
+
+    // Handle POST request - actual OAuth processing
+    if (req.method !== "POST") {
+      return new Response(
+        JSON.stringify({ success: false, error: "Method not allowed" }),
+        { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const body = await req.json();
+    const authCode = body.code;
+    const state = body.state;
 
     if (!authCode) {
       return new Response(

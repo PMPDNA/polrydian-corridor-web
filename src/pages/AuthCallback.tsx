@@ -20,56 +20,6 @@ export const AuthCallback = () => {
       const code = searchParams.get('code');
       const error = searchParams.get('error');
       const errorDescription = searchParams.get('error_description');
-      const state = searchParams.get('state');
-
-      // Check if this is a LinkedIn callback
-      if (code && window.location.pathname === '/auth/callback') {
-        setStatus('loading');
-        setMessage('Processing LinkedIn authorization...');
-        
-        try {
-          // Call the LinkedIn OAuth edge function to exchange code for token
-          const response = await supabase.functions.invoke('linkedin-oauth', {
-            body: { 
-              code,
-              action: 'exchange_token' 
-            }
-          });
-
-          const result = response.data;
-          
-          // Add null check to prevent "Cannot read properties of null" error
-          if (!result) {
-            throw new Error('No response data received from LinkedIn OAuth service');
-          }
-          
-          if (result.success) {
-            setStatus('success');
-            setMessage('LinkedIn connected successfully! You can close this window.');
-            toast({
-              title: "LinkedIn Connected",
-              description: "Your LinkedIn account has been successfully connected.",
-            });
-            
-            // Close the window after a delay
-            setTimeout(() => {
-              window.close();
-            }, 2000);
-          } else {
-            throw new Error(result.error || 'Failed to connect LinkedIn');
-          }
-        } catch (error) {
-          console.error('LinkedIn OAuth error:', error);
-          setStatus('error');
-          setMessage(`Failed to connect LinkedIn: ${error.message}`);
-          toast({
-            title: "LinkedIn Connection Failed",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-        return;
-      }
 
       if (error) {
         setStatus('error');
@@ -93,72 +43,50 @@ export const AuthCallback = () => {
         return;
       }
 
-      // Note: We'll let the edge function handle admin authentication
-      // since the user might not be logged in at callback time
-
+      // Process LinkedIn callback
+      setStatus('loading');
+      setMessage('Processing LinkedIn authorization...');
+      
       try {
-        setMessage('Exchanging authorization code for access token...');
-        
-        // Call the LinkedIn OAuth edge function with auth header if available
-        const headers: any = {}
-        if (session?.access_token) {
-          headers.Authorization = `Bearer ${session.access_token}`
-        }
-
+        // Send code via POST to avoid double-call issue
         const { data, error: functionError } = await supabase.functions.invoke('linkedin-oauth', {
-          body: {
-            code: code,
-            action: 'exchange_token'
-          },
-          headers
+          body: { code }
         });
 
         if (functionError) {
           throw new Error(functionError.message);
         }
 
-        // Add null check for data
-        if (!data) {
-          throw new Error('No response data received from LinkedIn OAuth service');
-        }
-
-        if (data.error || !data.success) {
-          throw new Error(data.error || 'LinkedIn OAuth failed');
+        if (!data || !data.success) {
+          throw new Error(data?.error || 'No response data received');
         }
 
         setStatus('success');
-        setMessage('LinkedIn integration completed successfully! Check the browser console for the access token to add to Supabase secrets.');
-        
-        // Log the token for admin to copy
-        console.log('🔑 LINKEDIN ACCESS TOKEN (Copy this to Supabase secrets):');
-        console.log('Secret name: LINKEDIN_ACCESS_TOKEN');
-        console.log('Instructions: Go to Supabase Dashboard > Settings > Edge Function Secrets');
-        
+        setMessage('LinkedIn connected successfully!');
         toast({
-          title: "LinkedIn Integration Successful",
-          description: "Access token generated. Check console for setup instructions.",
+          title: "LinkedIn Connected",
+          description: "Your LinkedIn account has been successfully connected.",
         });
 
-        // Redirect to admin page after 5 seconds
+        // Redirect to admin page after 2 seconds
         setTimeout(() => {
           navigate('/admin');
-        }, 5000);
+        }, 2000);
 
       } catch (error) {
-        console.error('Error processing LinkedIn callback:', error);
+        console.error('LinkedIn OAuth error:', error);
         setStatus('error');
-        setMessage(`Failed to complete LinkedIn integration: ${error.message}`);
+        setMessage(`Failed to connect LinkedIn: ${error.message}`);
         toast({
-          title: "Integration Failed",
+          title: "LinkedIn Connection Failed",
           description: error.message,
           variant: "destructive",
         });
       }
     };
 
-    // Process immediately, don't wait for session
     handleLinkedInCallback();
-  }, [searchParams, navigate, toast, user, session, isAdmin]);
+  }, [searchParams, navigate, toast]);
 
   const getIcon = () => {
     switch (status) {
