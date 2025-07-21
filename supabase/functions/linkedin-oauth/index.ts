@@ -16,8 +16,7 @@ const supabase = createClient(
 );
 
 const CLIENT_ID     = Deno.env.get("LINKEDIN_CLIENT_ID")!;
-const CLIENT_SECRET = Deno.env.get("LINKEDIN_CLIENT_SECRET")!;
-const REDIRECT_URI  = Deno.env.get("SUPABASE_URL")?.replace('supabase.co', 'lovableproject.com') + "/auth/callback" || "https://polrydian.com/auth/callback";
+const CLIENT_SECRET = Deno.env.get("LINKEDIN_CLIENT_SECRET")!
 
 /* ---------- helper ------------------------------------------------------- */
 async function upsertToken({
@@ -58,11 +57,15 @@ Deno.serve(async (req) => {
 
   const url  = new URL(req.url);
   const code = url.searchParams.get("code");
+  
+  // Determine redirect URI from request origin
+  const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || 'https://polrydian.com';
+  const redirectUri = `${origin}/auth/callback`;
 
   // ───────────────────────────────────────────────────────────── GET (browser redirect)
   if (req.method === "GET" && code) {
     try {
-      const token = await exchangeCodeForToken(code);
+      const token = await exchangeCodeForToken(code, redirectUri);
       const me    = await fetchMe(token.access_token);
       const urn   = `urn:li:person:${me.id}`;
 
@@ -88,7 +91,7 @@ Deno.serve(async (req) => {
     if (!body.code) return json({ success:false, error:"Missing code" }, 400);
 
     try {
-      const token = await exchangeCodeForToken(body.code);
+      const token = await exchangeCodeForToken(body.code, redirectUri);
       const me    = await fetchMe(token.access_token);
       const urn   = `urn:li:person:${me.id}`;
 
@@ -117,11 +120,11 @@ Deno.serve(async (req) => {
 }); // <<—— the missing closing bracket you hit before
 
 /* ---------- helpers ----------------------------------------------------- */
-async function exchangeCodeForToken(code: string) {
+async function exchangeCodeForToken(code: string, redirectUri: string) {
   const params = new URLSearchParams({
     grant_type: "authorization_code",
     code,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri: redirectUri,
     client_id: CLIENT_ID,
     client_secret: CLIENT_SECRET
   });
