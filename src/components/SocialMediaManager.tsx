@@ -461,7 +461,8 @@ export const SocialMediaManager = () => {
             </p>
             <Button
               onClick={() => {
-                const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78z20ojmlvz2ks&redirect_uri=${encodeURIComponent('https://d85f6385-6c6d-437f-978b-9196bd33e526.lovableproject.com/auth/callback')}&scope=profile%20email%20w_member_social`;
+                const redirectUri = `${window.location.origin}/auth/callback`
+                const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78z20ojmlvz2ks&redirect_uri=${encodeURIComponent(redirectUri)}&scope=profile%20email%20w_member_social`;
                 window.open(authUrl, '_blank');
               }}
               className="flex items-center gap-2"

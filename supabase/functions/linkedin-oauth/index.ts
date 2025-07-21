@@ -57,6 +57,12 @@ serve(async (req) => {
         throw new Error('LinkedIn client secret not configured')
       }
 
+      // Get the current domain from the request
+      const origin = req.headers.get('origin') || req.headers.get('referer')?.split('/').slice(0, 3).join('/') || 'https://polrydian.com'
+      const redirectUri = `${origin}/auth/callback`
+      
+      console.log('Using redirect URI:', redirectUri)
+
       const tokenResponse = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
         method: 'POST',
         headers: {
@@ -65,7 +71,7 @@ serve(async (req) => {
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: code,
-          redirect_uri: 'https://d85f6385-6c6d-437f-978b-9196bd33e526.lovableproject.com/auth/callback',
+          redirect_uri: redirectUri,
           client_id: clientId,
           client_secret: clientSecret,
         }),
