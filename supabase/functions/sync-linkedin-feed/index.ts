@@ -15,12 +15,13 @@ serve(async (req) => {
   }
 
   try {
-    const authHeader = req.headers.get('authorization');
-    console.log('🔑 Auth header present:', !!authHeader);
+    // ① who is calling me?
+    const authHeader = req.headers.get('authorization') ?? 'none';
+    console.log('[feed] bearer header:', authHeader.slice(0, 20) + '...');
     
-    if (!authHeader) {
+    if (!authHeader || authHeader === 'none') {
       return new Response(
-        JSON.stringify({ error: 'Authentication required' }),
+        JSON.stringify({ error: 'UNAUTH' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -33,7 +34,7 @@ serve(async (req) => {
       authHeader.replace('Bearer ', '')
     );
 
-    console.log('👤 User authenticated:', !!user, user?.id);
+    console.log('[feed] ctx.user:', user?.id ?? null);
 
     if (authError || !user) {
       console.error('🚫 Auth error:', authError);
@@ -56,17 +57,15 @@ serve(async (req) => {
       );
     }
 
-    // Get LinkedIn credentials
-    console.log('🔍 Looking for LinkedIn credentials for user:', user.id);
+    // ② fetch credential row
     const { data: credentials, error: credError } = await supabase
       .from('social_media_credentials')
-      .select('platform_user_id, access_token_encrypted, is_active')
+      .select('*')
       .eq('user_id', user.id)
       .eq('platform', 'linkedin')
-      .eq('is_active', true)
       .single();
 
-    console.log('📋 Credentials found:', !!credentials, credError?.message);
+    console.log('[feed] credential row:', credentials ?? null);
 
     if (credError || !credentials) {
       return new Response(
