@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Shield, ArrowLeft } from 'lucide-react'
+import { Shield } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { challengeMFA, verifyMFA, listMFAFactors } from '@/lib/supabase'
 import { supabase } from '@/integrations/supabase/client'
@@ -58,25 +58,29 @@ export default function TwoFactorVerification({ onSuccess }: TwoFactorVerificati
 
     setIsLoading(true)
     try {
+      console.log('Starting MFA verification...')
       const mfaResponse = await verifyMFA(factorId, challengeId, verificationCode)
       
-      console.log('MFA verification response:', mfaResponse)
+      console.log('MFA verification successful:', mfaResponse)
       
-      // The MFA verification should automatically update the session
-      // Force a session refresh to ensure the auth state is updated
-      const { data: session } = await supabase.auth.getSession()
-      console.log('Session after MFA:', session)
+      // Force a session refresh to ensure AAL2 is set
+      const { data: session, error: sessionError } = await supabase.auth.refreshSession()
+      console.log('Session after MFA refresh:', session, sessionError)
       
       toast({
         title: "Welcome back!",
         description: "Two-factor authentication successful.",
       })
       
-      // Small delay to ensure session is updated, then call success
+      // Wait a bit longer to ensure session state is properly updated
       setTimeout(() => {
+        console.log('Calling onSuccess callback')
         onSuccess()
-      }, 100)
+        // Force a page refresh to ensure admin panel loads
+        window.location.href = '/admin'
+      }, 500)
     } catch (error: any) {
+      console.error('MFA verification failed:', error)
       toast({
         title: "Verification Failed",
         description: "Please check your code and try again.",
