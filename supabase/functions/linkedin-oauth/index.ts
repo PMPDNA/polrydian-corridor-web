@@ -20,6 +20,8 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const { code } = body;
 
+    console.log("Received code:", code ? "present" : "missing");
+
     if (!code) {
       return jsonResponse({ success: false, error: "Missing authorization code" }, 400);
     }
@@ -28,9 +30,9 @@ Deno.serve(async (req) => {
     const origin = req.headers.get('origin') || 'https://polrydian.com';
     const redirectUri = `${origin}/auth/callback`;
     
-    console.log("Starting OAuth flow with redirect URI:", redirectUri);
+    console.log("Using redirect URI:", redirectUri);
 
-    // Step 1: Exchange code for token
+    // Exchange code for token
     const tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken";
     const params = new URLSearchParams({
       grant_type: "authorization_code",
@@ -40,7 +42,7 @@ Deno.serve(async (req) => {
       client_secret: clientSecret,
     });
 
-    console.log("Exchanging code for token...");
+    console.log("Making token request...");
 
     const tokenResponse = await fetch(tokenUrl, {
       method: "POST",
@@ -50,52 +52,35 @@ Deno.serve(async (req) => {
       body: params.toString(),
     });
 
+    console.log("Token response status:", tokenResponse.status);
+
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
       console.error("Token exchange failed:", errorText);
-      throw new Error(`LinkedIn token exchange failed: ${errorText}`);
+      return jsonResponse({
+        success: false,
+        error: `LinkedIn token exchange failed: ${errorText}`,
+        status: tokenResponse.status
+      }, 400);
     }
 
     const tokenData = await tokenResponse.json();
-    console.log("Token exchange successful");
+    console.log("Token exchange successful, access token length:", tokenData.access_token?.length || 0);
 
-    // Step 2: Get LinkedIn profile
-    console.log("Fetching LinkedIn profile...");
-    
-    const profileResponse = await fetch("https://api.linkedin.com/v2/me", {
-      headers: {
-        "Authorization": `Bearer ${tokenData.access_token}`,
-      },
-    });
-
-    if (!profileResponse.ok) {
-      const errorText = await profileResponse.text();
-      console.error("Profile fetch failed:", errorText);
-      throw new Error(`LinkedIn profile fetch failed: ${errorText}`);
-    }
-
-    const profile = await profileResponse.json();
-    console.log("Profile fetched successfully for user:", profile.id);
-
-    // Skip database storage for now - just return success
-    console.log("LinkedIn OAuth completed successfully (without database storage)");
-
+    // Just return the token exchange success for now
     return jsonResponse({
       success: true,
-      personId: `urn:li:person:${profile.id}`,
-      profile: {
-        id: profile.id,
-        firstName: profile.localizedFirstName,
-        lastName: profile.localizedLastName
-      },
-      message: "OAuth completed - database storage will be added separately"
+      message: "Token exchange completed successfully",
+      hasAccessToken: !!tokenData.access_token,
+      expiresIn: tokenData.expires_in
     });
 
   } catch (error) {
-    console.error("LinkedIn OAuth error:", error);
+    console.error("Error:", error);
     return jsonResponse({ 
       success: false, 
-      error: error.message || String(error)
+      error: error.message || String(error),
+      stack: error.stack
     }, 500);
   }
 });
