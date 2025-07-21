@@ -461,8 +461,9 @@ export const SocialMediaManager = () => {
             </p>
             <Button
               onClick={() => {
-                const redirectUri = 'https://polrydian.com/auth/callback'
-                const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=78z20ojmlvz2ks&redirect_uri=${encodeURIComponent(redirectUri)}&scope=profile%20email%20w_member_social`;
+                const redirectUri = `${window.location.origin}/auth/callback`
+                const clientId = '78z20ojmlvz2ks' // TODO: Move to environment variable
+                const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=profile%20email%20w_member_social`;
                 window.open(authUrl, '_blank');
               }}
               className="flex items-center gap-2"
