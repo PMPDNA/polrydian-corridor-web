@@ -75,17 +75,24 @@ serve(async (req) => {
     }
 
     const accessToken = credentials.access_token_encrypted;
-    const personId = credentials.platform_user_id;
+    const personUrn = `urn:li:person:${credentials.platform_user_id}`;
 
-    // Fetch LinkedIn posts
-    const postsResponse = await fetch(`https://api.linkedin.com/v2/shares?q=owners&owners=urn%3Ali%3Aperson%3A${personId}&count=50`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'LinkedIn-Version': '202405'
+    // Fetch LinkedIn posts using the correct personal endpoint
+    const postsResponse = await fetch(
+      `https://api.linkedin.com/v2/ugcPosts?q=authors&authors=${encodeURIComponent(personUrn)}&sortBy=LAST_MODIFIED&count=50`,
+      {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'X-Restli-Protocol-Version': '2.0.0',
+          'LinkedIn-Version': '202402'
+        }
       }
-    });
+    );
 
     if (!postsResponse.ok) {
+      const errorText = await postsResponse.text();
+      console.error('LinkedIn error:', postsResponse.status, errorText);
+      
       if (postsResponse.status === 401) {
         await supabase
           .from('social_media_credentials')
