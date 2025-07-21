@@ -17,7 +17,7 @@ const supabase = createClient(
 
 const CLIENT_ID     = Deno.env.get("LINKEDIN_CLIENT_ID")!;
 const CLIENT_SECRET = Deno.env.get("LINKEDIN_CLIENT_SECRET")!;
-const REDIRECT_URI  = "https://polrydian.com/auth/callback";   // **MUST match LI dev-portal**
+const REDIRECT_URI  = Deno.env.get("SUPABASE_URL")?.replace('supabase.co', 'lovableproject.com') + "/auth/callback" || "https://polrydian.com/auth/callback";
 
 /* ---------- helper ------------------------------------------------------- */
 async function upsertToken({
