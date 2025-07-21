@@ -60,10 +60,8 @@ serve(async (req) => {
         throw new Error('LinkedIn client secret not configured')
       }
 
-      // Use dynamic redirect URI from request origin or fallback to polrydian.com
-      const origin = req.headers.get('origin') || 'https://polrydian.com'
-      const redirectUri = `${origin}/auth/callback`
-      
+      // Use the exact redirect URI configured in LinkedIn app
+      const redirectUri = 'https://polrydian.com/auth/callback'
       console.log('Using redirect URI:', redirectUri)
 
       const tokenResponse = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
@@ -132,6 +130,7 @@ serve(async (req) => {
     console.error('LinkedIn OAuth error:', error)
     return new Response(
       JSON.stringify({
+        success: false,
         error: error.message,
         details: 'Check the edge function logs for more information'
       }),

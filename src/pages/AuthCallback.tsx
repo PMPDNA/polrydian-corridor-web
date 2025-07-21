@@ -38,6 +38,11 @@ export const AuthCallback = () => {
 
           const result = response.data;
           
+          // Add null check to prevent "Cannot read properties of null" error
+          if (!result) {
+            throw new Error('No response data received from LinkedIn OAuth service');
+          }
+          
           if (result.success) {
             setStatus('success');
             setMessage('LinkedIn connected successfully! You can close this window.');
@@ -112,8 +117,13 @@ export const AuthCallback = () => {
           throw new Error(functionError.message);
         }
 
-        if (data.error) {
-          throw new Error(data.error);
+        // Add null check for data
+        if (!data) {
+          throw new Error('No response data received from LinkedIn OAuth service');
+        }
+
+        if (data.error || !data.success) {
+          throw new Error(data.error || 'LinkedIn OAuth failed');
         }
 
         setStatus('success');
