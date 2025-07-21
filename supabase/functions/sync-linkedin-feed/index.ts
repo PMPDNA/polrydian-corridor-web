@@ -16,6 +16,8 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('authorization');
+    console.log('🔑 Auth header present:', !!authHeader);
+    
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'Authentication required' }),
@@ -31,7 +33,10 @@ serve(async (req) => {
       authHeader.replace('Bearer ', '')
     );
 
+    console.log('👤 User authenticated:', !!user, user?.id);
+
     if (authError || !user) {
+      console.error('🚫 Auth error:', authError);
       return new Response(
         JSON.stringify({ error: 'Authentication failed' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -52,6 +57,7 @@ serve(async (req) => {
     }
 
     // Get LinkedIn credentials
+    console.log('🔍 Looking for LinkedIn credentials for user:', user.id);
     const { data: credentials, error: credError } = await supabase
       .from('social_media_credentials')
       .select('platform_user_id, access_token_encrypted, is_active')
@@ -60,9 +66,11 @@ serve(async (req) => {
       .eq('is_active', true)
       .single();
 
+    console.log('📋 Credentials found:', !!credentials, credError?.message);
+
     if (credError || !credentials) {
       return new Response(
-        JSON.stringify({ error: 'LinkedIn credentials not found' }),
+        JSON.stringify({ error: 'no_credential' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
