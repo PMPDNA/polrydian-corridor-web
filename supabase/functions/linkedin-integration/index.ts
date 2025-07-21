@@ -56,12 +56,6 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Get LinkedIn access token from Supabase secrets
-    const linkedinToken = Deno.env.get('LINKEDIN_ACCESS_TOKEN')
-    if (!linkedinToken) {
-      throw new Error('LinkedIn access token not configured')
-    }
-
     // Verify user authentication
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
@@ -88,6 +82,29 @@ serve(async (req) => {
       throw new Error('Admin access required')
     }
 
+    // Get user's LinkedIn credentials
+    const { data: credentials, error: credError } = await supabase
+      .from('social_media_credentials')
+      .select('access_token_encrypted, expires_at, is_active')
+      .eq('platform', 'linkedin')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (credError || !credentials || credentials.length === 0) {
+      throw new Error('No LinkedIn connection found. Please connect your LinkedIn account first.')
+    }
+
+    const credential = credentials[0]
+    const isExpired = new Date(credential.expires_at) < new Date()
+    
+    if (isExpired) {
+      throw new Error('LinkedIn token has expired. Please reconnect your LinkedIn account.')
+    }
+
+    const linkedinToken = credential.access_token_encrypted
+
     const { action, ...params } = await req.json()
 
     switch (action) {
@@ -110,7 +127,7 @@ serve(async (req) => {
         return await syncLinkedInArticles(linkedinToken, supabase, user.id)
       
       case 'publish_to_linkedin':
-        const { content, title } = await req.json()
+        const { content, title } = params
         return await publishToLinkedIn(linkedinToken, content, title)
       
       default:
