@@ -200,31 +200,46 @@ serve(async (req) => {
 
     console.log('📡 Fetching LinkedIn posts for:', personUrn);
 
-    // Fetch LinkedIn posts using the correct personal endpoint
-    const postsResponse = await fetch(
-      `https://api.linkedin.com/v2/ugcPosts?q=authors&authors=${encodeURIComponent(personUrn)}&sortBy=LAST_MODIFIED&count=50`,
+    // Try the newer LinkedIn API endpoint first (v2 posts API)
+    let postsResponse = await fetch(
+      `https://api.linkedin.com/rest/posts?author=${encodeURIComponent(personUrn)}&count=50&sortBy=LAST_MODIFIED`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'X-Restli-Protocol-Version': '2.0.0',
-          'LinkedIn-Version': '202402'
+          'LinkedIn-Version': '202405',
+          'X-Restli-Protocol-Version': '2.0.0'
         }
       }
     );
+
+    // If that fails, try the legacy ugcPosts endpoint with different query
+    if (!postsResponse.ok) {
+      console.log('🔄 Trying legacy ugcPosts endpoint...');
+      postsResponse = await fetch(
+        `https://api.linkedin.com/v2/shares?q=owners&owners=${encodeURIComponent(personUrn)}&count=50&sortBy=LAST_MODIFIED`,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'X-Restli-Protocol-Version': '2.0.0'
+          }
+        }
+      );
+    }
 
     if (!postsResponse.ok) {
       const errorText = await postsResponse.text();
       console.error('LinkedIn error:', postsResponse.status, errorText);
       
-      // Log API error
+      // Log API error with more details
       await supabase.from('security_audit_log').insert({
         action: 'linkedin_api_error',
         user_id: user.id,
         details: {
           status: postsResponse.status,
           error: errorText,
-          endpoint: 'ugcPosts',
-          timestamp: new Date().toISOString()
+          endpoint: 'posts/shares',
+          timestamp: new Date().toISOString(),
+          token_permissions_note: 'User may need to re-authorize with updated permissions'
         }
       });
       
@@ -237,23 +252,44 @@ serve(async (req) => {
           .eq('platform', 'linkedin');
       }
       
+      if (postsResponse.status === 403) {
+        console.warn('🚫 Insufficient permissions - user needs to re-authorize with updated scopes');
+        return new Response(JSON.stringify({ 
+          error: 'Insufficient LinkedIn permissions',
+          action_required: 'Please disconnect and reconnect your LinkedIn account with updated permissions',
+          status: 403
+        }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
       throw new Error(`LinkedIn API error: ${postsResponse.status}`);
     }
 
     const postsData = await postsResponse.json();
     let insertedCount = 0;
 
-    console.log('💾 Processing', postsData.elements?.length || 0, 'posts');
+    console.log('💾 Processing', postsData.elements?.length || postsData.values?.length || 0, 'posts');
 
-    for (const post of postsData.elements || []) {
+    // Handle both new API format (elements) and legacy format (values)
+    const posts = postsData.elements || postsData.values || [];
+
+    for (const post of posts) {
+      // Handle different post formats from different API endpoints
+      const postId = post.id || post.shareUrl?.split('/').pop() || `post_${Date.now()}`;
+      const postText = post.text?.text || post.commentary?.text || post.specificContent?.com?.linkedIn?.ugcPost?.shareCommentary?.text || '';
+      const postUrl = post.shareUrl || `https://www.linkedin.com/feed/update/${postId}`;
+      const createdTime = post.created?.time || post.createdAt || post.created || Date.now();
+      
       const { error: insertError } = await supabase
         .from('linkedin_posts')
         .upsert({
-          id: post.id,
-          message: post.text?.text || '',
-          post_url: `https://www.linkedin.com/feed/update/${post.id}`,
+          id: postId,
+          message: postText,
+          post_url: postUrl,
           author: user.email || 'admin',
-          created_at: new Date(post.created.time).toISOString(),
+          created_at: new Date(createdTime).toISOString(),
           updated_at: new Date().toISOString(),
           is_visible: true,
           raw_data: post
@@ -267,7 +303,7 @@ serve(async (req) => {
       action: 'linkedin_sync_completed',
       user_id: user.id,
       details: {
-        posts_processed: postsData.elements?.length || 0,
+        posts_processed: posts.length,
         posts_inserted: insertedCount,
         timestamp: new Date().toISOString()
       }
@@ -278,7 +314,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ 
       success: true, 
       inserted: insertedCount,
-      total: postsData.elements?.length || 0
+      total: posts.length
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
