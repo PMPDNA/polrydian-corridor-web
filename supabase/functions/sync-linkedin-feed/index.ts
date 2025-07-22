@@ -7,6 +7,71 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Secure token decryption (matches linkedin-oauth implementation)
+async function decryptToken(encryptedToken: string): Promise<string> {
+  try {
+    // Decode from base64
+    const combined = new Uint8Array(
+      atob(encryptedToken).split('').map(char => char.charCodeAt(0))
+    );
+    
+    // Extract components
+    const keyData = combined.slice(0, 32);
+    const iv = combined.slice(32, 44);
+    const encrypted = combined.slice(44);
+    
+    // Import the key
+    const key = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'AES-GCM' },
+      false,
+      ['decrypt']
+    );
+    
+    // Decrypt
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: iv },
+      key,
+      encrypted
+    );
+    
+    return new TextDecoder().decode(decrypted);
+  } catch (error) {
+    console.error('Decryption error:', error);
+    // Fallback to base64 decoding for backwards compatibility
+    try {
+      return atob(encryptedToken);
+    } catch {
+      throw new Error('Failed to decrypt token');
+    }
+  }
+}
+
+// Enhanced IP extraction function for better security logging
+function extractClientIP(request: Request): string | null {
+  // Get IP from various headers set by reverse proxies
+  const headers = [
+    'x-forwarded-for',
+    'x-real-ip', 
+    'cf-connecting-ip',
+    'x-client-ip'
+  ];
+  
+  for (const header of headers) {
+    const value = request.headers.get(header);
+    if (value) {
+      // Take first IP if comma-separated
+      const ip = value.split(',')[0].trim();
+      // Basic IP validation
+      if (ip && /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$|^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$/.test(ip)) {
+        return ip;
+      }
+    }
+  }
+  return null;
+}
+
 serve(async (req) => {
   console.log('🚀 LinkedIn feed sync started');
   
@@ -15,11 +80,22 @@ serve(async (req) => {
   }
 
   try {
+    // Security logging - track who is calling
+    const clientIP = extractClientIP(req);
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+    
+    console.log('🔐 Request info:', {
+      ip: clientIP,
+      userAgent: userAgent.substring(0, 50),
+      method: req.method
+    });
+
     // ① who is calling me?
     const authHeader = req.headers.get('authorization') ?? 'none';
     console.log('[feed] bearer header:', authHeader.slice(0, 20) + '...');
     
     if (!authHeader || authHeader === 'none') {
+      console.warn('🚫 Unauthorized access attempt from:', clientIP);
       return new Response(
         JSON.stringify({ error: 'UNAUTH' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -38,11 +114,36 @@ serve(async (req) => {
 
     if (authError || !user) {
       console.error('🚫 Auth error:', authError);
+      
+      // Log failed authentication
+      await supabase.from('security_audit_log').insert({
+        action: 'failed_authentication',
+        ip_address: clientIP,
+        user_agent: userAgent,
+        details: {
+          endpoint: 'sync-linkedin-feed',
+          error: authError?.message || 'Invalid token',
+          timestamp: new Date().toISOString()
+        }
+      });
+      
       return new Response(
         JSON.stringify({ error: 'Authentication failed' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Log successful authentication
+    await supabase.from('security_audit_log').insert({
+      action: 'successful_authentication',
+      user_id: user.id,
+      ip_address: clientIP,
+      user_agent: userAgent,
+      details: {
+        endpoint: 'sync-linkedin-feed',
+        timestamp: new Date().toISOString()
+      }
+    });
 
     const { data: userRoles } = await supabase
       .from('user_roles')
@@ -51,6 +152,23 @@ serve(async (req) => {
 
     const hasAdminRole = userRoles?.some(role => role.role === 'admin');
     if (!hasAdminRole) {
+      console.warn('🚫 Access denied - user lacks admin role:', user.email);
+      
+      // Log access violation
+      await supabase.from('security_audit_log').insert({
+        action: 'access_denied',
+        user_id: user.id,
+        ip_address: clientIP,
+        user_agent: userAgent,
+        details: {
+          endpoint: 'sync-linkedin-feed',
+          reason: 'insufficient_permissions',
+          required_role: 'admin',
+          user_roles: userRoles?.map(r => r.role) || [],
+          timestamp: new Date().toISOString()
+        }
+      });
+      
       return new Response(
         JSON.stringify({ error: 'Admin access required' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -68,14 +186,19 @@ serve(async (req) => {
     console.log('[feed] credential row:', credentials ?? null);
 
     if (credError || !credentials) {
+      console.error('❌ No LinkedIn credentials found for user');
       return new Response(
         JSON.stringify({ error: 'no_credential' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const accessToken = credentials.access_token_encrypted;
+    // Decrypt the access token before use
+    console.log('🔓 Decrypting access token...');
+    const accessToken = await decryptToken(credentials.access_token_encrypted);
     const personUrn = `urn:li:person:${credentials.platform_user_id}`;
+
+    console.log('📡 Fetching LinkedIn posts for:', personUrn);
 
     // Fetch LinkedIn posts using the correct personal endpoint
     const postsResponse = await fetch(
@@ -93,7 +216,20 @@ serve(async (req) => {
       const errorText = await postsResponse.text();
       console.error('LinkedIn error:', postsResponse.status, errorText);
       
+      // Log API error
+      await supabase.from('security_audit_log').insert({
+        action: 'linkedin_api_error',
+        user_id: user.id,
+        details: {
+          status: postsResponse.status,
+          error: errorText,
+          endpoint: 'ugcPosts',
+          timestamp: new Date().toISOString()
+        }
+      });
+      
       if (postsResponse.status === 401) {
+        console.warn('🔄 Token expired, marking credentials as inactive');
         await supabase
           .from('social_media_credentials')
           .update({ is_active: false })
@@ -106,6 +242,8 @@ serve(async (req) => {
 
     const postsData = await postsResponse.json();
     let insertedCount = 0;
+
+    console.log('💾 Processing', postsData.elements?.length || 0, 'posts');
 
     for (const post of postsData.elements || []) {
       const { error: insertError } = await supabase
@@ -124,6 +262,19 @@ serve(async (req) => {
       if (!insertError) insertedCount++;
     }
 
+    // Log successful sync
+    await supabase.from('security_audit_log').insert({
+      action: 'linkedin_sync_completed',
+      user_id: user.id,
+      details: {
+        posts_processed: postsData.elements?.length || 0,
+        posts_inserted: insertedCount,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    console.log('✅ Sync completed:', insertedCount, 'posts inserted');
+
     return new Response(JSON.stringify({ 
       success: true, 
       inserted: insertedCount,
@@ -133,8 +284,30 @@ serve(async (req) => {
     });
 
   } catch (error: any) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('💥 Error:', error);
+    
+    // Log the error for monitoring
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      await supabase.from('security_audit_log').insert({
+        action: 'sync_error',
+        details: {
+          error: error.message,
+          stack: error.stack,
+          timestamp: new Date().toISOString()
+        }
+      });
+    } catch (logError) {
+      console.error('Failed to log error:', logError);
+    }
+    
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      details: 'Check function logs for more information'
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

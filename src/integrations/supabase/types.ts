@@ -698,6 +698,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      extract_first_ip: {
+        Args: { ip_string: string }
+        Returns: unknown
+      }
       get_admin_emails: {
         Args: Record<PropertyKey, never>
         Returns: Json
