@@ -7,10 +7,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Helper function to decrypt tokens (simplified - in production use proper encryption)
+// Simple base64 decryption to match linkedin-oauth implementation
 function decryptToken(encryptedToken: string): string {
-  // For now, assume tokens are stored as-is (implement proper decryption later)
-  return encryptedToken;
+  try {
+    return atob(encryptedToken);
+  } catch (error) {
+    console.error('Decryption error:', error);
+    return encryptedToken; // Fallback for non-encrypted tokens
+  }
 }
 
 serve(async (req) => {

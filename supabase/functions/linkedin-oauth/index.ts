@@ -133,8 +133,8 @@ serve(async (req) => {
     console.log('✅ Tokens obtained successfully');
 
     console.log('👤 Fetching user profile using REST API');
-    // Get user profile to store platform_user_id using new REST endpoint
-    const profileResponse = await fetch('https://api.linkedin.com/rest/people/~', {
+    // Get user profile to store platform_user_id using LinkedIn v2 API with required headers
+    const profileResponse = await fetch('https://api.linkedin.com/v2/me?projection=(id,localizedFirstName,localizedLastName,profilePicture(displayImage~:playableStreams))', {
       headers: {
         'Authorization': `Bearer ${tokenData.access_token}`,
         'LinkedIn-Version': '202507',

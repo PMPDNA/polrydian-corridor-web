@@ -169,10 +169,10 @@ serve(async (req) => {
 
     console.log('📡 Fetching LinkedIn posts for:', personUrn);
 
-    // Use the new LinkedIn API with required versioning
-    console.log('📡 Calling LinkedIn REST API with version 202507');
+    // Use LinkedIn v2 API with all required headers
+    console.log('📡 Calling LinkedIn v2 API with required headers');
     const postsResponse = await fetch(
-      `https://api.linkedin.com/rest/posts?author=${encodeURIComponent(personUrn)}&count=50&sortBy=LAST_MODIFIED`,
+      `https://api.linkedin.com/v2/shares?q=owners&owners=${encodeURIComponent(personUrn)}&count=50&sortBy=LAST_MODIFIED`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
