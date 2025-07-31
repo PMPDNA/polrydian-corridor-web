@@ -60,12 +60,12 @@ Deno.serve(async (req) => {
           const userAgent = visitorData.user_agent || ''
           const deviceInfo = parseUserAgent(userAgent)
           
-          // Insert visitor analytics data
+          // Insert visitor analytics data with proper IP handling
           const { error: trackError } = await supabase
             .from('visitor_analytics')
             .insert({
               visitor_id: visitorData.visitor_id,
-              ip_address: clientIP,
+              ip_address: clientIP === 'unknown' ? null : clientIP,
               user_agent: userAgent,
               page_url: visitorData.page_url,
               referrer: visitorData.referrer || null,

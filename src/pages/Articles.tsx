@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArticleForm } from "@/components/ArticleForm";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useArticles } from "@/hooks/useArticles";
+import { sanitizeHtml } from "@/lib/security";
 
 interface Article {
   id: string;
@@ -67,21 +69,29 @@ const sampleArticles: Article[] = [
 ];
 
 export default function Articles() {
-  const [articles, setArticles] = useState<Article[]>(() => {
-    const stored = localStorage.getItem('published-articles');
-    return stored ? JSON.parse(stored) : sampleArticles;
-  });
+  // Use real articles from database instead of sample data
+  const { articles: dbArticles, loading } = useArticles();
   const [currentHero, setCurrentHero] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showForm, setShowForm] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
-  // Save articles to localStorage whenever articles change
-  useEffect(() => {
-    localStorage.setItem('published-articles', JSON.stringify(articles));
-  }, [articles]);
+  // Convert database articles to the expected format
+  const articles: Article[] = dbArticles?.map(dbArticle => ({
+    id: dbArticle.id,
+    title: dbArticle.title,
+    excerpt: dbArticle.content.substring(0, 200) + "...",
+    content: dbArticle.content,
+    category: "Strategy" as const, // Default category
+    heroImage: "/placeholder.svg", // Default image
+    publishDate: new Date(dbArticle.created_at).toISOString().split('T')[0],
+    readTime: Math.ceil(dbArticle.content.length / 200), // Estimate read time
+    linkedinUrl: "",
+    featured: false,
+  })) || sampleArticles; // Fallback to sample articles if no database articles
 
-  const featuredArticles = articles.filter(article => article.featured);
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
+  const featuredArticles = articles.filter(article => article.featured);
 
   const filteredArticles = selectedCategory === "All" 
     ? articles 
@@ -230,7 +240,7 @@ export default function Articles() {
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <ArticleForm 
                   onSave={(article) => {
-                    setArticles(prev => [{ ...article, id: Date.now().toString() }, ...prev]);
+                    // Article will be saved to database via ArticleForm
                     setShowForm(false);
                   }}
                   onCancel={() => setShowForm(false)}
@@ -298,10 +308,40 @@ export default function Articles() {
                     </div>
                   </div>
                   
-                  <div className="flex gap-2">
-                    <Button size="sm" className="flex-1">
-                      Read More
-                    </Button>
+                   <div className="flex gap-2">
+                     <Dialog>
+                       <DialogTrigger asChild>
+                         <Button size="sm" className="flex-1" onClick={() => setSelectedArticle(article)}>
+                           Read More
+                         </Button>
+                       </DialogTrigger>
+                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                         <div className="space-y-6">
+                           <div>
+                             <Badge variant="secondary" className="mb-2">
+                               {article.category}
+                             </Badge>
+                             <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+                             <div className="flex items-center gap-4 text-muted-foreground mb-6">
+                               <div className="flex items-center gap-2">
+                                 <Calendar className="h-4 w-4" />
+                                 <span>{formatDate(article.publishDate)}</span>
+                               </div>
+                               <div className="flex items-center gap-2">
+                                 <Clock className="h-4 w-4" />
+                                 <span>{article.readTime} min read</span>
+                               </div>
+                             </div>
+                           </div>
+                           <div 
+                             className="prose prose-lg max-w-none"
+                             dangerouslySetInnerHTML={{ 
+                               __html: sanitizeHtml(article.content)
+                             }}
+                           />
+                         </div>
+                       </DialogContent>
+                     </Dialog>
                     <Button size="sm" variant="outline" asChild>
                       <a href={article.linkedinUrl} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-4 w-4" />

@@ -47,37 +47,90 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }, [user?.id])
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+    let mounted = true;
+
+    const initAuth = async () => {
+      try {
+        // Get initial session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted && session?.user) {
+          // Check if user has MFA enabled
+          const { data: factors } = await supabase.auth.mfa.listFactors();
+          const hasMFAEnabled = factors?.totp && factors.totp.length > 0;
+          
+          if (hasMFAEnabled) {
+            // Verify current assurance level
+            const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+            
+            if (data?.currentLevel !== 'aal2') {
+              // MFA required but not completed - force logout and show MFA
+              console.warn('MFA required but not verified. Logging out.');
+              await supabase.auth.signOut();
+              setNeedsMFA(true);
+              setSession(null);
+              setUser(null);
+              setLoading(false);
+              return;
+            }
+          }
+          
+          setSession(session);
+          setUser(session.user);
+          setNeedsMFA(false);
+        } else {
+          setSession(null);
+          setUser(null);
+          setNeedsMFA(false);
+        }
+        
+        if (mounted) setLoading(false);
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        if (mounted) {
+          setLoading(false);
+          setSession(null);
+          setUser(null);
+        }
+      }
+    };
+
+    initAuth();
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log('Auth state change:', _event, (session as any)?.user?.aal)
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change:', event);
       
-      // Only clear MFA requirement if user has AAL2 (completed MFA)
-      if (session?.user) {
-        if ((session as any).user.aal === 'aal2') {
-          console.log('User has completed MFA (AAL2), clearing needsMFA flag');
-          setNeedsMFA(false);
+      if (session?.user && event === 'SIGNED_IN') {
+        // Check MFA requirement on sign in
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        const hasMFAEnabled = factors?.totp && factors.totp.length > 0;
+        
+        if (hasMFAEnabled) {
+          const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+          
+          if (data?.currentLevel !== 'aal2') {
+            setNeedsMFA(true);
+            return;
+          }
         }
-      } else {
+        
+        setNeedsMFA(false);
+      } else if (event === 'SIGNED_OUT') {
         setNeedsMFA(false);
       }
       
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+      
       // Clear role cache when user changes
       if (session?.user?.id) {
-        clearUserRoleCache(session.user.id)
+        clearUserRoleCache(session.user.id);
       }
-    })
+    });
 
     return () => subscription.unsubscribe()
   }, [])
