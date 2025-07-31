@@ -12,6 +12,10 @@ import { refreshCSPNonce } from './lib/csp-nonce'
 applySecurityHeaders()
 refreshCSPNonce()
 
+// Initialize CSRF protection
+import { initializeCSRF } from './lib/enhanced-security'
+initializeCSRF()
+
 // Validate environment on startup
 validateEnvironment()
 

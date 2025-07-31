@@ -38,11 +38,19 @@ export const emailSchema = z.string()
   .email('Invalid email address')
   .min(1, 'Email is required')
 
-// Content sanitization
+// Content sanitization - Enhanced security
 export const sanitizeHtml = (content: string): string => {
   return DOMPurify.sanitize(content, {
-    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-    ALLOWED_ATTR: []
+    ALLOWED_TAGS: [
+      'p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 
+      'a', 'code', 'pre'
+    ],
+    ALLOWED_ATTR: ['href', 'target', 'rel'],
+    ALLOW_DATA_ATTR: false,
+    FORBID_TAGS: ['script', 'object', 'embed', 'iframe', 'form', 'input'],
+    FORBID_ATTR: ['style', 'on*'],
+    USE_PROFILES: { html: true }
   })
 }
 

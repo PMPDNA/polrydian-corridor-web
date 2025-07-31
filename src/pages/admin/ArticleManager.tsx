@@ -1,4 +1,5 @@
 import { useState } from "react";
+import DOMPurify from "dompurify";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import { ArticleForm } from "@/components/ArticleForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLayout } from "@/layouts/AdminLayout";
+import { sanitizeHtml } from "@/lib/security";
 
 export default function ArticleManager() {
   const { articles, loading, createArticle, updateArticle, deleteArticle } = useArticles();
@@ -185,7 +187,11 @@ export default function ArticleManager() {
                             <DialogTitle>{article.title}</DialogTitle>
                           </DialogHeader>
                           <div className="prose dark:prose-invert max-w-none">
-                            <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                            <div 
+                              dangerouslySetInnerHTML={{ 
+                                __html: sanitizeHtml(article.content)
+                              }}
+                            />
                           </div>
                         </DialogContent>
                       </Dialog>
