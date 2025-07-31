@@ -28,6 +28,15 @@ export default function SupabaseLogin() {
     setIsLoading(true)
     setErrors({})
 
+    // Add mobile debugging
+    console.log('SupabaseLogin attempt:', {
+      email: email,
+      isMobile: window.innerWidth <= 768,
+      userAgent: navigator.userAgent,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      timestamp: new Date().toISOString()
+    })
+
     // Check rate limiting
     const clientId = `${email}_${Date.now().toString().slice(0, -3)}` // IP simulation
     if (!authRateLimit.isAllowed(clientId)) {

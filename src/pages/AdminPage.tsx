@@ -127,6 +127,14 @@ export default function AdminPage() {
     e.preventDefault()
     setIsLoading(true)
 
+    // Add mobile debugging
+    console.log('AdminPage login attempt:', {
+      email: email,
+      isMobile: window.innerWidth <= 768,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString()
+    })
+
     try {
       if (showForgotPassword) {
         // Validate email format
