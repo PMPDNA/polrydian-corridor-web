@@ -200,31 +200,18 @@ serve(async (req) => {
 
     console.log('📡 Fetching LinkedIn posts for:', personUrn);
 
-    // Try the newer LinkedIn API endpoint first (v2 posts API)
-    let postsResponse = await fetch(
+    // Use the new LinkedIn API with required versioning
+    console.log('📡 Calling LinkedIn REST API with version 202507');
+    const postsResponse = await fetch(
       `https://api.linkedin.com/rest/posts?author=${encodeURIComponent(personUrn)}&count=50&sortBy=LAST_MODIFIED`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'LinkedIn-Version': '202405',
+          'LinkedIn-Version': '202507',
           'X-Restli-Protocol-Version': '2.0.0'
         }
       }
     );
-
-    // If that fails, try the legacy ugcPosts endpoint with different query
-    if (!postsResponse.ok) {
-      console.log('🔄 Trying legacy ugcPosts endpoint...');
-      postsResponse = await fetch(
-        `https://api.linkedin.com/v2/shares?q=owners&owners=${encodeURIComponent(personUrn)}&count=50&sortBy=LAST_MODIFIED`,
-        {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'X-Restli-Protocol-Version': '2.0.0'
-          }
-        }
-      );
-    }
 
     if (!postsResponse.ok) {
       const errorText = await postsResponse.text();

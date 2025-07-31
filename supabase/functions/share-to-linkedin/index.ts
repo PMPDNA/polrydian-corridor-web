@@ -151,24 +151,26 @@ serve(async (req) => {
 
     console.log('📝 Prepared post content length:', postContent.length);
 
-    // Create LinkedIn share using the new shares API
+    // Create LinkedIn post using the new REST API format
     const shareData = {
-      "owner": `urn:li:person:${personId}`,
-      "text": {
-        "text": postContent
-      },
+      "author": `urn:li:person:${personId}`,
+      "commentary": postContent,
+      "visibility": "PUBLIC",
       "distribution": {
-        "linkedInDistributionTarget": {}
+        "feedDistribution": "MAIN_FEED",
+        "targetEntities": [],
+        "thirdPartyDistributionChannels": []
       }
     };
 
-    console.log('🚀 Sharing to LinkedIn');
-    const shareResponse = await fetch('https://api.linkedin.com/v2/shares', {
+    console.log('🚀 Sharing to LinkedIn using REST API');
+    const shareResponse = await fetch('https://api.linkedin.com/rest/posts', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
-        'LinkedIn-Version': '202405'
+        'LinkedIn-Version': '202507',
+        'X-Restli-Protocol-Version': '2.0.0'
       },
       body: JSON.stringify(shareData)
     });

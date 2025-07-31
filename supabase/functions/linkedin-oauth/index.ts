@@ -132,12 +132,13 @@ serve(async (req) => {
     const tokenData = await tokenResponse.json();
     console.log('✅ Tokens obtained successfully');
 
-    console.log('👤 Fetching user profile');
-    // Get user profile to store platform_user_id
-    const profileResponse = await fetch('https://api.linkedin.com/v2/people/~:(id,firstName,lastName,profilePicture(displayImage~:playableStreams))', {
+    console.log('👤 Fetching user profile using REST API');
+    // Get user profile to store platform_user_id using new REST endpoint
+    const profileResponse = await fetch('https://api.linkedin.com/rest/people/~:(id,firstName,lastName,profilePicture(displayImage~:playableStreams))', {
       headers: {
         'Authorization': `Bearer ${tokenData.access_token}`,
-        'LinkedIn-Version': '202405'
+        'LinkedIn-Version': '202507',
+        'X-Restli-Protocol-Version': '2.0.0'
       }
     });
 
