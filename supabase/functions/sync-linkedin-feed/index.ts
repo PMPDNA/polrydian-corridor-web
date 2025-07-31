@@ -7,44 +7,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Secure token decryption (matches linkedin-oauth implementation)
+// Simple base64 decryption to match linkedin-oauth implementation
 async function decryptToken(encryptedToken: string): Promise<string> {
   try {
-    // Decode from base64
-    const combined = new Uint8Array(
-      atob(encryptedToken).split('').map(char => char.charCodeAt(0))
-    );
-    
-    // Extract components
-    const keyData = combined.slice(0, 32);
-    const iv = combined.slice(32, 44);
-    const encrypted = combined.slice(44);
-    
-    // Import the key
-    const key = await crypto.subtle.importKey(
-      'raw',
-      keyData,
-      { name: 'AES-GCM' },
-      false,
-      ['decrypt']
-    );
-    
-    // Decrypt
-    const decrypted = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv: iv },
-      key,
-      encrypted
-    );
-    
-    return new TextDecoder().decode(decrypted);
+    return atob(encryptedToken);
   } catch (error) {
     console.error('Decryption error:', error);
-    // Fallback to base64 decoding for backwards compatibility
-    try {
-      return atob(encryptedToken);
-    } catch {
-      throw new Error('Failed to decrypt token');
-    }
+    throw new Error('Failed to decrypt token');
   }
 }
 

@@ -27,11 +27,11 @@ serve(async (req) => {
     
     let requestData
     try {
-      requestData = JSON.parse(body)
+      requestData = body ? JSON.parse(body) : { action: 'check_connection' }
       console.log('📝 Parsed request data:', requestData)
     } catch (e) {
       console.error('❌ JSON parse error:', e.message)
-      throw new Error('Invalid JSON in request body')
+      requestData = { action: 'check_connection' }
     }
 
     const { action } = requestData

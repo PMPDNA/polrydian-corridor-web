@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Simplified token encryption - will enhance after debugging
+// Simple base64 encoding for token storage
 function encryptToken(token: string): string {
   try {
     return btoa(token);
@@ -134,7 +134,7 @@ serve(async (req) => {
 
     console.log('👤 Fetching user profile using REST API');
     // Get user profile to store platform_user_id using new REST endpoint
-    const profileResponse = await fetch('https://api.linkedin.com/rest/people/~:(id,firstName,lastName,profilePicture(displayImage~:playableStreams))', {
+    const profileResponse = await fetch('https://api.linkedin.com/rest/people/~', {
       headers: {
         'Authorization': `Bearer ${tokenData.access_token}`,
         'LinkedIn-Version': '202507',
