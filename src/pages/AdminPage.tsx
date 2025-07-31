@@ -73,8 +73,9 @@ export default function AdminPage() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <TwoFactorVerification 
           onSuccess={() => {
-            console.log('2FA verification successful');
-            setNeedsMFA(false);
+            console.log('2FA verification successful - waiting for auth state update');
+            // Don't manually set needsMFA - let the auth system handle it
+            // The onAuthStateChange will update needsMFA when session refreshes
           }} 
         />
       </div>
@@ -120,6 +121,7 @@ export default function AdminPage() {
   }
   // Fourth check: if all checks pass, show admin dashboard
   else if (user && isAdmin && !needsMFA) {
+    console.log('Rendering AdminDashboard for authenticated admin user');
     return <AdminDashboard />
   }
 

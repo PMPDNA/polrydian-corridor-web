@@ -58,27 +58,32 @@ export default function TwoFactorVerification({ onSuccess }: TwoFactorVerificati
 
     setIsLoading(true)
     try {
-      console.log('Starting MFA verification...')
-      const mfaResponse = await verifyMFA(factorId, challengeId, verificationCode)
+      console.log('Mobile MFA verification starting:', {
+        isMobile: window.innerWidth <= 768,
+        userAgent: navigator.userAgent
+      })
       
+      const mfaResponse = await verifyMFA(factorId, challengeId, verificationCode)
       console.log('MFA verification successful:', mfaResponse)
       
-      // Force a session refresh to ensure AAL2 is set
+      // Wait for session refresh with proper error handling
       const { data: session, error: sessionError } = await supabase.auth.refreshSession()
-      console.log('Session after MFA refresh:', session, sessionError)
+      console.log('Session after MFA refresh:', session?.session?.access_token ? 'Token present' : 'No token', sessionError)
+      
+      if (sessionError) {
+        console.error('Session refresh failed:', sessionError)
+        throw sessionError
+      }
       
       toast({
         title: "Welcome back!",
         description: "Two-factor authentication successful.",
       })
       
-      // Wait a bit longer to ensure session state is properly updated
-      setTimeout(() => {
-        console.log('Calling onSuccess callback')
-        onSuccess()
-        // Force a page refresh to ensure admin panel loads
-        window.location.href = '/admin'
-      }, 500)
+      // Let the auth system handle the state change naturally
+      console.log('Calling onSuccess callback')
+      onSuccess()
+      
     } catch (error: any) {
       console.error('MFA verification failed:', error)
       toast({

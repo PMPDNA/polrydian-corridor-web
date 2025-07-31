@@ -100,28 +100,14 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event);
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change:', event, {
+        hasSession: !!session,
+        hasUser: !!session?.user,
+        needsMFA: needsMFA
+      });
       
-      if (session?.user && event === 'SIGNED_IN') {
-        // Check MFA requirement on sign in
-        const { data: factors } = await supabase.auth.mfa.listFactors();
-        const hasMFAEnabled = factors?.totp && factors.totp.length > 0;
-        
-        if (hasMFAEnabled) {
-          const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-          
-          if (data?.currentLevel !== 'aal2') {
-            setNeedsMFA(true);
-            return;
-          }
-        }
-        
-        setNeedsMFA(false);
-      } else if (event === 'SIGNED_OUT') {
-        setNeedsMFA(false);
-      }
-      
+      // Handle session updates
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -129,6 +115,36 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       // Clear role cache when user changes
       if (session?.user?.id) {
         clearUserRoleCache(session.user.id);
+      }
+      
+      // Handle MFA logic separately with timeout
+      if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+        setTimeout(async () => {
+          try {
+            const { data: factors } = await supabase.auth.mfa.listFactors();
+            const hasMFAEnabled = factors?.totp && factors.totp.length > 0;
+            
+            if (hasMFAEnabled) {
+              const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+              console.log('MFA assurance level:', data?.currentLevel);
+              
+              if (data?.currentLevel !== 'aal2') {
+                console.log('Setting needsMFA to true');
+                setNeedsMFA(true);
+              } else {
+                console.log('Setting needsMFA to false - AAL2 verified');
+                setNeedsMFA(false);
+              }
+            } else {
+              setNeedsMFA(false);
+            }
+          } catch (error) {
+            console.error('MFA check error:', error);
+            setNeedsMFA(false);
+          }
+        }, 0);
+      } else if (event === 'SIGNED_OUT') {
+        setNeedsMFA(false);
       }
     });
 
