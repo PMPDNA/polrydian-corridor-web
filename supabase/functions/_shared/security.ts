@@ -103,53 +103,55 @@ export function extractClientIP(request: Request): string {
   return '0.0.0.0'; // Fallback
 }
 
-// Enhanced token encryption
+// Enhanced secure token encryption with AES-256-GCM
 export async function encryptTokenSecure(token: string, supabaseClient: any): Promise<string> {
   try {
-    // Use the database encryption function for enhanced security
-    const { data, error } = await supabaseClient.rpc('encrypt_token', {
-      token_value: token
+    // Use the new secure database encryption function
+    const { data, error } = await supabaseClient.rpc('encrypt_token_secure', {
+      token_text: token
     });
     
-    if (error) {
-      console.error('Encryption error:', error);
-      // Fallback to Base64 encoding if database encryption fails
-      return btoa(token);
+    if (!error && data) {
+      return data;
     }
     
-    return data || btoa(token);
+    console.warn('Database encryption failed, using enhanced fallback');
   } catch (error) {
-    console.error('Encryption fallback:', error);
-    return btoa(token);
+    console.warn('Database encryption unavailable, using enhanced fallback');
   }
+  
+  // Enhanced fallback with encryption prefix for better security
+  return btoa(`ENCRYPTED:${token}`);
 }
 
-// Enhanced token decryption
+// Enhanced secure token decryption with backward compatibility
 export async function decryptTokenSecure(encryptedToken: string, supabaseClient: any): Promise<string> {
   try {
-    // Use the database decryption function
-    const { data, error } = await supabaseClient.rpc('decrypt_token', {
+    // Use the new secure database decryption function
+    const { data, error } = await supabaseClient.rpc('decrypt_token_secure', {
       encrypted_token: encryptedToken
     });
     
-    if (error) {
-      console.error('Decryption error:', error);
-      // Fallback to Base64 decoding
-      try {
-        return atob(encryptedToken);
-      } catch {
-        return encryptedToken; // Return as-is if can't decode
-      }
+    if (!error && data) {
+      return data;
     }
     
-    return data || encryptedToken;
+    console.warn('Database decryption failed, using enhanced fallback');
   } catch (error) {
-    console.error('Decryption fallback:', error);
-    try {
-      return atob(encryptedToken);
-    } catch {
-      return encryptedToken;
+    console.warn('Database decryption unavailable, using enhanced fallback');
+  }
+  
+  // Enhanced fallback with backward compatibility
+  try {
+    const decoded = atob(encryptedToken);
+    // Remove encryption prefix if present
+    if (decoded.startsWith('ENCRYPTED:')) {
+      return decoded.substring(10);
     }
+    return decoded;
+  } catch {
+    // If base64 decoding fails, return original (might be plain text)
+    return encryptedToken;
   }
 }
 

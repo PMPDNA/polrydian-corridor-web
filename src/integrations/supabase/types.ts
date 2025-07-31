@@ -146,6 +146,27 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: number
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: never
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: never
+          title?: string | null
+        }
+        Relationships: []
+      }
       data_processing_log: {
         Row: {
           action: string
@@ -355,6 +376,38 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: number | null
+          created_at: string | null
+          id: number
+          sender_id: string | null
+        }
+        Insert: {
+          content: string
+          conversation_id?: number | null
+          created_at?: string | null
+          id?: never
+          sender_id?: string | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: number | null
+          created_at?: string | null
+          id?: never
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       outbound_shares: {
         Row: {
@@ -698,6 +751,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      decrypt_token_secure: {
+        Args: { encrypted_token: string }
+        Returns: string
+      }
+      encrypt_token_secure: {
+        Args: { token_text: string }
+        Returns: string
+      }
       extract_first_ip: {
         Args: { ip_string: string }
         Returns: unknown
@@ -716,6 +777,15 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      log_security_event_enhanced: {
+        Args: {
+          event_action: string
+          event_details?: Json
+          event_severity?: string
+          client_ip?: string
+        }
+        Returns: undefined
       }
       prevent_role_self_elevation: {
         Args: {

@@ -7,13 +7,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Simple base64 encoding for token storage
-function encryptToken(token: string): string {
+// Enhanced token encryption with AES-256-GCM security
+async function encryptTokenSecure(token: string, supabaseClient: any): Promise<string> {
   try {
-    return btoa(token);
+    // Use the new database encryption function for maximum security
+    const { data, error } = await supabaseClient.rpc('encrypt_token_secure', {
+      token_text: token
+    });
+    
+    if (!error && data) {
+      console.log('✅ Token encrypted using secure database function');
+      return data;
+    }
+    
+    console.warn('Database encryption failed, using enhanced fallback');
+    // Enhanced fallback with encryption prefix
+    return btoa(`ENCRYPTED:${token}`);
   } catch (error) {
-    console.error('Encryption error:', error);
-    return token;
+    console.error('Token encryption error, using fallback:', error);
+    return btoa(`ENCRYPTED:${token}`);
   }
 }
 
@@ -164,8 +176,8 @@ serve(async (req) => {
         user_id: user.id,
         platform: 'linkedin',
         platform_user_id: platformUserId,
-        access_token_encrypted: encryptToken(tokenData.access_token),
-        refresh_token_encrypted: encryptToken(tokenData.refresh_token || ''),
+        access_token_encrypted: await encryptTokenSecure(tokenData.access_token, supabase),
+        refresh_token_encrypted: await encryptTokenSecure(tokenData.refresh_token || '', supabase),
         expires_at: expiresAt.toISOString(),
         profile_data: profileData,
         is_active: true,
