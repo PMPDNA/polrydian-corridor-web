@@ -79,7 +79,9 @@ export const LinkedInConnectionStatus = () => {
     setIsConnecting(true);
     const redirectUri = `${window.location.origin}/auth/callback`;
     const clientId = '78z20ojmlvz2ks';
-    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=openid%20profile%20email%20w_member_social%20rw_organization_admin%20r_organization_social%20r_basicprofile%20r_1st_connections_size`;
+    // Updated scopes for LinkedIn v2 API with proper permissions for reading posts
+    const scopes = 'openid profile email w_member_social';
+    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=linkedin_auth`;
     
     // Open in the same window to handle the callback properly
     window.location.href = authUrl;
