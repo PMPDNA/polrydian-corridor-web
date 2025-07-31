@@ -67,22 +67,23 @@ export default function AdminPage() {
     )
   }
 
-  // First check: user must be logged in
-  if (!user) {
-    // Show login form (handled below)
-  }
-  // Second check: if user has MFA, require completion
-  else if (needsMFA) {
+  // Second check: if MFA is required, show 2FA verification regardless of user state
+  if (needsMFA) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <TwoFactorVerification 
           onSuccess={() => {
             console.log('2FA verification successful');
-            // The auth state change will handle clearing needsMFA
+            setNeedsMFA(false);
           }} 
         />
       </div>
     );
+  }
+
+  // First check: user must be logged in
+  if (!user) {
+    // Show login form (handled below)
   }
   // Third check: user must be admin (after MFA if required)
   else if (!isAdmin) {
