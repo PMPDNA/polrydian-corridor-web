@@ -94,8 +94,8 @@ export default function ArticleManager() {
 
   return (
     <AdminLayout title="Article Management">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="h-full overflow-hidden flex flex-col space-y-6">
+        <div className="flex justify-between items-center flex-shrink-0">
           <div>
             <h1 className="text-3xl font-bold">Article Management</h1>
             <p className="text-muted-foreground">Create, edit, and manage your articles</p>
@@ -117,7 +117,7 @@ export default function ArticleManager() {
           </Dialog>
         </div>
 
-        <Card>
+        <Card className="flex-shrink-0">
           <CardHeader>
             <CardTitle>Search Articles</CardTitle>
             <CardDescription>Find articles by title or content</CardDescription>
@@ -135,7 +135,8 @@ export default function ArticleManager() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-4">
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid gap-4 pb-4">
           {filteredArticles.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
@@ -243,6 +244,7 @@ export default function ArticleManager() {
               </Card>
             ))
           )}
+          </div>
         </div>
       </div>
     </AdminLayout>

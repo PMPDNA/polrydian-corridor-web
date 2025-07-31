@@ -10,6 +10,7 @@ import { PhotoGallery } from "@/components/PhotoGallery";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useArticles } from "@/hooks/useArticles";
 import { sanitizeHtml } from "@/lib/security";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 interface Article {
   id: string;
@@ -71,6 +72,7 @@ const sampleArticles: Article[] = [
 export default function Articles() {
   // Use real articles from database instead of sample data
   const { articles: dbArticles, loading } = useArticles();
+  const { user, isAdmin } = useSupabaseAuth();
   const [currentHero, setCurrentHero] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showForm, setShowForm] = useState(false);
@@ -230,23 +232,46 @@ export default function Articles() {
               </p>
             </div>
             
-            <Dialog open={showForm} onOpenChange={setShowForm}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Article
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <ArticleForm 
-                  onSave={(article) => {
-                    // Article will be saved to database via ArticleForm
-                    setShowForm(false);
-                  }}
-                  onCancel={() => setShowForm(false)}
-                />
-              </DialogContent>
-            </Dialog>
+            {isAdmin && (
+              <Dialog open={showForm} onOpenChange={setShowForm}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Article
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <ArticleForm 
+                    onSave={(article) => {
+                      // Article will be saved to database via ArticleForm
+                      setShowForm(false);
+                    }}
+                    onCancel={() => setShowForm(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+            )}
+
+            {/* Contribution section for non-admin users */}
+            {!isAdmin && (
+              <div className="mt-6 p-6 bg-secondary/20 rounded-lg border border-secondary/40">
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  Want to Contribute Your View?
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Share your insights and perspectives on current economic and market realities. 
+                  Submit your draft for review and potential publication.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button variant="outline" asChild>
+                    <a href="/contribute">Submit Your Draft</a>
+                  </Button>
+                  <Button variant="ghost" asChild>
+                    <a href="#contact">Contact Us</a>
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Category Filter */}

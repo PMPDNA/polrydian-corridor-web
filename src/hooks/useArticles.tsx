@@ -12,6 +12,13 @@ export interface Article {
   updated_at: string
   published_at?: string
   user_id: string
+  meta_description?: string
+  keywords?: string[]
+  featured_image?: string
+  slug?: string
+  reference_sources?: any[]
+  related_articles?: string[]
+  reading_time_minutes?: number
 }
 
 export function useArticles() {

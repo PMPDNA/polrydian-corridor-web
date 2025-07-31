@@ -38,12 +38,73 @@ export type Database = {
         }
         Relationships: []
       }
+      article_submissions: {
+        Row: {
+          admin_notes: string | null
+          content: string
+          created_at: string
+          id: string
+          keywords: string[] | null
+          meta_description: string | null
+          reference_sources: Json | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitter_email: string
+          submitter_message: string | null
+          submitter_name: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          keywords?: string[] | null
+          meta_description?: string | null
+          reference_sources?: Json | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitter_email: string
+          submitter_message?: string | null
+          submitter_name: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          keywords?: string[] | null
+          meta_description?: string | null
+          reference_sources?: Json | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitter_email?: string
+          submitter_message?: string | null
+          submitter_name?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           content: string
           created_at: string
+          featured_image: string | null
           id: string
+          keywords: string[] | null
+          meta_description: string | null
           published_at: string | null
+          reading_time_minutes: number | null
+          reference_sources: Json | null
+          related_articles: string[] | null
+          slug: string | null
           status: string
           title: string
           updated_at: string
@@ -52,8 +113,15 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          featured_image?: string | null
           id?: string
+          keywords?: string[] | null
+          meta_description?: string | null
           published_at?: string | null
+          reading_time_minutes?: number | null
+          reference_sources?: Json | null
+          related_articles?: string[] | null
+          slug?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -62,8 +130,15 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          featured_image?: string | null
           id?: string
+          keywords?: string[] | null
+          meta_description?: string | null
           published_at?: string | null
+          reading_time_minutes?: number | null
+          reference_sources?: Json | null
+          related_articles?: string[] | null
+          slug?: string | null
           status?: string
           title?: string
           updated_at?: string
