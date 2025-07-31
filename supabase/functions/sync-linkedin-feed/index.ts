@@ -172,7 +172,7 @@ serve(async (req) => {
     // Use LinkedIn v2 API with all required headers
     console.log('📡 Calling LinkedIn v2 API with required headers');
     const postsResponse = await fetch(
-      `https://api.linkedin.com/v2/shares?q=owners&owners=${encodeURIComponent(personUrn)}&count=50&sortBy=LAST_MODIFIED`,
+      `https://api.linkedin.com/v2/ugcPosts?q=authors&authors=List(${encodeURIComponent(personUrn)})&count=50&sortBy=LAST_MODIFIED`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
