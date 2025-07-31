@@ -39,10 +39,15 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Get client IP address
-    const clientIP = req.headers.get('x-forwarded-for') || 
-                    req.headers.get('x-real-ip') || 
-                    'unknown'
+    // Get client IP address with proper parsing
+    let clientIP = req.headers.get('x-forwarded-for') || 
+                   req.headers.get('x-real-ip') || 
+                   'unknown'
+    
+    // Handle comma-separated IPs by taking the first one
+    if (clientIP && clientIP.includes(',')) {
+      clientIP = clientIP.split(',')[0].trim()
+    }
 
     if (req.method === 'POST') {
       const { action, data } = await req.json()

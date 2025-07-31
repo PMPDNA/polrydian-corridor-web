@@ -22,7 +22,6 @@ interface Organization {
 }
 
 export const OrganizationLogos = () => {
-  const { isAdmin } = useSupabaseAuth();
   const [organizations, setOrganizations] = useState<Organization[]>([
     // Institutional Partners
     { id: "1", name: "World Affairs Council of Miami", website_url: "https://worldaffairs.miami", category: 'institutional' },
@@ -69,15 +68,7 @@ export const OrganizationLogos = () => {
   const { toast } = useToast();
 
   const handleLogoUpload = async (urls: string[], orgId: string) => {
-    if (!isAdmin) {
-      toast({
-        title: "Access denied",
-        description: "Only administrators can edit organizations.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
+    // Remove admin checks - this component should be public only
     if (urls.length > 0) {
       const updatedOrgs = organizations.map(org => 
         org.id === orgId ? { ...org, logo_url: urls[0] } : org
@@ -91,15 +82,6 @@ export const OrganizationLogos = () => {
   };
 
   const handleWebsiteUpdate = (orgId: string, websiteUrl: string) => {
-    if (!isAdmin) {
-      toast({
-        title: "Access denied",
-        description: "Only administrators can edit organizations.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     const updatedOrgs = organizations.map(org => 
       org.id === orgId ? { ...org, website_url: websiteUrl } : org
     );
@@ -118,15 +100,6 @@ export const OrganizationLogos = () => {
   };
 
   const deleteOrganization = (orgId: string) => {
-    if (!isAdmin) {
-      toast({
-        title: "Access denied",
-        description: "Only administrators can edit organizations.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     setOrganizations(organizations.filter(org => org.id !== orgId));
     toast({
       title: "Organization removed",
@@ -290,16 +263,6 @@ export const OrganizationLogos = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Collaborating with leading global institutions and business partners to deliver strategic insights and solutions
           </p>
-          {isAdmin && (
-            <Button 
-              onClick={() => setIsEditing(!isEditing)}
-              variant="outline"
-              className="mt-4"
-            >
-              <Pencil className="w-4 h-4 mr-2" />
-              {isEditing ? "Done Editing" : "Edit Organizations"}
-            </Button>
-          )}
         </div>
         
         {/* Business Partners Section - Centered at top */}
