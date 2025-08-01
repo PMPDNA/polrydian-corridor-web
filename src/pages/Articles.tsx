@@ -82,7 +82,7 @@ export default function Articles() {
   const articles: Article[] = dbArticles?.map(dbArticle => ({
     id: dbArticle.id,
     title: dbArticle.title,
-    excerpt: dbArticle.content.substring(0, 200) + "...",
+    excerpt: dbArticle.meta_description || dbArticle.content.substring(0, 200) + "...",
     content: dbArticle.content,
     category: "Strategy" as const, // Default category
     heroImage: "/placeholder.svg", // Default image
