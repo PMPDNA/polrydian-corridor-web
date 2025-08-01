@@ -256,39 +256,56 @@ export function IntegrationHub() {
 
   const checkEconomicInsights = async (): Promise<IntegrationStatus> => {
     try {
-      const { data, error } = await supabase.functions.invoke('fetch-economic-insights', {
-        body: { test: true }
+      const { data, error } = await supabase.functions.invoke('fred-api-integration', {
+        body: { operation: 'get_available_series' }
       })
 
       if (error) {
+        if (error.message?.includes('FRED_API_KEY')) {
+          return {
+            id: 'economic',
+            name: 'FRED Economic Data',
+            status: 'not_configured',
+            icon: TrendingUp,
+            description: 'FRED API key required for economic data',
+            lastChecked: new Date().toISOString(),
+            details: 'Configure FRED API key in secrets',
+            actions: [{ label: 'Configure API Key', type: 'configure' }]
+          }
+        }
+
         return {
           id: 'economic',
-          name: 'Economic Insights',
-          status: 'not_configured',
+          name: 'FRED Economic Data',
+          status: 'error',
           icon: TrendingUp,
-          description: 'Economic data API not configured',
+          description: 'FRED API configuration error',
           lastChecked: new Date().toISOString(),
           details: error.message,
-          actions: [{ label: 'Configure API', type: 'configure' }]
+          actions: [{ label: 'Test API', type: 'test', variant: 'outline' }]
         }
       }
 
       return {
         id: 'economic',
-        name: 'Economic Insights',
+        name: 'FRED Economic Data',
         status: 'connected',
         icon: TrendingUp,
-        description: 'Economic data API configured and working',
+        description: 'FRED API configured with access to economic indicators',
         lastChecked: new Date().toISOString(),
-        actions: [{ label: 'Test API', type: 'test', variant: 'outline' }]
+        details: `${data?.data?.length || 0} economic indicators available`,
+        actions: [
+          { label: 'Test API', type: 'test', variant: 'outline' },
+          { label: 'Fetch Data', type: 'sync', variant: 'outline' }
+        ]
       }
     } catch (error) {
       return {
         id: 'economic',
-        name: 'Economic Insights',
+        name: 'FRED Economic Data',
         status: 'not_configured',
         icon: TrendingUp,
-        description: 'Economic insights not available',
+        description: 'FRED economic data not available',
         lastChecked: new Date().toISOString(),
         actions: [{ label: 'Setup API', type: 'configure' }]
       }
@@ -393,12 +410,25 @@ export function IntegrationHub() {
   }
 
   const handleEconomicAction = async (actionType: string) => {
-    if (actionType === 'test') {
-      const { error } = await supabase.functions.invoke('fetch-economic-insights', {
-        body: { query: "GDP growth", test: true }
-      })
-      if (error) throw error
-      toast({ title: "Success", description: "Economic insights API working correctly" })
+    switch (actionType) {
+      case 'test':
+        const { error: testError } = await supabase.functions.invoke('fred-api-integration', {
+          body: { operation: 'get_available_series' }
+        })
+        if (testError) throw testError
+        toast({ title: "Success", description: "FRED API connection verified" })
+        break
+      case 'sync':
+        const { error: syncError } = await supabase.functions.invoke('fred-api-integration', {
+          body: { 
+            operation: 'fetch_indicators',
+            indicators: ['gdp', 'unemployment', 'inflation'],
+            limit: 20
+          }
+        })
+        if (syncError) throw syncError
+        toast({ title: "Success", description: "Economic data fetched successfully" })
+        break
     }
   }
 

@@ -125,7 +125,7 @@ serve(async (req) => {
       authUrl.searchParams.set('client_id', linkedinClientId);
       authUrl.searchParams.set('redirect_uri', redirectUrl);
       authUrl.searchParams.set('state', state);
-      authUrl.searchParams.set('scope', 'r_liteprofile w_member_social');
+      authUrl.searchParams.set('scope', 'openid profile email w_member_social r_basicprofile');
       
       console.log('✅ Authorization URL generated');
       return new Response(JSON.stringify({ 
