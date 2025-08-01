@@ -862,6 +862,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      migrate_existing_tokens: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       prevent_role_self_elevation: {
         Args: {
           target_user_id: string
