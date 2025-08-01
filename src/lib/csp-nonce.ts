@@ -27,19 +27,16 @@ export const generateCSPHeader = (nonce?: string): string => {
   const directives = {
     'default-src': "'self'",
     'script-src': `'self' 'nonce-${actualNonce}' 'wasm-unsafe-eval'`,
-    'style-src': `'self' 'nonce-${actualNonce}' 'unsafe-inline'`, // Unsafe-inline needed for Tailwind
+    'style-src': `'self' 'nonce-${actualNonce}' 'unsafe-inline' https://fonts.googleapis.com`,
     'img-src': "'self' data: https://*.supabase.co https://calendly.com https://media.licdn.com",
     'connect-src': "'self' https://*.supabase.co https://api.linkedin.com https://www.linkedin.com",
-    'font-src': "'self' data: https://fonts.gstatic.com",
+    'font-src': "'self' data: https://fonts.gstatic.com https://fonts.googleapis.com",
     'object-src': "'none'",
     'media-src': "'self' https://*.supabase.co",
     'frame-src': "'self' https://calendly.com",
-    'frame-ancestors': "'none'",
     'base-uri': "'self'",
     'form-action': "'self'",
-    'upgrade-insecure-requests': '',
-    'block-all-mixed-content': '',
-    'require-trusted-types-for': "'script'"
+    'upgrade-insecure-requests': ''
   };
   
   return Object.entries(directives)

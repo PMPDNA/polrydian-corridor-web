@@ -2,12 +2,7 @@ import { SECURITY_CONFIG } from './security-config'
 
 // Security headers and CSP configuration
 export const securityHeaders = {
-  'Content-Security-Policy': Object.entries(SECURITY_CONFIG.CSP_DIRECTIVES)
-    .map(([directive, sources]) => `${directive} ${sources.join(' ')}`)
-    .join('; '),
-  
   'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
