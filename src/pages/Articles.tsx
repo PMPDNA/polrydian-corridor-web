@@ -335,13 +335,20 @@ export default function Articles() {
                                  <span>{article.readTime} min read</span>
                                </div>
                              </div>
-                           </div>
-                           <div 
-                             className="prose prose-lg max-w-none"
-                             dangerouslySetInnerHTML={{ 
-                               __html: sanitizeHtml(article.content)
-                             }}
-                           />
+                            </div>
+                            {/* Main content first, then abstract/excerpt */}
+                            <div 
+                              className="prose prose-lg max-w-none"
+                              dangerouslySetInnerHTML={{ 
+                                __html: sanitizeHtml(article.content)
+                              }}
+                            />
+                            {article.excerpt && article.excerpt !== article.content.substring(0, 200) + "..." && (
+                              <div className="mt-6 p-4 bg-muted rounded-lg">
+                                <h3 className="text-lg font-semibold mb-2">Summary</h3>
+                                <p className="text-muted-foreground">{article.excerpt}</p>
+                              </div>
+                            )}
                          </div>
                        </DialogContent>
                      </Dialog>

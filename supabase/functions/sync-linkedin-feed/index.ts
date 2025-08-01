@@ -1,21 +1,15 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.51.0';
+import { 
+  decryptTokenSecure,
+  logSecurityEvent 
+} from '../_shared/security.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-// Simple base64 decryption to match linkedin-oauth implementation
-async function decryptToken(encryptedToken: string): Promise<string> {
-  try {
-    return atob(encryptedToken);
-  } catch (error) {
-    console.error('Decryption error:', error);
-    throw new Error('Failed to decrypt token');
-  }
-}
 
 // Enhanced IP extraction function for better security logging
 function extractClientIP(request: Request): string | null {
@@ -162,17 +156,22 @@ serve(async (req) => {
       );
     }
 
-    // Decrypt the access token before use
+    // Decrypt the access token before use using secure method
     console.log('🔓 Decrypting access token...');
-    const accessToken = await decryptToken(credentials.access_token_encrypted);
+    const accessToken = await decryptTokenSecure(credentials.access_token_encrypted, supabase);
+    
+    if (!accessToken) {
+      throw new Error('Failed to decrypt LinkedIn access token');
+    }
+    
     const personUrn = `urn:li:person:${credentials.platform_user_id}`;
 
     console.log('📡 Fetching LinkedIn posts for:', personUrn);
 
-    // Use LinkedIn v2 API with all required headers
-    console.log('📡 Calling LinkedIn v2 API with required headers');
+    // Use LinkedIn REST API with modern headers
+    console.log('📡 Calling LinkedIn REST API with required headers');
     const postsResponse = await fetch(
-      `https://api.linkedin.com/v2/ugcPosts?q=authors&authors=List(${encodeURIComponent(personUrn)})&count=50&sortBy=LAST_MODIFIED`,
+      `https://api.linkedin.com/rest/posts?author=urn:li:person:${credentials.platform_user_id}&count=20&sortBy=CREATED&sortOrder=DESCENDING`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
