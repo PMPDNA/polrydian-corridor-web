@@ -16,7 +16,7 @@ export function LinkedInConnectionWizard() {
     setConnectionStatus('connecting')
 
     try {
-      // Call the LinkedIn OAuth edge function
+      // Call the LinkedIn OAuth edge function to get authorization URL
       const { data, error } = await supabase.functions.invoke('linkedin-oauth', {
         body: {
           action: 'initiate_oauth',
@@ -29,57 +29,17 @@ export function LinkedInConnectionWizard() {
       }
 
       if (data?.authorization_url) {
-        // Open LinkedIn OAuth in a popup window
-        const popup = window.open(
-          data.authorization_url,
-          'linkedin-oauth',
-          'width=600,height=700,scrollbars=yes,resizable=yes'
-        )
-
-        // Listen for the OAuth callback
-        const handleMessage = (event: MessageEvent) => {
-          if (event.origin !== window.location.origin) return
-
-          if (event.data.type === 'LINKEDIN_OAUTH_SUCCESS') {
-            popup?.close()
-            setConnectionStatus('connected')
-            toast({
-              title: "LinkedIn Connected",
-              description: "Your LinkedIn account has been successfully connected",
-            })
-            window.removeEventListener('message', handleMessage)
-          } else if (event.data.type === 'LINKEDIN_OAUTH_ERROR') {
-            popup?.close()
-            setConnectionStatus('error')
-            toast({
-              title: "Connection Failed",
-              description: event.data.error || "Failed to connect LinkedIn account",
-              variant: "destructive",
-            })
-            window.removeEventListener('message', handleMessage)
-          }
-        }
-
-        window.addEventListener('message', handleMessage)
-
-        // Check if popup was closed manually
-        const checkClosed = setInterval(() => {
-          if (popup?.closed) {
-            clearInterval(checkClosed)
-            setConnectionStatus('idle')
-            window.removeEventListener('message', handleMessage)
-          }
-        }, 1000)
+        // Redirect to LinkedIn OAuth (full page redirect)
+        window.location.href = data.authorization_url
       }
     } catch (error: any) {
       console.error('LinkedIn OAuth error:', error)
       setConnectionStatus('error')
       toast({
-        title: "OAuth Setup Required",
+        title: "OAuth Setup Required", 
         description: "LinkedIn OAuth credentials need to be configured in the developer console",
         variant: "destructive",
       })
-    } finally {
       setIsConnecting(false)
     }
   }

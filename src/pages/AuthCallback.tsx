@@ -50,7 +50,11 @@ export const AuthCallback = () => {
       try {
         // Send code to LinkedIn OAuth function
         const { data, error: functionError } = await supabase.functions.invoke('linkedin-oauth', {
-          body: { code }
+          body: { 
+            action: 'exchange_code',
+            code,
+            redirectUri: `${window.location.origin}/auth/callback`
+          }
         });
 
         if (functionError) {

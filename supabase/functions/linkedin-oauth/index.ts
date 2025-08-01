@@ -104,17 +104,43 @@ serve(async (req) => {
 
     console.log('📝 Parsing request body');
     const body = await req.json();
-    const { code, redirectUri } = body;
+    const { action, code, redirectUri, state } = body;
 
     console.log('📊 Request data:', {
+      action,
       hasCode: !!code,
-      hasRedirectUri: !!redirectUri
+      hasRedirectUri: !!redirectUri,
+      hasState: !!state
     });
 
+    // Handle OAuth initiation
+    if (action === 'initiate_oauth') {
+      console.log('🚀 Initiating LinkedIn OAuth flow');
+      
+      const state = crypto.randomUUID();
+      const redirectUrl = redirectUri || `${req.headers.get('origin')}/auth/callback`;
+      
+      const authUrl = new URL('https://www.linkedin.com/oauth/v2/authorization');
+      authUrl.searchParams.set('response_type', 'code');
+      authUrl.searchParams.set('client_id', linkedinClientId);
+      authUrl.searchParams.set('redirect_uri', redirectUrl);
+      authUrl.searchParams.set('state', state);
+      authUrl.searchParams.set('scope', 'r_liteprofile w_member_social');
+      
+      console.log('✅ Authorization URL generated');
+      return new Response(JSON.stringify({ 
+        authorization_url: authUrl.toString(),
+        state: state
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Handle token exchange
     if (!code) {
-      console.log('❌ Authorization code is required');
+      console.log('❌ Authorization code is required for token exchange');
       return new Response(
-        JSON.stringify({ error: 'Authorization code is required' }),
+        JSON.stringify({ error: 'Authorization code is required for token exchange' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
