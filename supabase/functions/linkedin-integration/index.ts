@@ -74,6 +74,13 @@ serve(async (req) => {
 
     console.log('🔑 Found credentials for platform user:', credentials.platform_user_id)
 
+    // Decrypt access token
+    const decryptedToken = await decryptTokenSecure(credentials.access_token_encrypted)
+    
+    if (!decryptedToken) {
+      throw new Error('Failed to decrypt LinkedIn access token')
+    }
+
     // Handle different actions
     let response = {
       success: true,
@@ -93,40 +100,113 @@ serve(async (req) => {
         break
 
       case 'get_profile':
-        // For now, return the stored profile data
-        response = {
-          ...response,
-          profile: {
-            id: credentials.platform_user_id,
-            name: credentials.profile_data?.localizedFirstName + ' ' + credentials.profile_data?.localizedLastName,
-            firstName: credentials.profile_data?.localizedFirstName,
-            lastName: credentials.profile_data?.localizedLastName,
-            profilePicture: credentials.profile_data?.profilePicture?.displayImage
+        try {
+          // Fetch fresh profile data from LinkedIn API
+          const profileResponse = await fetch('https://api.linkedin.com/v2/people/~', {
+            headers: {
+              'Authorization': `Bearer ${decryptedToken}`,
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (!profileResponse.ok) {
+            throw new Error(`LinkedIn API error: ${profileResponse.status}`)
+          }
+
+          const profileData = await profileResponse.json()
+          
+          response = {
+            ...response,
+            profile: {
+              id: profileData.id,
+              name: `${profileData.localizedFirstName} ${profileData.localizedLastName}`,
+              firstName: profileData.localizedFirstName,
+              lastName: profileData.localizedLastName,
+              profilePicture: profileData.profilePicture?.displayImage
+            }
+          }
+        } catch (error) {
+          console.error('❌ Profile fetch error:', error)
+          // Fallback to stored profile data
+          response = {
+            ...response,
+            profile: {
+              id: credentials.platform_user_id,
+              name: credentials.profile_data?.localizedFirstName + ' ' + credentials.profile_data?.localizedLastName,
+              firstName: credentials.profile_data?.localizedFirstName,
+              lastName: credentials.profile_data?.localizedLastName,
+              profilePicture: credentials.profile_data?.profilePicture?.displayImage
+            }
           }
         }
         break
 
       case 'get_articles':
-        // Mock articles for now
-        response = {
-          ...response,
-          articles: [
-            {
-              id: 'mock-1',
-              title: 'Sample LinkedIn Article',
-              content: 'This is a sample article from LinkedIn integration.',
-              created: new Date().toISOString(),
-              visibility: 'PUBLIC'
+        try {
+          // Fetch posts from LinkedIn API
+          const postsResponse = await fetch('https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:' + credentials.platform_user_id + '&count=10', {
+            headers: {
+              'Authorization': `Bearer ${decryptedToken}`,
+              'Content-Type': 'application/json'
             }
-          ]
+          })
+
+          if (!postsResponse.ok) {
+            throw new Error(`LinkedIn API error: ${postsResponse.status}`)
+          }
+
+          const postsData = await postsResponse.json()
+          
+          const articles = postsData.elements?.map((post: any) => ({
+            id: post.id,
+            title: post.text?.text?.substring(0, 100) + '...' || 'LinkedIn Post',
+            content: post.text?.text || 'No content available',
+            created: new Date(post.created?.time || Date.now()).toISOString(),
+            visibility: post.visibility?.visibility || 'PUBLIC'
+          })) || []
+
+          response = {
+            ...response,
+            articles
+          }
+        } catch (error) {
+          console.error('❌ Articles fetch error:', error)
+          // Return empty array on error
+          response = {
+            ...response,
+            articles: [],
+            error: 'Failed to fetch LinkedIn posts'
+          }
         }
         break
 
       case 'test_connection':
-        response = {
-          ...response,
-          message: 'LinkedIn connection test successful',
-          connected: true
+        try {
+          // Test connection with a simple API call
+          const testResponse = await fetch('https://api.linkedin.com/v2/people/~', {
+            headers: {
+              'Authorization': `Bearer ${decryptedToken}`,
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (testResponse.ok) {
+            response = {
+              ...response,
+              message: 'LinkedIn connection test successful',
+              connected: true
+            }
+          } else {
+            throw new Error(`Test failed: ${testResponse.status}`)
+          }
+        } catch (error) {
+          console.error('❌ Connection test failed:', error)
+          response = {
+            ...response,
+            message: 'LinkedIn connection test failed',
+            connected: false,
+            error: error.message
+          }
         }
         break
 
