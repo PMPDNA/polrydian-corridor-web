@@ -43,6 +43,13 @@ const quickActions = [
     color: "text-purple-600",
   },
   {
+    title: "Economic Data",
+    description: "FRED economic indicators",
+    icon: TrendingUp,
+    href: "/admin/fred",
+    color: "text-blue-600",
+  },
+  {
     title: "Photo Gallery",
     description: "Upload and organize photos",
     icon: Camera,
