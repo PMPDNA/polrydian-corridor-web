@@ -1,6 +1,10 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.51.0';
+import { 
+  decryptTokenSecure,
+  logSecurityEvent 
+} from '../_shared/security.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,12 +30,6 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const linkedinAccessToken = Deno.env.get('LINKEDIN_ACCESS_TOKEN');
-
-    if (!linkedinAccessToken) {
-      throw new Error('LinkedIn access token not configured');
-    }
-
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Verify user authentication
@@ -93,10 +91,10 @@ serve(async (req) => {
 
     if (action === 'sync_articles') {
       console.log('🔍 Getting LinkedIn credentials from database');
-      // Get LinkedIn credentials from database
+      // Get LinkedIn credentials from database with access token
       const { data: credentials, error: credError } = await supabase
         .from('social_media_credentials')
-        .select('platform_user_id, profile_data')
+        .select('*')
         .eq('user_id', user.id)
         .eq('platform', 'linkedin')
         .eq('is_active', true)
@@ -113,14 +111,34 @@ serve(async (req) => {
         );
       }
 
+      // Check if token is expiring soon (within 30 days)
+      const expirationDate = new Date(credentials.expires_at);
+      const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const isTokenExpiringSoon = expirationDate < thirtyDaysFromNow;
+
+      if (isTokenExpiringSoon) {
+        console.warn('⚠️ LinkedIn token expiring soon:', credentials.expires_at);
+        await logSecurityEvent(supabase, 'linkedin_token_expiring', {
+          expires_at: credentials.expires_at,
+          user_id: user.id
+        }, 'medium');
+      }
+
+      // Decrypt access token
+      const linkedinAccessToken = await decryptTokenSecure(credentials.access_token_encrypted, supabase);
+      if (!linkedinAccessToken) {
+        throw new Error('Failed to decrypt LinkedIn access token');
+      }
+
       const personId = credentials.platform_user_id;
       console.log('✅ Using LinkedIn person ID from database:', personId);
 
-      // Fetch LinkedIn articles using Posts API with actual person ID
-      const articlesResponse = await fetch(`https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A${personId})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING`, {
+      // Fetch LinkedIn articles using newer REST API format
+      const articlesResponse = await fetch(`https://api.linkedin.com/rest/posts?author=urn:li:person:${personId}&count=20&sortBy=CREATED&sortOrder=DESCENDING`, {
         headers: {
           'Authorization': `Bearer ${linkedinAccessToken}`,
-          'LinkedIn-Version': '202405'
+          'LinkedIn-Version': '202507',
+          'X-Restli-Protocol-Version': '2.0.0'
         }
       });
 
@@ -176,10 +194,10 @@ serve(async (req) => {
 
     if (action === 'sync_posts') {
       console.log('🔍 Getting LinkedIn credentials from database');
-      // Get LinkedIn credentials from database
+      // Get LinkedIn credentials from database with access token
       const { data: credentials, error: credError } = await supabase
         .from('social_media_credentials')
-        .select('platform_user_id, profile_data')
+        .select('*')
         .eq('user_id', user.id)
         .eq('platform', 'linkedin')
         .eq('is_active', true)
@@ -196,14 +214,34 @@ serve(async (req) => {
         );
       }
 
+      // Check if token is expiring soon (within 30 days)
+      const expirationDate = new Date(credentials.expires_at);
+      const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const isTokenExpiringSoon = expirationDate < thirtyDaysFromNow;
+
+      if (isTokenExpiringSoon) {
+        console.warn('⚠️ LinkedIn token expiring soon:', credentials.expires_at);
+        await logSecurityEvent(supabase, 'linkedin_token_expiring', {
+          expires_at: credentials.expires_at,
+          user_id: user.id
+        }, 'medium');
+      }
+
+      // Decrypt access token
+      const linkedinAccessToken = await decryptTokenSecure(credentials.access_token_encrypted, supabase);
+      if (!linkedinAccessToken) {
+        throw new Error('Failed to decrypt LinkedIn access token');
+      }
+
       const personId = credentials.platform_user_id;
       console.log('✅ Using LinkedIn person ID from database:', personId);
 
-      // Fetch LinkedIn posts using Posts API with actual person ID
-      const postsResponse = await fetch(`https://api.linkedin.com/v2/posts?q=authors&authors=List(urn%3Ali%3Aperson%3A${personId})&projection=(elements*(id,author,created,lastModified,commentary,content,lifecycleState,visibility))&sortBy=CREATED&sortOrder=DESCENDING`, {
+      // Fetch LinkedIn posts using newer REST API format
+      const postsResponse = await fetch(`https://api.linkedin.com/rest/posts?author=urn:li:person:${personId}&count=20&sortBy=CREATED&sortOrder=DESCENDING`, {
         headers: {
           'Authorization': `Bearer ${linkedinAccessToken}`,
-          'LinkedIn-Version': '202405'
+          'LinkedIn-Version': '202507',
+          'X-Restli-Protocol-Version': '2.0.0'
         }
       });
 
@@ -221,10 +259,11 @@ serve(async (req) => {
         let engagement = { numLikes: 0, numComments: 0, numShares: 0, numViews: 0 };
         
         try {
-          const engagementResponse = await fetch(`https://api.linkedin.com/v2/socialActions/${post.id}`, {
+          const engagementResponse = await fetch(`https://api.linkedin.com/rest/socialActions/${post.id}`, {
             headers: {
               'Authorization': `Bearer ${linkedinAccessToken}`,
-              'LinkedIn-Version': '202405'
+              'LinkedIn-Version': '202507',
+              'X-Restli-Protocol-Version': '2.0.0'
             }
           });
 
@@ -267,6 +306,12 @@ serve(async (req) => {
       }
     }
 
+    // Log successful sync
+    await logSecurityEvent(supabase, `linkedin_${action}_success`, {
+      user_id: user.id,
+      action: action
+    }, 'low');
+
     return new Response(JSON.stringify({ 
       success: true, 
       message: `LinkedIn ${action} completed successfully` 
@@ -276,6 +321,17 @@ serve(async (req) => {
 
   } catch (error: any) {
     console.error('Error syncing LinkedIn data:', error);
+    
+    // Log error event
+    try {
+      await logSecurityEvent(supabase, 'linkedin_sync_error', {
+        error: error.message,
+        stack: error.stack
+      }, 'high');
+    } catch (logError) {
+      console.error('Failed to log error event:', logError);
+    }
+    
     return new Response(JSON.stringify({ 
       error: error.message 
     }), {

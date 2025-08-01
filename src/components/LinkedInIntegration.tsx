@@ -108,6 +108,36 @@ export default function LinkedInIntegration() {
     }
   }
 
+  const testRealSync = async () => {
+    setSyncLoading(true)
+    try {
+      const { data, error } = await supabase.functions.invoke('sync-linkedin-data', {
+        body: { action: 'sync_posts' }
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
+      toast({
+        title: "Real Sync Complete",
+        description: "LinkedIn posts synced to database successfully.",
+      })
+    } catch (error: any) {
+      toast({
+        title: "Sync Error",
+        description: error.message,
+        variant: "destructive",
+      })
+    } finally {
+      setSyncLoading(false)
+    }
+  }
+
   const publishToLinkedIn = async (content: string, title?: string) => {
     try {
       const data = await callLinkedInIntegration('publish_to_linkedin', { content, title })
@@ -154,6 +184,10 @@ export default function LinkedInIntegration() {
             <Button onClick={syncArticles} disabled={syncLoading} variant="secondary" className="gap-2">
               {syncLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
               Sync to Database
+            </Button>
+            <Button onClick={testRealSync} disabled={syncLoading} variant="default" className="gap-2">
+              {syncLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+              Test Real Sync
             </Button>
           </div>
         </CardContent>
