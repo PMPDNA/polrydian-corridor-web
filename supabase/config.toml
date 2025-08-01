@@ -17,5 +17,14 @@ verify_jwt = true
 [functions.publish-to-instagram]
 verify_jwt = true
 
+[functions.fetch-economic-insights]
+verify_jwt = true
+
+[functions.token-refresh-cron]
+verify_jwt = false
+
+[functions.integration-health-monitor]
+verify_jwt = false
+
 [functions.test-function]
 verify_jwt = false

@@ -5,14 +5,16 @@ import { InstagramIntegration } from "@/components/InstagramIntegration"
 import { EmailServiceSetup } from "@/components/EmailServiceSetup"
 import { IntegrationDashboard } from "@/components/IntegrationDashboard"
 import { IntegrationHub } from "@/components/IntegrationHub"
+import { IntegrationHealthDashboard } from "@/components/IntegrationHealthDashboard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AdminSocial() {
   return (
     <AdminLayout title="Social Media Management">
       <Tabs defaultValue="hub" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="hub">Integration Hub</TabsTrigger>
+          <TabsTrigger value="health">Health Monitor</TabsTrigger>
           <TabsTrigger value="status">Status Dashboard</TabsTrigger>
           <TabsTrigger value="overview">Social Overview</TabsTrigger>
           <TabsTrigger value="zapier">Zapier LinkedIn</TabsTrigger>
@@ -21,6 +23,9 @@ export default function AdminSocial() {
         </TabsList>
         <TabsContent value="hub">
           <IntegrationHub />
+        </TabsContent>
+        <TabsContent value="health">
+          <IntegrationHealthDashboard />
         </TabsContent>
         <TabsContent value="status">
           <IntegrationDashboard />

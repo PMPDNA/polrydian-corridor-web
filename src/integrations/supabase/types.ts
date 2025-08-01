@@ -371,6 +371,60 @@ export type Database = {
         }
         Relationships: []
       }
+      integration_logs: {
+        Row: {
+          created_at: string
+          error_code: string | null
+          error_message: string | null
+          execution_time_ms: number | null
+          id: string
+          integration_type: string
+          ip_address: unknown | null
+          operation: string
+          request_data: Json | null
+          response_data: Json | null
+          retry_count: number | null
+          status: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          integration_type: string
+          ip_address?: unknown | null
+          operation: string
+          request_data?: Json | null
+          response_data?: Json | null
+          retry_count?: number | null
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          integration_type?: string
+          ip_address?: unknown | null
+          operation?: string
+          request_data?: Json | null
+          response_data?: Json | null
+          retry_count?: number | null
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       linkedin_articles: {
         Row: {
           content: string
@@ -852,6 +906,21 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      log_integration_event: {
+        Args: {
+          p_integration_type: string
+          p_operation: string
+          p_status?: string
+          p_user_id?: string
+          p_error_message?: string
+          p_error_code?: string
+          p_request_data?: Json
+          p_response_data?: Json
+          p_execution_time_ms?: number
+          p_retry_count?: number
+        }
+        Returns: string
       }
       log_security_event_enhanced: {
         Args: {
