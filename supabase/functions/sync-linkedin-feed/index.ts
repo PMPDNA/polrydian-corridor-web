@@ -164,10 +164,23 @@ serve(async (req) => {
       throw new Error('Failed to decrypt LinkedIn access token');
     }
     
-    const personUrn = `urn:li:person:${credentials.platform_user_id}`;
-    const encodedUrn = encodeURIComponent(personUrn);
+    // Use organization URN if available, otherwise fallback to personal
+    const organizationData = credentials.profile_data?.organization;
+    let authorUrn: string;
+    let authorType: string;
 
-    console.log('📡 Fetching LinkedIn posts for:', personUrn);
+    if (organizationData?.organizationUrn) {
+      authorUrn = organizationData.organizationUrn;
+      authorType = 'organization';
+      console.log('🏢 Using organization URN:', authorUrn);
+    } else {
+      authorUrn = `urn:li:person:${credentials.platform_user_id}`;
+      authorType = 'person';
+      console.log('👤 Using personal URN:', authorUrn);
+    }
+
+    const encodedUrn = encodeURIComponent(authorUrn);
+    console.log('📡 Fetching LinkedIn posts for:', authorUrn, `(${authorType})`);
     console.log('📡 Calling LinkedIn REST API posts endpoint with proper format');
     
     const postsResponse = await fetch(

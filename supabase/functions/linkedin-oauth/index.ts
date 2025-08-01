@@ -125,7 +125,7 @@ serve(async (req) => {
       authUrl.searchParams.set('client_id', linkedinClientId);
       authUrl.searchParams.set('redirect_uri', redirectUrl);
       authUrl.searchParams.set('state', state);
-      authUrl.searchParams.set('scope', 'openid profile email w_member_social r_basicprofile');
+      authUrl.searchParams.set('scope', 'openid profile email w_member_social r_basicprofile r_organization_social w_organization_social rw_organization_admin');
       
       console.log('✅ Authorization URL generated');
       return new Response(JSON.stringify({ 
@@ -191,6 +191,51 @@ serve(async (req) => {
 
     console.log('✅ Profile fetched, ID:', platformUserId);
 
+    // Fetch organizations the user can manage
+    console.log('🏢 Fetching user organizations...');
+    const orgsResponse = await fetch('https://api.linkedin.com/rest/organizationalEntityAcls?q=roleAssignee', {
+      headers: {
+        'Authorization': `Bearer ${tokenData.access_token}`,
+        'LinkedIn-Version': '202507',
+        'X-Restli-Protocol-Version': '2.0.0'
+      }
+    });
+
+    let organizationData = null;
+    if (orgsResponse.ok) {
+      const orgsData = await orgsResponse.json();
+      console.log('📊 Organizations response:', orgsData);
+      
+      // Find Polrydian organization or use first available
+      const organizations = orgsData.elements || [];
+      const polrydianOrg = organizations.find(org => 
+        org.organizationalTarget && (
+          org.organizationalTarget.includes('polrydian') ||
+          org.organizationalTarget.includes('Polrydian')
+        )
+      );
+      
+      if (polrydianOrg) {
+        console.log('🎯 Found Polrydian organization:', polrydianOrg.organizationalTarget);
+        organizationData = {
+          organizationUrn: polrydianOrg.organizationalTarget,
+          organizationId: polrydianOrg.organizationalTarget.replace('urn:li:organization:', ''),
+          role: polrydianOrg.role,
+          state: polrydianOrg.state
+        };
+      } else if (organizations.length > 0) {
+        console.log('📝 Using first available organization:', organizations[0].organizationalTarget);
+        organizationData = {
+          organizationUrn: organizations[0].organizationalTarget,
+          organizationId: organizations[0].organizationalTarget.replace('urn:li:organization:', ''),
+          role: organizations[0].role,
+          state: organizations[0].state
+        };
+      }
+    } else {
+      console.warn('⚠️ Could not fetch organizations:', orgsResponse.status);
+    }
+
     // Calculate expiration time
     const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000);
 
@@ -205,7 +250,10 @@ serve(async (req) => {
         access_token_encrypted: await encryptTokenSecure(tokenData.access_token, supabase),
         refresh_token_encrypted: await encryptTokenSecure(tokenData.refresh_token || '', supabase),
         expires_at: expiresAt.toISOString(),
-        profile_data: profileData,
+        profile_data: {
+          ...profileData,
+          organization: organizationData
+        },
         is_active: true,
         updated_at: new Date().toISOString()
       }, {
@@ -229,7 +277,8 @@ serve(async (req) => {
         id: profileData.id,
         firstName: profileData.firstName?.localized?.en_US || '',
         lastName: profileData.lastName?.localized?.en_US || ''
-      }
+      },
+      organization: organizationData
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
