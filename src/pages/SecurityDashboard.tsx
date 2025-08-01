@@ -124,6 +124,12 @@ export default function SecurityDashboard() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container mx-auto px-4 pt-24 pb-8 space-y-8">
+        {/* Back Button */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="outline" asChild>
+            <a href="/admin">← Back to Admin Dashboard</a>
+          </Button>
+        </div>
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

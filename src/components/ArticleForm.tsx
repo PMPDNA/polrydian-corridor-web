@@ -191,7 +191,8 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full max-w-none space-y-6 p-6 max-h-[85vh] overflow-y-auto">
+      <div className="sticky top-0 bg-background z-10 pb-4 border-b">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">
@@ -204,6 +205,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         <Badge variant="outline" className="flex items-center gap-2">
           <span>Est. {formData.readTime} min read</span>
         </Badge>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -330,6 +332,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
                 rows={12}
                 required
                 maxLength={50000}
+                className="resize-none min-h-[300px]"
               />
               {errors.content && <p className="text-sm text-destructive mt-1">{errors.content}</p>}
             </div>
