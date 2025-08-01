@@ -85,11 +85,11 @@ export default function Articles() {
     excerpt: dbArticle.meta_description || dbArticle.content.substring(0, 200) + "...",
     content: dbArticle.content,
     category: "Strategy" as const, // Default category
-    heroImage: "/placeholder.svg", // Default image
+    heroImage: dbArticle.featured_image || "/placeholder.svg", // Use actual featured image
     publishDate: new Date(dbArticle.created_at).toISOString().split('T')[0],
-    readTime: Math.ceil(dbArticle.content.length / 200), // Estimate read time
+    readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.length / 200),
     linkedinUrl: "",
-    featured: false,
+    featured: dbArticle.status === 'published',
   })) || sampleArticles; // Fallback to sample articles if no database articles
 
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
@@ -311,46 +311,64 @@ export default function Articles() {
                     </div>
                   </div>
                   
-                   <div className="flex gap-2">
+                <div className="flex gap-2">
+                     <Button 
+                       size="sm" 
+                       className="flex-1"
+                       onClick={() => window.location.href = `/article/${article.id}`}
+                     >
+                       Read Full Article
+                     </Button>
                      <Dialog>
                        <DialogTrigger asChild>
-                         <Button size="sm" className="flex-1" onClick={() => setSelectedArticle(article)}>
-                           Read More
+                         <Button size="sm" variant="outline" onClick={() => setSelectedArticle(article)}>
+                           Quick Preview
                          </Button>
                        </DialogTrigger>
-                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                         <div className="space-y-6">
-                           <div>
-                             <Badge variant="secondary" className="mb-2">
-                               {article.category}
-                             </Badge>
-                             <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
-                             <div className="flex items-center gap-4 text-muted-foreground mb-6">
-                               <div className="flex items-center gap-2">
-                                 <Calendar className="h-4 w-4" />
-                                 <span>{formatDate(article.publishDate)}</span>
-                               </div>
-                               <div className="flex items-center gap-2">
-                                 <Clock className="h-4 w-4" />
-                                 <span>{article.readTime} min read</span>
-                               </div>
-                             </div>
-                            </div>
-                            {/* Main content first, then abstract/excerpt */}
-                            <div 
-                              className="prose prose-lg max-w-none"
-                              dangerouslySetInnerHTML={{ 
-                                __html: sanitizeHtml(article.content)
-                              }}
-                            />
-                            {article.excerpt && article.excerpt !== article.content.substring(0, 200) + "..." && (
-                              <div className="mt-6 p-4 bg-muted rounded-lg">
-                                <h3 className="text-lg font-semibold mb-2">Summary</h3>
-                                <p className="text-muted-foreground">{article.excerpt}</p>
+                        <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
+                          <div className="space-y-6">
+                            <div>
+                              <Badge variant="secondary" className="mb-2">
+                                {article.category}
+                              </Badge>
+                              <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+                              <div className="flex items-center gap-4 text-muted-foreground mb-6">
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-4 w-4" />
+                                  <span>{formatDate(article.publishDate)}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Clock className="h-4 w-4" />
+                                  <span>{article.readTime} min read</span>
+                                </div>
                               </div>
-                            )}
-                         </div>
-                       </DialogContent>
+                              {/* Hero Image */}
+                              {article.heroImage && article.heroImage !== "/placeholder.svg" && (
+                                <div className="mb-6">
+                                  <img 
+                                    src={article.heroImage} 
+                                    alt={article.title}
+                                    className="w-full h-64 object-cover rounded-lg"
+                                  />
+                                </div>
+                              )}
+                             </div>
+                             {/* Main content - no truncation */}
+                             <div 
+                               className="prose prose-lg max-w-none whitespace-pre-wrap"
+                               style={{ maxHeight: 'none', overflow: 'visible' }}
+                               dangerouslySetInnerHTML={{ 
+                                 __html: sanitizeHtml(article.content)
+                               }}
+                             />
+                             {article.excerpt && article.excerpt !== article.content.substring(0, 200) + "..." && (
+                               <div className="mt-6 p-4 bg-muted rounded-lg">
+                                 <h3 className="text-lg font-semibold mb-2">Summary</h3>
+                                 <p className="text-muted-foreground">{article.excerpt}</p>
+                               </div>
+                             )}
+                          </div>
+                        </DialogContent>
                      </Dialog>
                     <Button size="sm" variant="outline" asChild>
                       <a href={article.linkedinUrl} target="_blank" rel="noopener noreferrer">

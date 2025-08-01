@@ -99,10 +99,12 @@ export type Database = {
           auto_publish_substack: boolean | null
           chapter_id: string | null
           content: string
+          content_images: string[] | null
           content_type: string | null
           created_at: string
           featured_image: string | null
           id: string
+          image_associations: Json | null
           keywords: string[] | null
           meta_description: string | null
           published_at: string | null
@@ -125,10 +127,12 @@ export type Database = {
           auto_publish_substack?: boolean | null
           chapter_id?: string | null
           content: string
+          content_images?: string[] | null
           content_type?: string | null
           created_at?: string
           featured_image?: string | null
           id?: string
+          image_associations?: Json | null
           keywords?: string[] | null
           meta_description?: string | null
           published_at?: string | null
@@ -151,10 +155,12 @@ export type Database = {
           auto_publish_substack?: boolean | null
           chapter_id?: string | null
           content?: string
+          content_images?: string[] | null
           content_type?: string | null
           created_at?: string
           featured_image?: string | null
           id?: string
+          image_associations?: Json | null
           keywords?: string[] | null
           meta_description?: string | null
           published_at?: string | null
@@ -532,6 +538,45 @@ export type Database = {
           visitor_id?: string | null
         }
         Relationships: []
+      }
+      image_usage: {
+        Row: {
+          article_id: string | null
+          created_at: string | null
+          id: string
+          image_id: string | null
+          usage_type: string
+        }
+        Insert: {
+          article_id?: string | null
+          created_at?: string | null
+          id?: string
+          image_id?: string | null
+          usage_type: string
+        }
+        Update: {
+          article_id?: string | null
+          created_at?: string | null
+          id?: string
+          image_id?: string | null
+          usage_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "image_usage_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "image_usage_image_id_fkey"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "images"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       images: {
         Row: {

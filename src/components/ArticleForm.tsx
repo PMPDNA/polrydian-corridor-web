@@ -154,7 +154,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         
         if (created) {
           // Update additional fields in the articles table
-          await supabase
+          const { error: updateError } = await supabase
             .from('articles')
             .update({
               meta_description: validatedData.excerpt,
@@ -165,6 +165,10 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
               published_at: new Date().toISOString()
             })
             .eq('id', created.id);
+          
+          if (updateError) {
+            console.error('Error updating article fields:', updateError);
+          }
             
           onSave(created as any);
         }
