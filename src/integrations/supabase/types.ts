@@ -371,6 +371,54 @@ export type Database = {
         }
         Relationships: []
       }
+      images: {
+        Row: {
+          alt_text: string | null
+          category: string
+          created_at: string | null
+          description: string | null
+          file_path: string
+          file_size: number | null
+          file_type: string
+          id: string
+          is_public: boolean | null
+          name: string
+          tags: string[] | null
+          updated_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          file_path: string
+          file_size?: number | null
+          file_type: string
+          id?: string
+          is_public?: boolean | null
+          name: string
+          tags?: string[] | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          file_path?: string
+          file_size?: number | null
+          file_type?: string
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          tags?: string[] | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       integration_logs: {
         Row: {
           created_at: string
