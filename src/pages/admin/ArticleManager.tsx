@@ -11,10 +11,12 @@ import {
   Search, 
   Eye,
   Calendar,
-  Clock
+  Clock,
+  Share
 } from "lucide-react";
 import { useArticles } from "@/hooks/useArticles";
 import { ArticleForm } from "@/components/ArticleForm";
+import { ArticleShareButtons } from "@/components/ArticleShareButtons";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLayout } from "@/layouts/AdminLayout";
@@ -33,28 +35,17 @@ export default function ArticleManager() {
   );
 
   const handleSaveArticle = (article: any) => {
-    // Convert to the format expected by useArticles hook
+    // ArticleForm now handles saving directly to Supabase
     if (editingArticle) {
-      updateArticle(editingArticle.id, {
-        title: article.title,
-        content: article.content,
-        status: 'published'
-      }).then(() => {
-        setEditingArticle(null);
-        toast({
-          title: "Success",
-          description: "Article updated successfully",
-        });
-      });
+      setEditingArticle(null);
     } else {
-      createArticle(article.title, article.content).then(() => {
-        setShowCreateDialog(false);
-        toast({
-          title: "Success",
-          description: "Article created successfully",
-        });
-      });
+      setShowCreateDialog(false);
     }
+    
+    toast({
+      title: "Success",
+      description: editingArticle ? "Article updated successfully" : "Article created successfully",
+    });
   };
 
   const handleCancel = () => {
@@ -197,6 +188,16 @@ export default function ArticleManager() {
                         </DialogContent>
                       </Dialog>
                       
+                      {article.status === 'published' && (
+                        <ArticleShareButtons
+                          articleId={article.id}
+                          title={article.title}
+                          content={article.content}
+                          size="sm"
+                          variant="outline"
+                        />
+                      )}
+                      
                       <Dialog open={editingArticle?.id === article.id} onOpenChange={(open) => !open && setEditingArticle(null)}>
                         <DialogTrigger asChild>
                           <Button 
@@ -207,23 +208,12 @@ export default function ArticleManager() {
                             <Edit className="w-4 h-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
+                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle>Edit Article</DialogTitle>
                           </DialogHeader>
                           <ArticleForm 
-                            article={{
-                              id: article.id,
-                              title: article.title,
-                              content: article.content,
-                              excerpt: article.content.substring(0, 150),
-                              category: "Strategy" as const,
-                              heroImage: "",
-                              publishDate: new Date(article.created_at).toISOString().split('T')[0],
-                              readTime: 5,
-                              linkedinUrl: "",
-                              featured: false
-                            }}
+                            article={article}
                             onSave={handleSaveArticle} 
                             onCancel={handleCancel}
                           />

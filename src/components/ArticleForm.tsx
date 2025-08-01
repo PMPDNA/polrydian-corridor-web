@@ -7,11 +7,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Save, X, Webhook, Link, Upload } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Save, X, Webhook, Link, Upload, Image as ImageIcon } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
+import { ImageGalleryPicker } from "@/components/ImageGalleryPicker";
 import { useToast } from "@/hooks/use-toast";
 import { articleSchema, sanitizeHtml, sanitizeFormData, isValidUrl } from "@/lib/security";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useArticles, type Article as DBArticle } from "@/hooks/useArticles";
 
 interface Article {
   id: string;
@@ -29,29 +33,52 @@ interface Article {
 }
 
 interface ArticleFormProps {
-  article?: Article;
-  onSave: (article: Article) => void;
+  article?: Article | DBArticle;
+  onSave: (article: Article | DBArticle) => void;
   onCancel: () => void;
 }
 
 export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
   const { toast } = useToast();
-  const { isAdmin } = useSupabaseAuth();
+  const { isAdmin, user } = useSupabaseAuth();
+  const { createArticle, updateArticle } = useArticles();
   const [isLoading, setIsLoading] = useState(false);
   const [zapierWebhook, setZapierWebhook] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Handle both legacy Article interface and new DBArticle interface
+  const getArticleField = (field: string, fallback: any = "") => {
+    if (!article) return fallback;
+    
+    // Map fields between interfaces
+    switch (field) {
+      case 'excerpt':
+        return 'meta_description' in article ? article.meta_description : (article as any).excerpt || fallback;
+      case 'publishDate':
+        return 'created_at' in article ? new Date(article.created_at).toISOString().split('T')[0] : (article as any).publishDate || fallback;
+      case 'readTime':
+        return 'reading_time_minutes' in article ? article.reading_time_minutes : (article as any).readTime || fallback;
+      case 'heroImage':
+        return 'featured_image' in article ? article.featured_image : (article as any).heroImage || fallback;
+      case 'category':
+        return (article as any).category || "Strategy";
+      default:
+        return (article as any)[field] || fallback;
+    }
+  };
+
   const [formData, setFormData] = useState({
-    title: article?.title || "",
-    excerpt: article?.excerpt || "",
-    content: article?.content || "",
-    category: article?.category || "Strategy" as const,
-    heroImage: article?.heroImage || "",
-    publishDate: article?.publishDate || new Date().toISOString().split('T')[0],
-    readTime: article?.readTime || 5,
-    linkedinUrl: article?.linkedinUrl || "",
-    featured: article?.featured || false,
-    vipPhotos: article?.vipPhotos || [],
-    eventPhotos: article?.eventPhotos || []
+    title: getArticleField('title'),
+    excerpt: getArticleField('excerpt'),
+    content: getArticleField('content'),
+    category: getArticleField('category', "Strategy") as "Strategy" | "Geopolitics" | "Philosophy" | "Defense & Aerospace",
+    heroImage: getArticleField('heroImage'),
+    publishDate: getArticleField('publishDate', new Date().toISOString().split('T')[0]),
+    readTime: getArticleField('readTime', 5),
+    linkedinUrl: getArticleField('linkedinUrl'),
+    featured: getArticleField('featured', false),
+    vipPhotos: getArticleField('vipPhotos', []),
+    eventPhotos: getArticleField('eventPhotos', [])
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,7 +87,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
     setErrors({});
 
     // Check admin privileges
-    if (!isAdmin) {
+    if (!isAdmin || !user) {
       toast({
         title: "Access Denied",
         description: "You need admin privileges to publish articles.",
@@ -97,34 +124,74 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       }
 
       const validatedData = validationResult.data;
-      const newArticle: Article = {
-        id: article?.id || Date.now().toString(),
-        title: validatedData.title,
-        excerpt: validatedData.excerpt,
-        content: sanitizeHtml(validatedData.content),
-        category: validatedData.category as any,
-        heroImage: formData.heroImage,
-        publishDate: formData.publishDate,
-        readTime: formData.readTime,
-        linkedinUrl: formData.linkedinUrl,
-        featured: validatedData.featured || false,
-        vipPhotos: formData.vipPhotos,
-        eventPhotos: formData.eventPhotos
-      };
-
-      // Save to localStorage for persistence
-      const existingArticles = JSON.parse(localStorage.getItem('published-articles') || '[]');
-      const articleIndex = existingArticles.findIndex((a: any) => a.id === newArticle.id);
       
-      if (articleIndex >= 0) {
-        existingArticles[articleIndex] = newArticle;
+      // Save to Supabase database
+      if (article && 'id' in article && article.id) {
+        // Update existing article
+        const updated = await updateArticle(article.id, {
+          title: validatedData.title,
+          content: sanitizeHtml(validatedData.content),
+          status: 'published'
+        });
+        
+        if (updated) {
+          // Update additional fields in the articles table
+          await supabase
+            .from('articles')
+            .update({
+              meta_description: validatedData.excerpt,
+              featured_image: formData.heroImage,
+              reading_time_minutes: formData.readTime,
+              keywords: [formData.category]
+            })
+            .eq('id', article.id);
+            
+          onSave(updated as any);
+        }
       } else {
-        existingArticles.unshift(newArticle);
+        // Create new article
+        const created = await createArticle(validatedData.title, sanitizeHtml(validatedData.content));
+        
+        if (created) {
+          // Update additional fields in the articles table
+          await supabase
+            .from('articles')
+            .update({
+              meta_description: validatedData.excerpt,
+              featured_image: formData.heroImage,
+              reading_time_minutes: formData.readTime,
+              keywords: [formData.category],
+              status: 'published',
+              published_at: new Date().toISOString()
+            })
+            .eq('id', created.id);
+            
+          onSave(created as any);
+        }
       }
-      
-      localStorage.setItem('published-articles', JSON.stringify(existingArticles));
 
-      onSave(newArticle);
+      // Handle image associations if images were uploaded
+      if (formData.heroImage || formData.vipPhotos.length > 0 || formData.eventPhotos.length > 0) {
+        const allImages = [
+          ...(formData.heroImage ? [{ url: formData.heroImage, category: 'hero' }] : []),
+          ...formData.vipPhotos.map(url => ({ url, category: 'vip' })),
+          ...formData.eventPhotos.map(url => ({ url, category: 'event' }))
+        ];
+
+        // Store image associations
+        for (const image of allImages) {
+          await supabase
+            .from('images')
+            .upsert({
+              file_path: image.url,
+              name: `${formData.title} - ${image.category}`,
+              category: image.category,
+              uploaded_by: user.id,
+              file_type: 'image/jpeg',
+              is_public: true
+            }, { onConflict: 'file_path' });
+        }
+      }
 
       // Trigger Zapier webhook if provided and valid
       if (zapierWebhook && isValidUrl(zapierWebhook)) {
@@ -137,38 +204,37 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
             },
             body: JSON.stringify({
               action: "article_published",
-              article: newArticle,
+              article: {
+                title: validatedData.title,
+                content: sanitizeHtml(validatedData.content),
+                excerpt: validatedData.excerpt
+              },
               timestamp: new Date().toISOString()
             })
           });
 
           toast({
             title: "Article Published & Synced",
-            description: "Article published to website and Zapier webhook triggered.",
+            description: "Article saved to database and Zapier webhook triggered.",
           });
         } catch (error) {
           toast({
             title: "Article Published",
-            description: "Article published to website, but webhook failed. Check URL security.",
+            description: "Article saved to database, but webhook failed. Check URL security.",
             variant: "destructive"
           });
         }
-      } else if (zapierWebhook && !isValidUrl(zapierWebhook)) {
-        toast({
-          title: "Article Published",
-          description: "Article published, but webhook URL is not secure (HTTPS required).",
-          variant: "destructive"
-        });
       } else {
         toast({
           title: "Article Published!",
-          description: "Your article is now live on the website.",
+          description: "Your article has been saved successfully.",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error saving article:', error);
       toast({
         title: "Error",
-        description: "Failed to save article. Please try again.",
+        description: error.message || "Failed to save article. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -287,19 +353,52 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="heroImage">Hero Image</Label>
-              <FileUpload
-                onFilesChange={(urls) => setFormData(prev => ({ ...prev, heroImage: urls[0] || "" }))}
-                currentFiles={formData.heroImage ? [formData.heroImage] : []}
-                multiple={false}
-                label="Upload Hero Image"
-                className="mb-4"
-              />
-              <Input
-                id="heroImage"
-                value={formData.heroImage}
-                onChange={(e) => setFormData(prev => ({ ...prev, heroImage: e.target.value }))}
-                placeholder="Or enter image URL"
-              />
+              <div className="space-y-4">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" type="button" className="w-full">
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      Choose from Gallery
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl">
+                    <DialogHeader>
+                      <DialogTitle>Choose Hero Image</DialogTitle>
+                    </DialogHeader>
+                    <ImageGalleryPicker
+                      onImageSelect={(url) => setFormData(prev => ({ ...prev, heroImage: url }))}
+                      selectedImage={formData.heroImage}
+                      category="hero"
+                      multiple={false}
+                    />
+                  </DialogContent>
+                </Dialog>
+                
+                <FileUpload
+                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, heroImage: urls[0] || "" }))}
+                  currentFiles={formData.heroImage ? [formData.heroImage] : []}
+                  multiple={false}
+                  label="Or Upload New Image"
+                  className="mb-4"
+                />
+                
+                <Input
+                  id="heroImage"
+                  value={formData.heroImage}
+                  onChange={(e) => setFormData(prev => ({ ...prev, heroImage: e.target.value }))}
+                  placeholder="Or enter image URL directly"
+                />
+              </div>
+              
+              {formData.heroImage && (
+                <div className="mt-2">
+                  <img 
+                    src={formData.heroImage} 
+                    alt="Hero preview"
+                    className="max-w-xs h-32 object-cover rounded border"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex items-center space-x-2">
@@ -340,12 +439,37 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <Label>VIP Meeting Photos</Label>
+                
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" type="button" className="w-full">
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      Choose VIP Photos ({formData.vipPhotos.length} selected)
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl">
+                    <DialogHeader>
+                      <DialogTitle>Choose VIP Photos</DialogTitle>
+                    </DialogHeader>
+                    <ImageGalleryPicker
+                      onImageSelect={(url) => setFormData(prev => ({ 
+                        ...prev, 
+                        vipPhotos: [...prev.vipPhotos, url] 
+                      }))}
+                      category="vip"
+                      multiple={true}
+                      maxImages={10}
+                    />
+                  </DialogContent>
+                </Dialog>
+                
                 <FileUpload
-                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, vipPhotos: urls }))}
-                  currentFiles={formData.vipPhotos}
+                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, vipPhotos: [...prev.vipPhotos, ...urls] }))}
+                  currentFiles={[]}
                   multiple={true}
-                  label="Upload VIP Photos"
+                  label="Or Upload New VIP Photos"
                 />
+                
                 <div className="space-y-2">
                   <Label htmlFor="vipPhotosText">Or enter URLs (comma-separated)</Label>
                   <Textarea
@@ -363,12 +487,37 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
               
               <div className="space-y-4">
                 <Label>Event Photos</Label>
+                
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" type="button" className="w-full">
+                      <ImageIcon className="h-4 w-4 mr-2" />
+                      Choose Event Photos ({formData.eventPhotos.length} selected)
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl">
+                    <DialogHeader>
+                      <DialogTitle>Choose Event Photos</DialogTitle>
+                    </DialogHeader>
+                    <ImageGalleryPicker
+                      onImageSelect={(url) => setFormData(prev => ({ 
+                        ...prev, 
+                        eventPhotos: [...prev.eventPhotos, url] 
+                      }))}
+                      category="event"
+                      multiple={true}
+                      maxImages={10}
+                    />
+                  </DialogContent>
+                </Dialog>
+                
                 <FileUpload
-                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, eventPhotos: urls }))}
-                  currentFiles={formData.eventPhotos}
+                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, eventPhotos: [...prev.eventPhotos, ...urls] }))}
+                  currentFiles={[]}
                   multiple={true}
-                  label="Upload Event Photos"
+                  label="Or Upload New Event Photos"
                 />
+                
                 <div className="space-y-2">
                   <Label htmlFor="eventPhotosText">Or enter URLs (comma-separated)</Label>
                   <Textarea
