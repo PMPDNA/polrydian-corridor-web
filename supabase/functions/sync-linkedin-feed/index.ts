@@ -175,7 +175,7 @@ serve(async (req) => {
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'LinkedIn-Version': '202401',
+          'LinkedIn-Version': '202409',
           'X-Restli-Protocol-Version': '2.0.0',
           'X-RestLi-Method': 'FINDER',
           'Content-Type': 'application/json'
