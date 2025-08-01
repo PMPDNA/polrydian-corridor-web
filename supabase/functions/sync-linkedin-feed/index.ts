@@ -165,12 +165,9 @@ serve(async (req) => {
     }
     
     const personUrn = `urn:li:person:${credentials.platform_user_id}`;
+    const encodedUrn = encodeURIComponent(personUrn);
 
     console.log('📡 Fetching LinkedIn posts for:', personUrn);
-
-    // Use LinkedIn REST API posts endpoint with correct parameters
-    const personUrn = `urn:li:person:${credentials.platform_user_id}`;
-    const encodedUrn = encodeURIComponent(personUrn);
     console.log('📡 Calling LinkedIn REST API posts endpoint with proper format');
     
     const postsResponse = await fetch(
