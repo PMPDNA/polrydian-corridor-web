@@ -171,12 +171,14 @@ serve(async (req) => {
     console.log('📡 Calling LinkedIn REST API posts endpoint with proper format');
     
     const postsResponse = await fetch(
-      `https://api.linkedin.com/v2/shares?q=owners&owners=${encodedUrn}&count=20&sortBy=LAST_MODIFIED`,
+      `https://api.linkedin.com/rest/posts?q=author&author=${encodedUrn}&count=20&sortBy=CREATED`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-          'X-Restli-Protocol-Version': '2.0.0'
+          'LinkedIn-Version': '202507',
+          'X-Restli-Protocol-Version': '2.0.0',
+          'X-RestLi-Method': 'FINDER',
+          'Content-Type': 'application/json'
         }
       }
     );
