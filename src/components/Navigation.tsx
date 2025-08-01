@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { PolrydianLogo } from "@/components/PolrydianLogo";
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Menu, X } from 'lucide-react';
+import { PolrydianLogo } from '@/components/PolrydianLogo';
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   const menuItems = [
     { label: "Home", href: "/" },
@@ -15,40 +17,48 @@ export const Navigation = () => {
     { label: "Insights", href: "/insights" },
     { label: "FAQ", href: "/faq" },
     { label: "Search", href: "/search" },
-    { label: "Contact", href: "/#contact" }
   ];
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location.pathname]);
+
   return (
-    <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-[#F6EED7] z-50">
+    <nav className="fixed top-0 w-full bg-background/95 backdrop-blur-sm border-b border-border z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          {/* Polrydian Logo - Make it clickable to go home */}
-          <a href="/" className="hover:opacity-80 transition-opacity">
+          {/* Polrydian Logo */}
+          <Link to="/" className="hover:opacity-80 transition-opacity">
             <PolrydianLogo variant="compact" size="sm" />
-          </a>
+          </Link>
 
           {/* Personal Branding */}
           <div className="hidden sm:block ml-4 pl-4 border-l border-border">
-            <div className="font-semibold text-sm text-foreground font-polrydian">Patrick Misiewicz</div>
-            <div className="text-xs text-muted-foreground font-polrydian">Founder & Strategic Advisor</div>
+            <div className="font-semibold text-sm text-foreground">Patrick Misiewicz</div>
+            <div className="text-xs text-muted-foreground">Founder & Strategic Advisor</div>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
             {menuItems.map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
-                className="text-foreground hover:text-accent transition-colors duration-300"
+                to={item.href}
+                className={`transition-colors duration-300 ${
+                  location.pathname === item.href 
+                    ? 'text-primary font-medium' 
+                    : 'text-foreground hover:text-primary'
+                }`}
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
-            <a href="/#contact">
+            <Link to="/contact">
               <Button variant="default" size="sm">
                 Get in Touch
               </Button>
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -67,24 +77,27 @@ export const Navigation = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-background border-t border-border shadow-lg z-50">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg z-50">
             <div className="max-w-7xl mx-auto px-6 py-4">
               <div className="flex flex-col gap-4">
                 {menuItems.map((item) => (
-                  <a
+                  <Link
                     key={item.label}
-                    href={item.href}
-                    className="text-foreground hover:text-accent transition-colors duration-300 py-2 text-lg"
-                    onClick={() => setIsMenuOpen(false)}
+                    to={item.href}
+                    className={`py-2 text-lg transition-colors duration-300 ${
+                      location.pathname === item.href 
+                        ? 'text-primary font-medium' 
+                        : 'text-foreground hover:text-primary'
+                    }`}
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 ))}
-                <a href="/#contact" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/contact">
                   <Button variant="default" size="sm" className="mt-2 w-full">
                     Get in Touch
                   </Button>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

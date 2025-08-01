@@ -10,13 +10,14 @@ import ImageManager from "@/components/ImageManager"
 import FredDashboard from "@/components/FredDashboard"
 import { BookSeriesManager } from "@/components/BookSeriesManager"
 import { PublishingPipeline } from "@/components/PublishingPipeline"
+import GalleryManager from "@/components/GalleryManager"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AdminSocial() {
   return (
     <AdminLayout title="Social Media Management">
       <Tabs defaultValue="hub" className="w-full">
-        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-11">
+        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
           <TabsTrigger value="hub">Integration Hub</TabsTrigger>
           <TabsTrigger value="health">Health Monitor</TabsTrigger>
           <TabsTrigger value="status">Status Dashboard</TabsTrigger>
@@ -25,6 +26,7 @@ export default function AdminSocial() {
           <TabsTrigger value="instagram">Instagram</TabsTrigger>
           <TabsTrigger value="email">Email Setup</TabsTrigger>
           <TabsTrigger value="images">Images</TabsTrigger>
+          <TabsTrigger value="gallery">Gallery</TabsTrigger>
           <TabsTrigger value="fred">FRED</TabsTrigger>
           <TabsTrigger value="book">Book Series</TabsTrigger>
           <TabsTrigger value="publishing">Publishing</TabsTrigger>
@@ -51,10 +53,14 @@ export default function AdminSocial() {
           <EmailServiceSetup />
         </TabsContent>
         
-        <TabsContent value="images">
-          <ImageManager />
-        </TabsContent>
-        
+          <TabsContent value="images">
+            <ImageManager />
+          </TabsContent>
+
+          <TabsContent value="gallery">
+            <GalleryManager />
+          </TabsContent>
+
           <TabsContent value="fred">
             <FredDashboard />
           </TabsContent>
