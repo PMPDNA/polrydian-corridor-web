@@ -168,13 +168,19 @@ serve(async (req) => {
 
     console.log('📡 Fetching LinkedIn posts for:', personUrn);
 
-    // Use LinkedIn API v2 shares endpoint for posts
-    console.log('📡 Calling LinkedIn API v2 shares endpoint');
+    // Use LinkedIn REST API posts endpoint with correct parameters
+    const personUrn = `urn:li:person:${credentials.platform_user_id}`;
+    const encodedUrn = encodeURIComponent(personUrn);
+    console.log('📡 Calling LinkedIn REST API posts endpoint with proper format');
+    
     const postsResponse = await fetch(
-      `https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:${credentials.platform_user_id}&count=20&sortBy=CREATED`,
+      `https://api.linkedin.com/rest/posts?q=author&author=${encodedUrn}&count=20&sortBy=CREATED`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
+          'LinkedIn-Version': '202401',
+          'X-Restli-Protocol-Version': '2.0.0',
+          'X-RestLi-Method': 'FINDER',
           'Content-Type': 'application/json'
         }
       }
@@ -224,32 +230,59 @@ serve(async (req) => {
     const postsData = await postsResponse.json();
     let insertedCount = 0;
 
-    console.log('💾 Processing', postsData.elements?.length || postsData.values?.length || 0, 'posts');
+    console.log('💾 Processing', postsData.results?.length || postsData.elements?.length || 0, 'posts');
 
-    // Handle both new API format (elements) and legacy format (values)
-    const posts = postsData.elements || postsData.values || [];
+    // Handle LinkedIn REST API response format (results array)
+    const posts = postsData.results || postsData.elements || [];
 
     for (const post of posts) {
-      // Handle different post formats from different API endpoints
-      const postId = post.id || post.shareUrl?.split('/').pop() || `post_${Date.now()}`;
-      const postText = post.text?.text || post.commentary?.text || post.specificContent?.com?.linkedIn?.ugcPost?.shareCommentary?.text || '';
-      const postUrl = post.shareUrl || `https://www.linkedin.com/feed/update/${postId}`;
-      const createdTime = post.created?.time || post.createdAt || post.created || Date.now();
-      
-      const { error: insertError } = await supabase
-        .from('linkedin_posts')
-        .upsert({
-          id: postId,
-          message: postText,
-          post_url: postUrl,
-          author: user.email || 'admin',
-          created_at: new Date(createdTime).toISOString(),
-          updated_at: new Date().toISOString(),
-          is_visible: true,
-          raw_data: post
-        }, { onConflict: 'id' });
+      try {
+        // Extract post data from LinkedIn REST API format
+        const postId = post.id || `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const postText = post.commentary?.text || post.content?.commentary?.text || post.text || '';
+        const postUrl = `https://www.linkedin.com/feed/update/${postId}`;
+        const createdTime = post.createdAt || post.created?.time || Date.now();
+        
+        // Insert into both tables for compatibility
+        const { error: linkedinPostsError } = await supabase
+          .from('linkedin_posts')
+          .upsert({
+            id: postId,
+            message: postText,
+            post_url: postUrl,
+            author: user.email || 'admin',
+            created_at: new Date(createdTime).toISOString(),
+            updated_at: new Date().toISOString(),
+            is_visible: true,
+            raw_data: post
+          }, { onConflict: 'id' });
 
-      if (!insertError) insertedCount++;
+        // Also insert into social_media_posts for unified display
+        const { error: socialMediaError } = await supabase
+          .from('social_media_posts')
+          .upsert({
+            platform_post_id: postId,
+            platform: 'linkedin',
+            post_type: 'article',
+            title: postText.substring(0, 100) + (postText.length > 100 ? '...' : ''),
+            content: postText,
+            post_url: postUrl,
+            published_at: new Date(createdTime).toISOString(),
+            engagement_data: post.socialDetail || {},
+            is_visible: true,
+            is_featured: (post.socialDetail?.totalShares || 0) > 10,
+            approval_status: 'approved'
+          }, { onConflict: 'platform_post_id' });
+
+        if (!linkedinPostsError && !socialMediaError) {
+          insertedCount++;
+          console.log(`✅ Inserted post: ${postId}`);
+        } else {
+          console.error('Error inserting post:', { linkedinPostsError, socialMediaError });
+        }
+      } catch (postError) {
+        console.error('Error processing individual post:', postError);
+      }
     }
 
     // Log successful sync

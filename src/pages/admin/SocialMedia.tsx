@@ -11,6 +11,7 @@ import FredDashboard from "@/components/FredDashboard"
 import { BookSeriesManager } from "@/components/BookSeriesManager"
 import { PublishingPipeline } from "@/components/PublishingPipeline"
 import GalleryManager from "@/components/GalleryManager"
+import LinkedInSyncManager from "@/components/LinkedInSyncManager"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AdminSocial() {
@@ -19,6 +20,7 @@ export default function AdminSocial() {
       <Tabs defaultValue="hub" className="w-full">
         <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
           <TabsTrigger value="hub">Integration Hub</TabsTrigger>
+          <TabsTrigger value="linkedin-sync">LinkedIn Sync</TabsTrigger>
           <TabsTrigger value="health">Health Monitor</TabsTrigger>
           <TabsTrigger value="status">Status Dashboard</TabsTrigger>
           <TabsTrigger value="overview">Social Overview</TabsTrigger>
@@ -33,6 +35,9 @@ export default function AdminSocial() {
         </TabsList>
         <TabsContent value="hub">
           <IntegrationHub />
+        </TabsContent>
+        <TabsContent value="linkedin-sync">
+          <LinkedInSyncManager />
         </TabsContent>
         <TabsContent value="health">
           <IntegrationHealthDashboard />

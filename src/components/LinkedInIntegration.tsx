@@ -111,7 +111,7 @@ export default function LinkedInIntegration() {
   const testRealSync = async () => {
     setSyncLoading(true)
     try {
-      const { data, error } = await supabase.functions.invoke('sync-linkedin-data', {
+      const { data, error } = await supabase.functions.invoke('sync-linkedin-feed', {
         body: { action: 'sync_posts' }
       })
 
@@ -124,9 +124,12 @@ export default function LinkedInIntegration() {
       }
 
       toast({
-        title: "Real Sync Complete",
-        description: "LinkedIn posts synced to database successfully.",
+        title: "LinkedIn Sync Complete",
+        description: `Successfully synced ${data.inserted || 0} posts from LinkedIn.`,
       })
+      
+      // Refresh articles after successful sync
+      await loadArticles()
     } catch (error: any) {
       toast({
         title: "Sync Error",
