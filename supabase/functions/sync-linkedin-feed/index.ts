@@ -168,15 +168,14 @@ serve(async (req) => {
 
     console.log('📡 Fetching LinkedIn posts for:', personUrn);
 
-    // Use LinkedIn REST API with modern headers
-    console.log('📡 Calling LinkedIn REST API with required headers');
+    // Use LinkedIn API v2 shares endpoint for posts
+    console.log('📡 Calling LinkedIn API v2 shares endpoint');
     const postsResponse = await fetch(
-      `https://api.linkedin.com/rest/posts?author=urn:li:person:${credentials.platform_user_id}&count=20&sortBy=CREATED&sortOrder=DESCENDING`,
+      `https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:${credentials.platform_user_id}&count=20&sortBy=CREATED`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'LinkedIn-Version': '202507',
-          'X-Restli-Protocol-Version': '2.0.0'
+          'Content-Type': 'application/json'
         }
       }
     );

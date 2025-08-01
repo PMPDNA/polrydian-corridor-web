@@ -143,8 +143,8 @@ serve(async (req) => {
 
       case 'get_articles':
         try {
-          // Fetch posts from LinkedIn API
-          const postsResponse = await fetch('https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:' + credentials.platform_user_id + '&count=10', {
+          // Fetch posts from LinkedIn API v2 shares endpoint
+          const postsResponse = await fetch(`https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:${credentials.platform_user_id}&count=10&sortBy=CREATED`, {
             headers: {
               'Authorization': `Bearer ${decryptedToken}`,
               'Content-Type': 'application/json'
@@ -152,11 +152,14 @@ serve(async (req) => {
           })
 
           if (!postsResponse.ok) {
+            const errorText = await postsResponse.text()
+            console.error('LinkedIn API error:', postsResponse.status, errorText)
             throw new Error(`LinkedIn API error: ${postsResponse.status}`)
           }
 
           const postsData = await postsResponse.json()
           
+          // Handle LinkedIn API v2 response format
           const articles = postsData.elements?.map((post: any) => ({
             id: post.id,
             title: post.text?.text?.substring(0, 100) + '...' || 'LinkedIn Post',

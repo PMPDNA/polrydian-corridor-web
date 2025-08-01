@@ -133,12 +133,11 @@ serve(async (req) => {
       const personId = credentials.platform_user_id;
       console.log('✅ Using LinkedIn person ID from database:', personId);
 
-      // Fetch LinkedIn articles using newer REST API format
-      const articlesResponse = await fetch(`https://api.linkedin.com/rest/posts?author=urn:li:person:${personId}&count=20&sortBy=CREATED&sortOrder=DESCENDING`, {
+      // Fetch LinkedIn articles using v2 shares API
+      const articlesResponse = await fetch(`https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:${personId}&count=20&sortBy=CREATED`, {
         headers: {
           'Authorization': `Bearer ${linkedinAccessToken}`,
-          'LinkedIn-Version': '202507',
-          'X-Restli-Protocol-Version': '2.0.0'
+          'Content-Type': 'application/json'
         }
       });
 
@@ -236,12 +235,11 @@ serve(async (req) => {
       const personId = credentials.platform_user_id;
       console.log('✅ Using LinkedIn person ID from database:', personId);
 
-      // Fetch LinkedIn posts using newer REST API format
-      const postsResponse = await fetch(`https://api.linkedin.com/rest/posts?author=urn:li:person:${personId}&count=20&sortBy=CREATED&sortOrder=DESCENDING`, {
+      // Fetch LinkedIn posts using v2 shares API
+      const postsResponse = await fetch(`https://api.linkedin.com/v2/shares?q=owners&owners=urn:li:person:${personId}&count=20&sortBy=CREATED`, {
         headers: {
           'Authorization': `Bearer ${linkedinAccessToken}`,
-          'LinkedIn-Version': '202507',
-          'X-Restli-Protocol-Version': '2.0.0'
+          'Content-Type': 'application/json'
         }
       });
 
