@@ -862,6 +862,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      log_security_violation: {
+        Args: { violation_type: string; details?: Json; severity?: string }
+        Returns: undefined
+      }
       migrate_existing_tokens: {
         Args: Record<PropertyKey, never>
         Returns: number
