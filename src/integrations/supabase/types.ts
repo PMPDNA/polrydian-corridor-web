@@ -94,7 +94,12 @@ export type Database = {
       }
       articles: {
         Row: {
+          auto_publish_linkedin: boolean | null
+          auto_publish_medium: boolean | null
+          auto_publish_substack: boolean | null
+          chapter_id: string | null
           content: string
+          content_type: string | null
           created_at: string
           featured_image: string | null
           id: string
@@ -107,11 +112,20 @@ export type Database = {
           slug: string | null
           status: string
           title: string
+          transcript: string | null
           updated_at: string
           user_id: string
+          video_duration: number | null
+          video_thumbnail: string | null
+          video_url: string | null
         }
         Insert: {
+          auto_publish_linkedin?: boolean | null
+          auto_publish_medium?: boolean | null
+          auto_publish_substack?: boolean | null
+          chapter_id?: string | null
           content: string
+          content_type?: string | null
           created_at?: string
           featured_image?: string | null
           id?: string
@@ -124,11 +138,20 @@ export type Database = {
           slug?: string | null
           status?: string
           title: string
+          transcript?: string | null
           updated_at?: string
           user_id: string
+          video_duration?: number | null
+          video_thumbnail?: string | null
+          video_url?: string | null
         }
         Update: {
+          auto_publish_linkedin?: boolean | null
+          auto_publish_medium?: boolean | null
+          auto_publish_substack?: boolean | null
+          chapter_id?: string | null
           content?: string
+          content_type?: string | null
           created_at?: string
           featured_image?: string | null
           id?: string
@@ -141,10 +164,22 @@ export type Database = {
           slug?: string | null
           status?: string
           title?: string
+          transcript?: string | null
           updated_at?: string
           user_id?: string
+          video_duration?: number | null
+          video_thumbnail?: string | null
+          video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "articles_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "book_chapters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       auth_rate_limits: {
         Row: {
@@ -172,6 +207,92 @@ export type Database = {
           window_start?: string
         }
         Relationships: []
+      }
+      book_chapters: {
+        Row: {
+          article_id: string | null
+          book_title: string
+          chapter_number: number
+          chapter_slug: string | null
+          chapter_title: string
+          created_at: string
+          id: string
+          is_published: boolean | null
+          key_concepts: Json | null
+          publish_date: string | null
+          reading_time_minutes: number | null
+          sequence_order: number
+          shorts_duration: number | null
+          shorts_id: string | null
+          shorts_url: string | null
+          transcript: string | null
+          updated_at: string
+          video_15min_id: string | null
+          video_15min_url: string | null
+          video_5min_id: string | null
+          video_5min_url: string | null
+          video_duration_15min: number | null
+          video_duration_5min: number | null
+        }
+        Insert: {
+          article_id?: string | null
+          book_title?: string
+          chapter_number: number
+          chapter_slug?: string | null
+          chapter_title: string
+          created_at?: string
+          id?: string
+          is_published?: boolean | null
+          key_concepts?: Json | null
+          publish_date?: string | null
+          reading_time_minutes?: number | null
+          sequence_order: number
+          shorts_duration?: number | null
+          shorts_id?: string | null
+          shorts_url?: string | null
+          transcript?: string | null
+          updated_at?: string
+          video_15min_id?: string | null
+          video_15min_url?: string | null
+          video_5min_id?: string | null
+          video_5min_url?: string | null
+          video_duration_15min?: number | null
+          video_duration_5min?: number | null
+        }
+        Update: {
+          article_id?: string | null
+          book_title?: string
+          chapter_number?: number
+          chapter_slug?: string | null
+          chapter_title?: string
+          created_at?: string
+          id?: string
+          is_published?: boolean | null
+          key_concepts?: Json | null
+          publish_date?: string | null
+          reading_time_minutes?: number | null
+          sequence_order?: number
+          shorts_duration?: number | null
+          shorts_id?: string | null
+          shorts_url?: string | null
+          transcript?: string | null
+          updated_at?: string
+          video_15min_id?: string | null
+          video_15min_url?: string | null
+          video_5min_id?: string | null
+          video_5min_url?: string | null
+          video_duration_15min?: number | null
+          video_duration_5min?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_chapters_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       client_preferences: {
         Row: {
@@ -220,6 +341,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      content_versions: {
+        Row: {
+          chapter_id: string | null
+          content_id: string | null
+          content_type: string
+          created_at: string
+          id: string
+          status: string | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          chapter_id?: string | null
+          content_id?: string | null
+          content_type: string
+          created_at?: string
+          id?: string
+          status?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          chapter_id?: string | null
+          content_id?: string | null
+          content_type?: string
+          created_at?: string
+          id?: string
+          status?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_versions_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "book_chapters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       conversations: {
         Row: {
@@ -648,6 +810,60 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      publishing_schedule: {
+        Row: {
+          article_id: string | null
+          chapter_id: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          platform: string
+          published_url: string | null
+          scheduled_date: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          article_id?: string | null
+          chapter_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform: string
+          published_url?: string | null
+          scheduled_date: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          article_id?: string | null
+          chapter_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform?: string
+          published_url?: string | null
+          scheduled_date?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "publishing_schedule_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "publishing_schedule_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "book_chapters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       security_audit_log: {
         Row: {

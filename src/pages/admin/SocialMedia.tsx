@@ -8,13 +8,15 @@ import { IntegrationHub } from "@/components/IntegrationHub"
 import { IntegrationHealthDashboard } from "@/components/IntegrationHealthDashboard"
 import ImageManager from "@/components/ImageManager"
 import FredDashboard from "@/components/FredDashboard"
+import { BookSeriesManager } from "@/components/BookSeriesManager"
+import { PublishingPipeline } from "@/components/PublishingPipeline"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AdminSocial() {
   return (
     <AdminLayout title="Social Media Management">
       <Tabs defaultValue="hub" className="w-full">
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-11">
           <TabsTrigger value="hub">Integration Hub</TabsTrigger>
           <TabsTrigger value="health">Health Monitor</TabsTrigger>
           <TabsTrigger value="status">Status Dashboard</TabsTrigger>
@@ -24,6 +26,8 @@ export default function AdminSocial() {
           <TabsTrigger value="email">Email Setup</TabsTrigger>
           <TabsTrigger value="images">Images</TabsTrigger>
           <TabsTrigger value="fred">FRED</TabsTrigger>
+          <TabsTrigger value="book">Book Series</TabsTrigger>
+          <TabsTrigger value="publishing">Publishing</TabsTrigger>
         </TabsList>
         <TabsContent value="hub">
           <IntegrationHub />
@@ -51,10 +55,18 @@ export default function AdminSocial() {
           <ImageManager />
         </TabsContent>
         
-        <TabsContent value="fred">
-          <FredDashboard />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="fred">
+            <FredDashboard />
+          </TabsContent>
+
+          <TabsContent value="book">
+            <BookSeriesManager />
+          </TabsContent>
+
+          <TabsContent value="publishing">
+            <PublishingPipeline />
+          </TabsContent>
+        </Tabs>
     </AdminLayout>
   )
 }
