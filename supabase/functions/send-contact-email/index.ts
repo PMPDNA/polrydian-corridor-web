@@ -1,12 +1,14 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.51.0';
+import { extractClientIP, validateInput, checkRateLimit, logSecurityEvent, getCombinedHeaders } from '../_shared/security.ts';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://polrydian.com",
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-csrf-token",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -18,6 +20,7 @@ interface ContactEmailRequest {
   service?: string;
   message: string;
   urgent: boolean;
+  csrfToken: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -27,67 +30,123 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Rate limiting by IP
-    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
-    
-    // Simple rate limiting check (you could enhance this with a database)
-    const userAgent = req.headers.get('user-agent') || '';
-    
-    // Block suspicious requests
-    if (userAgent.includes('bot') || userAgent.includes('crawler')) {
-      console.log('Blocked bot request from:', clientIP);
-      return new Response(
-        JSON.stringify({ error: 'Access denied' }),
-        { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const body = await req.json();
-    const { 
-      firstName, 
-      lastName, 
-      email, 
-      company, 
-      service, 
-      message, 
-      urgent 
-    }: ContactEmailRequest = body;
+    // Extract client information for security logging
+    const clientIP = extractClientIP(req);
+    const userAgent = req.headers.get('user-agent') || 'unknown';
 
-    // Enhanced validation
-    if (!firstName || !lastName || !email || !message) {
+    // Enhanced rate limiting and bot detection
+    if (!checkRateLimit(clientIP, 5, 60)) { // 5 requests per minute
+      await logSecurityEvent(supabase, 'rate_limit_exceeded', {
+        ip: clientIP,
+        user_agent: userAgent,
+        endpoint: 'send-contact-email'
+      }, 'medium');
+      
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ 
+          error: 'Too many requests. Please try again later.' 
+        }),
         { 
-          status: 400, 
-          headers: { "Content-Type": "application/json", ...corsHeaders } 
+          status: 429, 
+          headers: getCombinedHeaders()
         }
       );
     }
 
-    // Input sanitization and validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Enhanced bot detection
+    const botPatterns = [
+      /bot/i, /crawler/i, /spider/i, /scraper/i,
+      /curl/i, /wget/i, /python/i, /requests/i
+    ];
+    
+    if (botPatterns.some(pattern => pattern.test(userAgent))) {
+      await logSecurityEvent(supabase, 'bot_blocked', {
+        ip: clientIP,
+        user_agent: userAgent
+      }, 'low');
+      
       return new Response(
-        JSON.stringify({ error: "Invalid email format" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        JSON.stringify({ error: 'Automated requests not allowed' }),
+        { status: 403, headers: getCombinedHeaders() }
       );
     }
 
-    // Length limits to prevent abuse
-    if (firstName.length > 50 || lastName.length > 50 || message.length > 5000) {
+    if (req.method !== 'POST') {
       return new Response(
-        JSON.stringify({ error: "Input too long" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        JSON.stringify({ error: 'Method not allowed' }),
+        { status: 405, headers: getCombinedHeaders() }
       );
     }
 
-    // Basic content filtering
-    const suspiciousPatterns = /<script|javascript|<iframe|onclick/i;
-    if (suspiciousPatterns.test(message) || suspiciousPatterns.test(firstName) || suspiciousPatterns.test(lastName)) {
-      console.log('Blocked suspicious content from:', clientIP);
+    const requestData = await req.json() as ContactEmailRequest;
+
+    // Enhanced input validation with CSRF protection
+    const validation = validateInput(requestData, [
+      'firstName', 'lastName', 'email', 'message', 'csrfToken'
+    ]);
+
+    if (!validation.isValid) {
+      await logSecurityEvent(supabase, 'invalid_input', {
+        ip: clientIP,
+        errors: validation.errors
+      }, 'medium');
+      
       return new Response(
-        JSON.stringify({ error: "Invalid content detected" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        JSON.stringify({ 
+          error: 'Invalid input data', 
+          details: validation.errors 
+        }),
+        { status: 400, headers: getCombinedHeaders() }
+      );
+    }
+
+    const sanitizedData = validation.sanitizedData;
+
+    // Enhanced email format validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(sanitizedData.email)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid email format' }),
+        { status: 400, headers: getCombinedHeaders() }
+      );
+    }
+
+    // Content length validation
+    if (sanitizedData.message.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: 'Message too long. Maximum 5000 characters.' }),
+        { status: 400, headers: getCombinedHeaders() }
+      );
+    }
+
+    // Check for suspicious content patterns
+    const suspiciousPatterns = [
+      /<script/i, /javascript:/i, /onclick/i, /onerror/i,
+      /viagra/i, /casino/i, /bitcoin/i, /crypto/i,
+      /http:\/\//g, /https:\/\//g
+    ];
+
+    const messageContent = sanitizedData.message.toLowerCase();
+    const suspiciousCount = suspiciousPatterns.reduce((count, pattern) => {
+      const matches = messageContent.match(pattern);
+      return count + (matches ? matches.length : 0);
+    }, 0);
+
+    if (suspiciousCount > 2) {
+      await logSecurityEvent(supabase, 'suspicious_content', {
+        ip: clientIP,
+        suspicious_patterns: suspiciousCount,
+        message_preview: sanitizedData.message.substring(0, 100)
+      }, 'high');
+      
+      return new Response(
+        JSON.stringify({ error: 'Message contains suspicious content' }),
+        { status: 400, headers: getCombinedHeaders() }
       );
     }
 
@@ -95,33 +154,39 @@ const handler = async (req: Request): Promise<Response> => {
     const notificationResponse = await resend.emails.send({
       from: "Strategic Inquiry <noreply@polrydian.com>",
       to: ["patrick@polrydian.com"],
-      subject: `${urgent ? "🔴 URGENT " : ""}New Strategic Consultation Inquiry - ${firstName} ${lastName}`,
+      subject: `${sanitizedData.urgent ? "🔴 URGENT " : ""}New Strategic Consultation Inquiry - ${sanitizedData.firstName} ${sanitizedData.lastName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2563eb; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">
-            ${urgent ? "🔴 URGENT " : ""}Strategic Consultation Inquiry
+            ${sanitizedData.urgent ? "🔴 URGENT " : ""}Strategic Consultation Inquiry
           </h2>
           
           <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #374151;">Contact Information</h3>
-            <p><strong>Name:</strong> ${firstName} ${lastName}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            ${company ? `<p><strong>Organization:</strong> ${company}</p>` : ""}
-            ${service ? `<p><strong>Service Area:</strong> ${service}</p>` : ""}
-            <p><strong>Priority:</strong> ${urgent ? "URGENT - Immediate attention required" : "Standard inquiry"}</p>
+            <p><strong>Name:</strong> ${sanitizedData.firstName} ${sanitizedData.lastName}</p>
+            <p><strong>Email:</strong> ${sanitizedData.email}</p>
+            ${sanitizedData.company ? `<p><strong>Organization:</strong> ${sanitizedData.company}</p>` : ""}
+            ${sanitizedData.service ? `<p><strong>Service Area:</strong> ${sanitizedData.service}</p>` : ""}
+            <p><strong>Priority:</strong> ${sanitizedData.urgent ? "URGENT - Immediate attention required" : "Standard inquiry"}</p>
           </div>
 
           <div style="margin: 20px 0;">
             <h3 style="color: #374151;">Strategic Challenge/Opportunity:</h3>
             <div style="background: white; padding: 15px; border-left: 4px solid #2563eb; border-radius: 4px;">
-              ${message.replace(/\n/g, '<br>')}
+              ${sanitizedData.message.replace(/\n/g, '<br>')}
             </div>
           </div>
 
           <div style="background: #eff6ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 0; font-size: 14px; color: #1e40af;">
-              <strong>Response Time Target:</strong> ${urgent ? "24 hours (urgent)" : "48 hours (standard)"}
+              <strong>Response Time Target:</strong> ${sanitizedData.urgent ? "24 hours (urgent)" : "48 hours (standard)"}
             </p>
+          </div>
+
+          <div style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; font-size: 12px; color: #6c757d;">
+            <p>Submitted: ${new Date().toLocaleString()}</p>
+            <p>IP Address: ${clientIP}</p>
+            <p>User Agent: ${userAgent}</p>
           </div>
 
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
@@ -135,20 +200,20 @@ const handler = async (req: Request): Promise<Response> => {
     // Send confirmation email to the user
     const confirmationResponse = await resend.emails.send({
       from: "Patrick Misiewicz <patrick@polrydian.com>",
-      to: [email],
+      to: [sanitizedData.email],
       subject: "Strategic Consultation Inquiry Received - Polrydian Group",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2563eb;">Thank you for your strategic consultation inquiry</h2>
           
-          <p>Dear ${firstName},</p>
+          <p>Dear ${sanitizedData.firstName},</p>
           
-          <p>I've received your inquiry regarding strategic consultation and corridor economics advisory services. Your submission has been flagged as ${urgent ? "<strong>urgent</strong>" : "standard priority"} and will receive appropriate attention.</p>
+          <p>I've received your inquiry regarding strategic consultation and corridor economics advisory services. Your submission has been flagged as ${sanitizedData.urgent ? "<strong>urgent</strong>" : "standard priority"} and will receive appropriate attention.</p>
 
           <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #374151;">What happens next?</h3>
             <ul style="color: #4b5563;">
-              <li><strong>Initial Review:</strong> I'll personally review your strategic challenge within ${urgent ? "24 hours" : "48 hours"}</li>
+              <li><strong>Initial Review:</strong> I'll personally review your strategic challenge within ${sanitizedData.urgent ? "24 hours" : "48 hours"}</li>
               <li><strong>Preliminary Assessment:</strong> If aligned with our capabilities, I'll provide initial thoughts and next steps</li>
               <li><strong>Consultation Scheduling:</strong> We'll arrange a focused discussion to explore how corridor economics can address your specific needs</li>
             </ul>
@@ -177,31 +242,80 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Emails sent successfully:", { notificationResponse, confirmationResponse });
+    // Send both emails and handle results
+    const [notificationResult, confirmationResult] = await Promise.allSettled([
+      notificationResponse,
+      confirmationResponse
+    ]);
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: "Your strategic consultation inquiry has been sent successfully. You should receive a confirmation email shortly." 
-      }), 
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
-      }
-    );
+    // Log successful contact form submission
+    await logSecurityEvent(supabase, 'contact_form_success', {
+      ip: clientIP,
+      email: sanitizedData.email,
+      company: sanitizedData.company,
+      urgent: sanitizedData.urgent
+    }, 'low');
+
+    // Check results and provide appropriate response
+    const notificationSuccess = notificationResult.status === 'fulfilled' && !notificationResult.value.error;
+    const confirmationSuccess = confirmationResult.status === 'fulfilled' && !confirmationResult.value.error;
+
+    if (notificationSuccess && confirmationSuccess) {
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: "Your strategic consultation inquiry has been sent successfully. You should receive a confirmation email shortly." 
+        }), 
+        {
+          status: 200,
+          headers: getCombinedHeaders(),
+        }
+      );
+    } else {
+      // Log partial failure
+      await logSecurityEvent(supabase, 'email_partial_failure', {
+        notification_success: notificationSuccess,
+        confirmation_success: confirmationSuccess,
+        notification_error: notificationResult.status === 'rejected' ? notificationResult.reason : null,
+        confirmation_error: confirmationResult.status === 'rejected' ? confirmationResult.reason : null
+      }, 'medium');
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Your message was received, but there was an issue with email delivery. We\'ll still get back to you.' 
+        }),
+        { 
+          status: 200, 
+          headers: getCombinedHeaders()
+        }
+      );
+    }
   } catch (error: any) {
     console.error("Error in send-contact-email function:", error);
+    
+    // Log error for security monitoring
+    try {
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      );
+      
+      await logSecurityEvent(supabase, 'contact_form_error', {
+        error: error.message,
+        stack: error.stack
+      }, 'high');
+    } catch (logError) {
+      console.error('Failed to log error:', logError);
+    }
+    
     return new Response(
       JSON.stringify({ 
-        error: "Failed to send email. Please try again or contact us directly at patrick@polrydian.com",
-        details: error.message 
+        error: "Failed to send email. Please try again or contact us directly at patrick@polrydian.com"
       }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: getCombinedHeaders(),
       }
     );
   }
