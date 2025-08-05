@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArticleForm } from "@/components/ArticleForm";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { SocialShareButtons } from "@/components/SocialShareButtons";
 import { useArticles } from "@/hooks/useArticles";
 import { sanitizeHtml } from "@/lib/security";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -84,13 +85,13 @@ export default function Articles() {
     title: dbArticle.title,
     excerpt: dbArticle.meta_description || dbArticle.content.substring(0, 200) + "...",
     content: dbArticle.content,
-    category: "Strategy" as const, // Default category
-    heroImage: dbArticle.featured_image || "/placeholder.svg", // Use actual featured image
+    category: (dbArticle.keywords?.[0] as any) || "Strategy",
+    heroImage: dbArticle.featured_image || "/placeholder.svg",
     publishDate: new Date(dbArticle.created_at).toISOString().split('T')[0],
     readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.length / 200),
     linkedinUrl: "",
     featured: dbArticle.status === 'published',
-  })) || sampleArticles; // Fallback to sample articles if no database articles
+  })) || [];
 
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
   const featuredArticles = articles.filter(article => article.featured);
@@ -311,7 +312,7 @@ export default function Articles() {
                     </div>
                   </div>
                   
-                <div className="flex gap-2">
+                  <div className="flex gap-2 mb-4">
                      <Button 
                        size="sm" 
                        className="flex-1"
@@ -370,12 +371,15 @@ export default function Articles() {
                           </div>
                         </DialogContent>
                      </Dialog>
-                    <Button size="sm" variant="outline" asChild>
-                      <a href={article.linkedinUrl} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    </Button>
-                  </div>
+                     <Button size="sm" variant="outline" asChild>
+                       <a href={article.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                         <ExternalLink className="h-4 w-4" />
+                       </a>
+                     </Button>
+                   </div>
+                     
+                   {/* Social Share Buttons */}
+                   <SocialShareButtons article={article} compact={true} />
 
                   {/* Photo Gallery Preview */}
                   {(article.vipPhotos || article.eventPhotos) && (

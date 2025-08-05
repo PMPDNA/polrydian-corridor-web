@@ -20,7 +20,6 @@ import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
 import { AuthCallback } from "./pages/AuthCallback";
 import AdminPage from "./pages/AdminPage";
-import BookSeries from "./pages/BookSeries";
 
 import AdminSocial from "./pages/admin/SocialMedia";
 import HeroEditor from "./pages/admin/HeroEditor";
@@ -59,7 +58,6 @@ const App = () => {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/cookie-settings" element={<CookieSettings />} />
           <Route path="/articles" element={<Articles />} />
-          <Route path="/book-series" element={<BookSeries />} />
           <Route path="/contribute" element={<ContributeArticle />} />
             <Route path="/admin" element={
               <ErrorBoundary>
