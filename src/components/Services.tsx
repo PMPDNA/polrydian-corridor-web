@@ -123,13 +123,19 @@ export const Services = () => {
           ))}
         </div>
 
-        {/* Simplified Call to Action */}
+        {/* Call to Action */}
         <div className="text-center">
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
             Ready to transform your strategic challenges into competitive advantages? 
-            <a href="/calendly-demo" className="text-accent hover:underline ml-1">Schedule a consultation</a> 
-            or <a href="/about" className="text-accent hover:underline ml-1">learn more about our approach</a>.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/contact" className="inline-flex items-center justify-center px-6 py-3 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors font-medium">
+              Schedule Strategic Consultation
+            </a>
+            <a href="/about" className="inline-flex items-center justify-center px-6 py-3 border border-accent text-accent rounded-lg hover:bg-accent/10 transition-colors font-medium">
+              Learn About Our Approach
+            </a>
+          </div>
         </div>
       </div>
     </section>

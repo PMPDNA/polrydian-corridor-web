@@ -348,6 +348,60 @@ export type Database = {
         }
         Relationships: []
       }
+      consultation_bookings: {
+        Row: {
+          admin_notes: string | null
+          company: string | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          message: string
+          phone: string | null
+          preferred_date: string | null
+          preferred_time: string | null
+          service_area: string | null
+          status: string
+          updated_at: string
+          urgency_level: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          company?: string | null
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          message: string
+          phone?: string | null
+          preferred_date?: string | null
+          preferred_time?: string | null
+          service_area?: string | null
+          status?: string
+          updated_at?: string
+          urgency_level?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string
+          phone?: string | null
+          preferred_date?: string | null
+          preferred_time?: string | null
+          service_area?: string | null
+          status?: string
+          updated_at?: string
+          urgency_level?: string
+        }
+        Relationships: []
+      }
       content_schedule: {
         Row: {
           config: Json | null

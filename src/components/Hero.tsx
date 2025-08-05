@@ -40,38 +40,28 @@ export const Hero = () => {
           <EnhancedCorridorEconomics />
         </div>
 
-        {/* Call to Action - Single Primary CTA */}
+        {/* Call to Action - Contact Form Integration */}
         <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
           <div className="flex justify-center">
-            <CalendlyPopup
-              calendlyUrl="https://calendly.com/patrickmisiewicz/consultation"
-              buttonText="Schedule a Strategic Consultation"
-              variant="default"
-              size="lg"
-              className="bg-accent text-white px-10 py-6 text-xl hover:bg-accent/90 shadow-elegant"
-            />
+            <a 
+              href="/contact" 
+              className="inline-flex items-center justify-center bg-accent text-accent-foreground px-10 py-6 text-xl rounded-lg hover:bg-accent/90 shadow-elegant transition-colors font-semibold"
+            >
+              Schedule Strategic Consultation
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </a>
           </div>
           <p className="text-sm text-muted-foreground">
-            Free initial consultation • Emergency sessions available for urgent matters
+            Free initial consultation • Priority response for urgent strategic matters
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center text-sm">
             <a href="/services" className="text-accent hover:text-accent/80 underline">
               View Strategic Solutions
             </a>
             <span className="hidden sm:inline text-muted-foreground">•</span>
-            <CalendlyPopup
-              calendlyUrl="https://calendly.com/patrickmisiewicz/emergency-consultation"
-              buttonText="Rapid-Response Brief ($500)"
-              variant="ghost"
-              size="sm"
-              className="text-accent hover:text-accent/80 underline p-0 h-auto"
-              prefill={{
-                customAnswers: {
-                  "emergency_fee": "500",
-                  "meeting_type": "emergency"
-                }
-              }}
-            />
+            <a href="/about" className="text-accent hover:text-accent/80 underline">
+              Learn About Our Approach
+            </a>
           </div>
         </div>
         

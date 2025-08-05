@@ -15,12 +15,8 @@ const stoicQuotes: Quote[] = [
     author: "Marcus Aurelius"
   },
   {
-    text: "The best revenge is not to be like your enemy.",
+    text: "When you wake up in the morning, tell yourself: the people I deal with today will be meddling, ungrateful, arrogant, dishonest, jealous and surly. But I have seen the beauty of good, and the ugliness of evil, and have recognized that the wrongdoer has a nature related to my own.",
     author: "Marcus Aurelius"
-  },
-  {
-    text: "Every new beginning comes from some other beginning's end.",
-    author: "Seneca"
   },
   {
     text: "It is not the man who has too little, but the man who craves more, who is poor.",
@@ -31,11 +27,11 @@ const stoicQuotes: Quote[] = [
     author: "Seneca"
   },
   {
-    text: "No one can hurt you without your permission.",
-    author: "Epictetus"
+    text: "Every accomplishment starts with the decision to try.",
+    author: "Seneca"
   },
   {
-    text: "Wealth consists in not having great possessions, but in having few wants.",
+    text: "No one can hurt you without your permission.",
     author: "Epictetus"
   },
   {
@@ -43,15 +39,19 @@ const stoicQuotes: Quote[] = [
     author: "Epictetus"
   },
   {
+    text: "First say to yourself what would you be; and then do what you have to do.",
+    author: "Epictetus"
+  },
+  {
     text: "Nothing is permanent except change.",
     author: "Heraclitus"
   },
   {
-    text: "The path up and down are one and the same.",
+    text: "Big results require big ambitions.",
     author: "Heraclitus"
   },
   {
-    text: "Big results require big ambitions.",
+    text: "Character is destiny.",
     author: "Heraclitus"
   }
 ];

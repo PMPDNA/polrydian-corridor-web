@@ -131,8 +131,9 @@ export const About = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             About Patrick Misiewicz
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            Founder of Polrydian Group, specializing in corridor economics and strategic transformation
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+            Founder of Polrydian Group and Board Director at World Affairs Council of Miami. 
+            Specializing in corridor economics—transforming geopolitical complexity into strategic opportunity across 60+ countries.
           </p>
           
           {/* Profile Picture directly under the heading */}
@@ -199,38 +200,45 @@ export const About = () => {
                 <div className="max-h-[60vh] overflow-y-auto">
                   <h3 className="text-xl font-semibold text-foreground mb-4">Strategic Philosophy & Full Biography</h3>
                   
-                  <div className="grid md:grid-cols-2 gap-6 text-sm text-muted-foreground leading-relaxed">
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">Strategic Philosophy</h4>
-                        <p>My work centers on <strong>corridor economics</strong>—the disciplined practice of mapping and managing strategic flows of capital, technology, policy, and expertise across critical global regions, transforming obstacles into pathways toward resilience and sustainable growth.</p>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">Professional Background</h4>
-                        <p>I'm Patrick Oscar Misiewicz, founder of Polrydian Group, where my guiding principle is simple: transforming complexity and geopolitical friction into clear, actionable strategy.</p>
-                      </div>
-
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">Academic Foundation</h4>
-                        <p>BA in International Economic Relations at the University of Gdańsk, Erasmus scholarship in Amsterdam, study-abroad at Kyungpook National University in South Korea, Master's in Logistics & Supply Chain Management at FIU, and Public Policy studies at Georgetown University.</p>
-                      </div>
+                   <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+                    <div>
+                      <h4 className="font-medium text-foreground mb-2">Professional Overview</h4>
+                      <p>Patrick Oscar Misiewicz is the founder of Polrydian Group, a strategic consulting firm specializing in corridor economics—the disciplined practice of mapping and managing strategic flows of capital, technology, policy, and expertise across critical global regions. His work transforms geopolitical complexity into clear, actionable strategy for governments, corporations, and development organizations.</p>
                     </div>
 
-                    <div className="space-y-3">
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">Global Experience</h4>
-                        <p>Real-world exposure across 60 countries spanning Africa, Asia, Europe, Latin America, and North America, including strategic initiatives from the Amber Route Initiative to West African agritech development in Côte d'Ivoire.</p>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">Strategic Philosophy</h4>
+                          <p>Patrick's approach centers on the principle that "what stands in the way becomes the way"—transforming obstacles and geopolitical friction into strategic pathways toward resilience and sustainable growth. This philosophy guides his work in developing economic corridors that create competitive advantages from complex global challenges.</p>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">Academic Foundation</h4>
+                          <p>BA in International Economic Relations from the University of Gdańsk, with Erasmus scholarship studies in Amsterdam and international experience at Kyungpook National University in South Korea. Advanced degrees include an MSc in Logistics & Supply Chain Management from Florida International University and Public Policy studies at Georgetown University.</p>
+                        </div>
+
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">Global Experience</h4>
+                          <p>Direct operational experience across 60+ countries spanning Africa, Asia, Europe, Latin America, and North America. Key projects include the Amber Route Initiative for Central-Eastern European integration, West African agritech development in Côte d'Ivoire, and infrastructure development across multiple continents.</p>
+                        </div>
                       </div>
 
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">Current Roles</h4>
-                        <p>Board Director and Chair of the Central & Eastern Europe program at the World Affairs Council of Miami. Senior Adviser & Director of Infrastructure & M&A at Zab Capital Holdings (2024-2025).</p>
-                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">Current Leadership Roles</h4>
+                          <p>Board Director and Chair of the Central & Eastern Europe program at the World Affairs Council of Miami. Senior Adviser & Director of Infrastructure & M&A at Zab Capital Holdings (2024-2025). Active in commercial real estate transactions ranging $20M-$500M, with expertise in warehouses, schools, and international hotel properties.</p>
+                        </div>
 
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">Personal Disciplines</h4>
-                        <p><strong>Chess</strong> sharpens pattern recognition, <strong>sailing</strong> strengthens adaptive decision-making, and <strong>daily Stoic journaling</strong> maintains clarity and composure in volatility.</p>
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">Commercial Real Estate Expertise</h4>
+                          <p>Extensive experience in both buy-side and sell-side representation for commercial real estate transactions. Specializes in industrial warehouses, educational facilities, and hospitality properties across international markets, with a focus on infrastructure-enabled investment opportunities.</p>
+                        </div>
+
+                        <div>
+                          <h4 className="font-medium text-foreground mb-2">Personal Disciplines</h4>
+                          <p><strong>Chess</strong> develops strategic pattern recognition, <strong>sailing</strong> builds adaptive decision-making under uncertainty, and <strong>daily Stoic journaling</strong> maintains clarity and emotional regulation during volatile market conditions. These practices directly inform his strategic consulting methodology.</p>
+                        </div>
                       </div>
                     </div>
                   </div>

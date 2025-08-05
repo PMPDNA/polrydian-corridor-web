@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-import CalendlyPopup from "@/components/CalendlyPopup";
+import { ConsultationBookingForm } from "@/components/ConsultationBookingForm";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Mail, 
@@ -209,137 +209,9 @@ export const Contact = () => {
             </Card>
           </div>
 
-          {/* Contact Form */}
+          {/* Consultation Booking Form */}
           <div>
-            <Card className="shadow-elegant">
-              <CardHeader>
-                <CardTitle className="text-2xl text-foreground">Start the Conversation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="firstName">First Name *</Label>
-                      <Input 
-                        id="firstName" 
-                        placeholder="Your first name" 
-                        className="mt-1" 
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        disabled={isSubmitting}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="lastName">Last Name *</Label>
-                      <Input 
-                        id="lastName" 
-                        placeholder="Your last name" 
-                        className="mt-1" 
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        disabled={isSubmitting}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">Email Address *</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      placeholder="your.email@company.com" 
-                      className="mt-1" 
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      disabled={isSubmitting}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="company">Organization</Label>
-                    <Input 
-                      id="company" 
-                      placeholder="Your company or organization" 
-                      className="mt-1" 
-                      value={formData.company}
-                      onChange={handleInputChange}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="service">Area of Interest</Label>
-                    <select 
-                      id="service" 
-                      className="w-full mt-1 px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                      value={formData.service}
-                      onChange={handleInputChange}
-                      disabled={isSubmitting}
-                    >
-                      <option value="">Select a service area</option>
-                      {services.map((service, index) => (
-                        <option key={index} value={service}>{service}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="message">Strategic Challenge or Opportunity *</Label>
-                    <Textarea 
-                      id="message" 
-                      placeholder="Describe your strategic challenge, project scope, or opportunity. The more detail you provide, the better we can tailor our initial consultation." 
-                      className="mt-1 min-h-[120px]"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      disabled={isSubmitting}
-                      required
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="checkbox" 
-                      id="urgent" 
-                      className="rounded disabled:opacity-50" 
-                      checked={formData.urgent}
-                      onChange={handleInputChange}
-                      disabled={isSubmitting}
-                    />
-                    <Label htmlFor="urgent" className="text-sm">
-                      This is an urgent strategic matter requiring immediate attention
-                    </Label>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    variant="default" 
-                    size="lg" 
-                    className="w-full text-lg py-6" 
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <LoadingSpinner size="sm" className="mr-2" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-5 w-5 mr-2" />
-                        Send Strategic Inquiry
-                      </>
-                    )}
-                  </Button>
-
-                  <p className="text-xs text-muted-foreground text-center">
-                    By submitting this form, you agree to our confidentiality protocols and 
-                    professional consultation terms.
-                  </p>
-                </form>
-              </CardContent>
-            </Card>
+            <ConsultationBookingForm />
           </div>
         </div>
 
@@ -355,13 +227,13 @@ export const Contact = () => {
                 Let's navigate complexity together and build the corridors that advance your mission.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <CalendlyPopup
-                  calendlyUrl="https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
-                  buttonText="Schedule your meeting with Calendly integration"
-                  variant="default"
-                  size="lg"
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-                />
+                <a 
+                  href="#consultation-form"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white rounded-lg font-medium transition-colors"
+                >
+                  Schedule Strategic Consultation
+                </a>
                 <Button variant="outline" size="lg" className="border-accent text-accent hover:bg-accent hover:text-accent-foreground">
                   <Linkedin className="h-5 w-5 mr-2" />
                   <a href="https://www.linkedin.com/in/patrick-misiewicz-mslscm-28299b40" target="_blank" rel="noopener noreferrer">

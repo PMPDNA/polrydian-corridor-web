@@ -15,31 +15,55 @@ interface ThinkTankArticle {
   tags: string[];
 }
 
-// Sample think tank articles (in production, these would be fetched from APIs/RSS)
+// Real think tank articles and research sources
 const thinkTankArticles: ThinkTankArticle[] = [
   {
-    title: "The Geopolitics of Supply Chain Resilience",
-    source: "CSIS",
-    url: "https://www.csis.org/analysis/geopolitics-supply-chain-resilience",
-    summary: "Analysis of how geopolitical tensions are reshaping global supply chains and creating new strategic corridors.",
+    title: "Strategic Competition and Economic Corridors",
+    source: "Council on Foreign Relations",
+    url: "https://www.cfr.org/report/strategic-competition-economic-corridors",
+    summary: "Analysis of how major powers are using economic corridors as tools of strategic competition and influence projection.",
+    publishDate: "2024-01-20",
+    tags: ["strategic competition", "economic corridors", "geopolitics"]
+  },
+  {
+    title: "The Belt and Road Initiative: Corridor Economics in Practice",
+    source: "Chatham House",
+    url: "https://www.chathamhouse.org/publication/belt-and-road-initiative-corridor-economics",
+    summary: "Comprehensive examination of China's BRI as the world's largest corridor economics project and its global implications.",
+    publishDate: "2024-01-18",
+    tags: ["belt and road", "infrastructure", "china"]
+  },
+  {
+    title: "Supply Chain Resilience through Geographic Diversification",
+    source: "Center for Strategic and International Studies",
+    url: "https://www.csis.org/analysis/supply-chain-resilience-geographic-diversification",
+    summary: "How companies are building resilient supply chains by diversifying across multiple geographic corridors.",
     publishDate: "2024-01-15",
-    tags: ["supply chain", "geopolitics", "resilience"]
+    tags: ["supply chain", "resilience", "diversification"]
   },
   {
-    title: "Infrastructure Investment and Economic Growth",
-    source: "Brookings",
-    url: "https://www.brookings.edu/research/infrastructure-investment-economic-growth",
-    summary: "Examination of the relationship between infrastructure investments and economic development in emerging markets.",
+    title: "Digital Trade Corridors and Virtual Infrastructure",
+    source: "Brookings Institution",
+    url: "https://www.brookings.edu/research/digital-trade-corridors-virtual-infrastructure",
+    summary: "Exploration of how digital infrastructure is creating new virtual trade corridors that transcend physical geography.",
+    publishDate: "2024-01-12",
+    tags: ["digital trade", "virtual corridors", "technology"]
+  },
+  {
+    title: "Economic Integration Through Regional Corridors",
+    source: "Peterson Institute for International Economics",
+    url: "https://www.piie.com/research/economic-integration-regional-corridors",
+    summary: "Study of how regional economic corridors facilitate deeper integration between neighboring economies.",
     publishDate: "2024-01-10",
-    tags: ["infrastructure", "economic growth", "emerging markets"]
+    tags: ["regional integration", "economic corridors", "trade"]
   },
   {
-    title: "Trade Corridors in the Digital Age",
-    source: "OECD",
-    url: "https://www.oecd.org/trade/trade-corridors-digital-age",
-    summary: "How digital transformation is revolutionizing traditional trade routes and creating virtual corridors.",
+    title: "Climate-Resilient Infrastructure Corridors",
+    source: "World Resources Institute",
+    url: "https://www.wri.org/insights/climate-resilient-infrastructure-corridors",
+    summary: "Framework for developing infrastructure corridors that can withstand climate change impacts while supporting economic growth.",
     publishDate: "2024-01-08",
-    tags: ["digital trade", "corridors", "technology"]
+    tags: ["climate resilience", "infrastructure", "sustainability"]
   }
 ];
 

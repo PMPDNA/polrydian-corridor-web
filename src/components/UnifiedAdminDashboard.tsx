@@ -25,6 +25,7 @@ import { EnhancedAnalyticsDashboard } from '@/components/EnhancedAnalyticsDashbo
 import AdminRoleManager from '@/components/AdminRoleManager';
 import { UnifiedOrganizationManager } from '@/components/UnifiedOrganizationManager';
 import GalleryManager from '@/components/GalleryManager';
+import { ConsultationBookingsManager } from '@/components/ConsultationBookingsManager';
 
 export const UnifiedAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -37,7 +38,8 @@ export const UnifiedAdminDashboard = () => {
       tabs: [
         { id: 'articles', label: 'Articles', component: <ArticleManagerEnhanced /> },
         { id: 'images', label: 'Images', component: <ImageManager /> },
-        { id: 'gallery', label: 'Gallery', component: <GalleryManager /> }
+        { id: 'gallery', label: 'Gallery', component: <GalleryManager /> },
+        { id: 'bookings', label: 'Consultation Bookings', component: <ConsultationBookingsManager /> }
       ]
     },
     {

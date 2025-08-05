@@ -15,13 +15,13 @@ export const ProofChips = () => {
     },
     {
       icon: <Award className="w-4 h-4" />,
-      text: "Fortune 500",
-      description: "Client Portfolio"
+      text: "Multi-Corridor",
+      description: "Infrastructure Expert"
     },
     {
       icon: <MapPin className="w-4 h-4" />,
-      text: "Multi-Corridor",
-      description: "Infrastructure Expert"
+      text: "Strategic Pathways",
+      description: "Economic Development"
     }
   ];
 
