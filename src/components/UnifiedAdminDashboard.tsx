@@ -17,14 +17,14 @@ import {
   Upload,
   Link as LinkIcon
 } from 'lucide-react';
-import { ImageManager } from '@/components/ImageManager';
+import ImageManager from '@/components/ImageManager';
 import { SocialMediaManager } from '@/components/SocialMediaManager';
-import { ArticleManagerEnhanced } from '@/components/ArticleManagerEnhanced';
-import { FredDashboard } from '@/components/FredDashboard';
+import ArticleManagerEnhanced from '@/components/ArticleManagerEnhanced';
+import FredDashboard from '@/components/FredDashboard';
 import { EnhancedAnalyticsDashboard } from '@/components/EnhancedAnalyticsDashboard';
-import { AdminRoleManager } from '@/components/AdminRoleManager';
+import AdminRoleManager from '@/components/AdminRoleManager';
 import { UnifiedOrganizationManager } from '@/components/UnifiedOrganizationManager';
-import { GalleryManager } from '@/components/GalleryManager';
+import GalleryManager from '@/components/GalleryManager';
 
 export const UnifiedAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
