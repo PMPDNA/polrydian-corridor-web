@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe2, Zap, Clock } from "lucide-react";
 import polrydianHeroBg from "@/assets/polrydian-hero-bg.jpg";
+import corridorDiagram from "@/assets/corridor-economics-diagram.jpg";
 import { PolrydianLogo } from "@/components/PolrydianLogo";
 import { ProofChips } from "@/components/ProofChips";
 import CalendlyPopup from "./CalendlyPopup";
@@ -40,34 +41,65 @@ export const Hero = () => {
             Transforming Complexity into 
             <span className="text-accent block mt-2">Strategic Clarity</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
             Strategic consulting with Patrick Misiewicz, Founder of Polrydian Group. Specializing in corridor economics—mapping 
             strategic flows of capital, technology, and expertise to transform complex global challenges into competitive advantages.
           </p>
+          
+          {/* Corridor Economics Explanation with Visual */}
+          <div className="bg-background/50 backdrop-blur-sm border border-accent/20 rounded-xl p-6 max-w-4xl mx-auto mb-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center justify-center gap-2">
+              <Globe2 className="h-5 w-5 text-accent" />
+              What is Corridor Economics?
+            </h3>
+            <div className="grid md:grid-cols-2 gap-6 items-center">
+              <div>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+                  Corridor economics maps the strategic flows of capital, technology, and expertise between regions to create competitive pathways. 
+                  Think of it as building bridges where others see barriers—transforming geopolitical friction into strategic advantage.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Capital Flows</span>
+                  <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Technology Transfer</span>
+                  <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Strategic Pathways</span>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src={corridorDiagram} 
+                  alt="Corridor Economics Network Diagram showing strategic flows between global regions"
+                  className="w-full max-w-sm rounded-lg shadow-md"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Call to Action */}
+        {/* Call to Action - Single Primary CTA */}
         <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/services">
-              <Button variant="default" size="lg" className="text-lg px-8 py-6">
-                Explore Strategic Solutions
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-            </a>
+          <div className="flex justify-center">
             <CalendlyPopup
               calendlyUrl="https://calendly.com/patrickmisiewicz/consultation"
-              buttonText="BOOK A STRATEGY SESSION"
+              buttonText="Schedule a Strategic Consultation"
               variant="default"
               size="lg"
-              className="bg-accent text-white px-8 py-6 text-lg hover:bg-accent/90"
+              className="bg-accent text-white px-10 py-6 text-xl hover:bg-accent/90 shadow-elegant"
             />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Free initial consultation • Emergency sessions available for urgent matters
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center text-sm">
+            <a href="/services" className="text-accent hover:text-accent/80 underline">
+              View Strategic Solutions
+            </a>
+            <span className="hidden sm:inline text-muted-foreground">•</span>
             <CalendlyPopup
               calendlyUrl="https://calendly.com/patrickmisiewicz/emergency-consultation"
               buttonText="Rapid-Response Brief ($500)"
-              variant="outline"
-              size="lg"
-              className="text-lg px-8 py-6 border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+              variant="ghost"
+              size="sm"
+              className="text-accent hover:text-accent/80 underline p-0 h-auto"
               prefill={{
                 customAnswers: {
                   "emergency_fee": "500",
@@ -76,9 +108,6 @@ export const Hero = () => {
               }}
             />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Emergency meetings available if I'm available • Last minute fee applies
-          </p>
         </div>
         
         {/* Proof Elements */}

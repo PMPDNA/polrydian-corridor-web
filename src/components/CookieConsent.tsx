@@ -99,10 +99,10 @@ export default function CookieConsent() {
 
   return (
     <>
-      {/* Cookie Banner - Smaller compact version */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-2">
-        <div className="max-w-6xl mx-auto bg-background/95 backdrop-blur-sm border border-accent/20 rounded-lg shadow-lg">
-          <div className="flex items-center justify-between gap-4 p-3">
+      {/* Cookie Banner - Compact version positioned above content */}
+      <div className="fixed bottom-4 left-4 right-4 z-40 max-w-4xl mx-auto">
+        <div className="bg-background/95 backdrop-blur-sm border border-accent/20 rounded-lg shadow-elegant">
+          <div className="flex items-center justify-between gap-4 p-4">
             <div className="flex items-center gap-3 flex-1">
               <Cookie className="h-4 w-4 text-accent flex-shrink-0" />
               <div>

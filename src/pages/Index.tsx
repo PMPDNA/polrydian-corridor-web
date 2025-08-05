@@ -4,6 +4,7 @@ import { About } from "@/components/About";
 import { Services } from "@/components/Services";
 import { Experience } from "@/components/Experience";
 import { Contact } from "@/components/Contact";
+import { TestimonialsSection } from "@/components/TestimonialsSection";
 
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { SocialMediaFeed } from "@/components/SocialMediaFeed";
@@ -30,6 +31,8 @@ const Index = () => {
         <section id="hero" aria-label="Hero section">
           <Hero />
         </section>
+        {/* Add testimonials after hero */}
+        <TestimonialsSection />
         <OrganizationLogos />
         <section id="social-insights" aria-label="Professional insights" className="py-20 bg-gradient-to-br from-background via-background/50 to-primary/5">
           <div className="container mx-auto px-6">

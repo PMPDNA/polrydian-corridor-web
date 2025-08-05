@@ -85,6 +85,18 @@ export default function BookSeries() {
             Each chapter available in multiple formats: in-depth articles, 15-minute videos, 5-minute summaries, and quick insights.
           </p>
           
+          {/* Sample Chapter Teaser */}
+          <div className="bg-accent/5 border border-accent/20 rounded-xl p-6 max-w-2xl mx-auto mb-8">
+            <h3 className="text-lg font-semibold text-foreground mb-3">📖 Sample Chapter Available</h3>
+            <p className="text-muted-foreground text-sm mb-4">
+              Get a preview of "The Strategic Mind" - Chapter 1 explores the foundational principles of corridor economics 
+              and how strategic thinking transforms obstacles into opportunities.
+            </p>
+            <Button variant="outline" className="text-accent border-accent hover:bg-accent hover:text-white">
+              Read Sample Chapter
+            </Button>
+          </div>
+          
           {totalChapters > 0 && (
             <div className="max-w-md mx-auto">
               <div className="flex justify-between text-sm text-muted-foreground mb-2">

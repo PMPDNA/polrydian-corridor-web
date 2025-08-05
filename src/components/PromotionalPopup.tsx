@@ -15,24 +15,24 @@ export const PromotionalPopup = () => {
         const hasSeenPopup = localStorage.getItem('polrydian-promo-seen');
         
         if (!hasSeenPopup) {
-          // Show popup after user scrolls 50% of the page or after reading content
+          // Show popup after user scrolls 80% of the page or spends time reading
           const handleScroll = () => {
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const windowHeight = window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
             const scrollPercent = scrollTop / (documentHeight - windowHeight);
             
-            if (scrollPercent > 0.5) {
+            if (scrollPercent > 0.8) {
               setIsOpen(true);
               window.removeEventListener('scroll', handleScroll);
             }
           };
 
-          // Also show after 30 seconds if user hasn't scrolled
+          // Show after 2 minutes if user is engaged (scrolled but hasn't triggered popup)
           const timeoutId = setTimeout(() => {
             setIsOpen(true);
             window.removeEventListener('scroll', handleScroll);
-          }, 30000);
+          }, 120000);
 
           window.addEventListener('scroll', handleScroll);
           
