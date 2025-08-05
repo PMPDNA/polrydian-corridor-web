@@ -348,6 +348,42 @@ export type Database = {
         }
         Relationships: []
       }
+      content_schedule: {
+        Row: {
+          config: Json | null
+          created_at: string
+          frequency_days: number
+          id: string
+          is_active: boolean | null
+          last_executed: string | null
+          next_execution: string | null
+          schedule_type: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string
+          frequency_days: number
+          id?: string
+          is_active?: boolean | null
+          last_executed?: string | null
+          next_execution?: string | null
+          schedule_type: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string
+          frequency_days?: number
+          id?: string
+          is_active?: boolean | null
+          last_executed?: string | null
+          next_execution?: string | null
+          schedule_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       content_versions: {
         Row: {
           chapter_id: string | null
@@ -626,6 +662,51 @@ export type Database = {
         }
         Relationships: []
       }
+      insights: {
+        Row: {
+          chart_config: Json | null
+          content: string
+          created_at: string
+          data_points: Json
+          data_source: string
+          id: string
+          indicator_type: string
+          is_published: boolean
+          region: string
+          series_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          chart_config?: Json | null
+          content: string
+          created_at?: string
+          data_points?: Json
+          data_source: string
+          id?: string
+          indicator_type: string
+          is_published?: boolean
+          region?: string
+          series_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          chart_config?: Json | null
+          content?: string
+          created_at?: string
+          data_points?: Json
+          data_source?: string
+          id?: string
+          indicator_type?: string
+          is_published?: boolean
+          region?: string
+          series_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integration_logs: {
         Row: {
           created_at: string
@@ -793,6 +874,39 @@ export type Database = {
           },
         ]
       }
+      newsletter_subscriptions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          interests: Json | null
+          name: string | null
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          interests?: Json | null
+          name?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          interests?: Json | null
+          name?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       outbound_shares: {
         Row: {
           article_id: string | null
@@ -823,6 +937,45 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      partners: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          is_visible: boolean | null
+          logo_url: string
+          name: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_visible?: boolean | null
+          logo_url: string
+          name: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_visible?: boolean | null
+          logo_url?: string
+          name?: string
+          updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }

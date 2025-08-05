@@ -14,6 +14,8 @@ import { PromotionalPopup } from "@/components/PromotionalPopup";
 import Footer from "@/components/Footer";
 import { GDPRConsentManager } from "@/components/GDPRConsentManager";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { FREDDataDisplay } from "@/components/FREDDataDisplay";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 const Index = () => {
   const { track } = useAnalytics();
@@ -32,18 +34,12 @@ const Index = () => {
           <Hero />
         </section>
         <UnifiedOrganizationManager />
-        <section id="social-insights" aria-label="Professional insights" className="py-20 bg-gradient-to-br from-background via-background/50 to-primary/5">
-          <div className="container mx-auto px-6">
-            <div className="space-y-12">
-              <div className="text-center">
-                <h2 className="text-3xl font-bold tracking-tight text-foreground mb-4">
-                  Professional Insights
-                </h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                  Stay updated with the latest strategic insights and professional thoughts from our leadership team.
-                </p>
-              </div>
+        <section id="insights" aria-label="Economic insights" className="py-20 bg-gradient-to-br from-background via-background/50 to-primary/5">
+          <div className="container mx-auto px-6 space-y-12">
+            <FREDDataDisplay variant="compact" />
+            <div className="grid md:grid-cols-2 gap-8">
               <LinkedInFeed />
+              <NewsletterSignup variant="compact" />
             </div>
           </div>
         </section>

@@ -4,6 +4,8 @@ import polrydianHeroBg from "@/assets/polrydian-hero-bg.jpg";
 import corridorDiagram from "@/assets/corridor-economics-diagram.jpg";
 import { PolrydianLogo } from "@/components/PolrydianLogo";
 import { ProofChips } from "@/components/ProofChips";
+import { StoicQuoteRotator } from "@/components/StoicQuoteRotator";
+import { EnhancedCorridorEconomics } from "@/components/EnhancedCorridorEconomics";
 import CalendlyPopup from "./CalendlyPopup";
 
 export const Hero = () => {
@@ -20,20 +22,8 @@ export const Hero = () => {
           <PolrydianLogo variant="full" size="lg" className="justify-center" />
         </div>
 
-        {/* Quote */}
-        <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <blockquote className="text-xl md:text-2xl text-muted-foreground font-light italic mb-4">
-            "The impediment to action advances action. What stands in the way becomes the way."
-          </blockquote>
-          <cite className="text-foreground text-sm">— Marcus Aurelius</cite>
-          
-          {/* Strategic thinking image under quote */}
-          <div className="mt-6 flex justify-center">
-            <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center">
-              <Globe2 className="h-8 w-8 text-accent" />
-            </div>
-          </div>
-        </div>
+        {/* Rotating Stoic Quotes */}
+        <StoicQuoteRotator />
 
         {/* Main Heading */}
         <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
@@ -46,33 +36,8 @@ export const Hero = () => {
             strategic flows of capital, technology, and expertise to transform complex global challenges into competitive advantages.
           </p>
           
-          {/* Corridor Economics Explanation with Visual */}
-          <div className="bg-background/50 backdrop-blur-sm border border-accent/20 rounded-xl p-6 max-w-4xl mx-auto mb-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center justify-center gap-2">
-              <Globe2 className="h-5 w-5 text-accent" />
-              What is Corridor Economics?
-            </h3>
-            <div className="grid md:grid-cols-2 gap-6 items-center">
-              <div>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-3">
-                  Corridor economics maps the strategic flows of capital, technology, and expertise between regions to create competitive pathways. 
-                  Think of it as building bridges where others see barriers—transforming geopolitical friction into strategic advantage.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Capital Flows</span>
-                  <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Technology Transfer</span>
-                  <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Strategic Pathways</span>
-                </div>
-              </div>
-              <div className="flex justify-center">
-                <img 
-                  src={corridorDiagram} 
-                  alt="Corridor Economics Network Diagram showing strategic flows between global regions"
-                  className="w-full max-w-sm rounded-lg shadow-md"
-                />
-              </div>
-            </div>
-          </div>
+          {/* Enhanced Corridor Economics Section */}
+          <EnhancedCorridorEconomics />
         </div>
 
         {/* Call to Action - Single Primary CTA */}

@@ -12,7 +12,6 @@ export const Navigation = () => {
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Services", href: "/services" },
-    { label: "Book Series", href: "/book-series" },
     { label: "Articles", href: "/articles" },
     { label: "Insights", href: "/insights" },
     { label: "FAQ", href: "/faq" },
@@ -53,11 +52,9 @@ export const Navigation = () => {
                 {item.label}
               </Link>
             ))}
-            <Link to="/contact">
-              <Button variant="default" size="sm">
-                Get in Touch
-              </Button>
-            </Link>
+            <Button variant="default" size="sm" onClick={() => window.location.href = 'https://calendly.com/patrickmisiewicz/consultation'}>
+              Get in Touch
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -92,11 +89,9 @@ export const Navigation = () => {
                     {item.label}
                   </Link>
                 ))}
-                <Link to="/contact">
-                  <Button variant="default" size="sm" className="mt-2 w-full">
-                    Get in Touch
-                  </Button>
-                </Link>
+                <Button variant="default" size="sm" className="mt-2 w-full" onClick={() => window.location.href = 'https://calendly.com/patrickmisiewicz/consultation'}>
+                  Get in Touch
+                </Button>
               </div>
             </div>
           </div>
