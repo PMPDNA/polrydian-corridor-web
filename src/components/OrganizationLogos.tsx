@@ -40,10 +40,11 @@ export const OrganizationLogos = () => {
     { id: "14", name: "Embassy of Poland to the United States", website_url: "https://www.gov.pl/web/usa-en/embassy-washington", category: 'institutional' },
     { id: "15", name: "Defense Cooperation Agency University", website_url: "https://dscu.edu", category: 'institutional' },
     
-    // Business Partners
+    // Business Partners - Now with real logos
     { 
       id: "16", 
       name: "Maven Investment Partners", 
+      logo_url: "/src/assets/logos/maven-investment-partners.png",
       website_url: "https://mavenip.net", 
       category: 'business',
       description: "Maven Investment Partners is a Middle East based boutique advisory firm comprising of senior industry veterans with extensive experience in Corporate Finance Advisory, M&A Advisory, Transformation & Restructuring Advisory, Interim & Crisis Management and Corporate Governance Initiatives. We partner with shareholders and management teams to help them achieve their strategic objectives."
@@ -58,6 +59,7 @@ export const OrganizationLogos = () => {
     {
       id: "18",
       name: "Lee & Associates",
+      logo_url: "/src/assets/logos/lee-associates.jpg",
       website_url: "https://www.lee-associates.com/southflorida/our-team/sebastian-misiewicz/",
       category: 'business',
       description: "Commercial real estate specializing in warehouses, schools, and international hotels. Working with Sebastian Misiewicz, Principal. Representing both buyers and sellers with deal mandates ranging from $20M to $500M."

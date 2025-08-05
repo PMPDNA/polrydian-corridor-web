@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth'
 import { useToast } from '@/hooks/use-toast'
 
+// Unified Article interface for consistent usage across the app
 export interface Article {
   id: string
   title: string
@@ -12,25 +13,41 @@ export interface Article {
   updated_at: string
   published_at?: string
   user_id: string
+  
+  // SEO and metadata
   meta_description?: string
   keywords?: string[]
-  featured_image?: string
   slug?: string
-  reference_sources?: any[]
-  related_articles?: string[]
-  reading_time_minutes?: number
-  // Additional fields to support unified interface
-  content_type?: string
+  
+  // Images and media
+  featured_image?: string
   content_images?: string[]
+  image_associations?: any[]
   video_url?: string
   video_thumbnail?: string
+  video_duration?: number
   transcript?: string
+  
+  // Article structure
+  content_type?: string
+  reading_time_minutes?: number
+  reference_sources?: any[]
+  related_articles?: string[]
   chapter_id?: string
+  
+  // Publishing options
   auto_publish_linkedin?: boolean
   auto_publish_substack?: boolean
   auto_publish_medium?: boolean
-  image_associations?: any[]
-  video_duration?: number
+  
+  // Display properties for unified interface
+  excerpt?: string
+  category?: "Strategy" | "Geopolitics" | "Philosophy" | "Defense & Aerospace"
+  heroImage?: string
+  publishDate?: string
+  readTime?: number
+  linkedinUrl?: string
+  featured?: boolean
 }
 
 export function useArticles() {
