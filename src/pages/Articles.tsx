@@ -12,6 +12,7 @@ import { SocialShareButtons } from "@/components/SocialShareButtons";
 import { useArticles } from "@/hooks/useArticles";
 import { sanitizeHtml } from "@/lib/security";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { Link } from "react-router-dom";
 
 interface Article {
   id: string;
@@ -316,9 +317,11 @@ export default function Articles() {
                      <Button 
                        size="sm" 
                        className="flex-1"
-                       onClick={() => window.location.href = `/article/${article.id}`}
+                       asChild
                      >
-                       Read Full Article
+                       <Link to={`/articles/${article.id}`}>
+                         Read Full Article
+                       </Link>
                      </Button>
                      <Dialog>
                        <DialogTrigger asChild>
