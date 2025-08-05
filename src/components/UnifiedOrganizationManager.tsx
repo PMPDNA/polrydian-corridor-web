@@ -383,6 +383,8 @@ export const UnifiedOrganizationManager = () => {
                 accept="image/*"
                 label="Upload Logo"
                 className="text-xs"
+                category="logos"
+                folder="logos"
               />
             </div>
           ) : (

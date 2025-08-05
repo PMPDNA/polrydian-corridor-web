@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import TwoFactorSetup from "@/components/TwoFactorSetup"
 import { RealTimeDashboard } from "@/components/RealTimeDashboard"
+import { IntegrationHealthMonitor } from "@/components/IntegrationHealthMonitor"
 import {
   LayoutDashboard,
   FileText,
@@ -51,10 +52,10 @@ const quickActions = [
     color: "text-blue-600",
   },
   {
-    title: "Photo Gallery",
-    description: "Upload and organize photos",
+    title: "Image Manager",
+    description: "Centralized image storage",
     icon: Camera,
-    href: "/admin/gallery",
+    href: "/admin/images",
     color: "text-orange-600",
   },
 ]
@@ -155,6 +156,11 @@ export default function AdminDashboard() {
         </div>
 
         {/* Real-Time Status Dashboard */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Real-Time Integration Health</h3>
+          <IntegrationHealthMonitor />
+        </div>
+        
         <RealTimeDashboard />
 
         {/* Security Configuration */}

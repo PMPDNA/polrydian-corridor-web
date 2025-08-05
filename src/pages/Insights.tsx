@@ -174,16 +174,32 @@ export default function Insights() {
         </div>
 
         {/* API Key Notice */}
-        <Card className="mb-8 bg-accent/5 border-accent/20">
+        <Card className="mb-8 bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20">
           <CardContent className="p-6">
-            <h3 className="font-semibold text-foreground mb-2">
-              Setup Required: Perplexity API Integration
-            </h3>
+            <div className="flex items-center gap-3 mb-3">
+              <TrendingUp className="h-6 w-6 text-primary" />
+              <h3 className="font-semibold text-foreground">
+                Economic Intelligence Hub
+              </h3>
+              <Badge variant="outline">CSIS Integration</Badge>
+            </div>
             <p className="text-muted-foreground text-sm mb-3">
-              To fetch real-time economic insights from CSIS and other sources, please add your Perplexity API key to the Supabase Edge Function secrets.
+              Access real-time economic insights from CSIS, Trade Guys podcast, and other leading policy sources. 
+              This system provides strategic intelligence on corridor economics, trade policy, and geopolitical developments.
             </p>
-            <div className="text-xs text-muted-foreground">
-              Once configured, you'll have access to current economic analysis, trade policy updates, and geopolitical intelligence.
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <div className="flex items-center gap-2 text-xs">
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <span>CSIS Analysis</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                <span>Trade Guys Podcast</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                <span>Policy Updates</span>
+              </div>
             </div>
           </CardContent>
         </Card>

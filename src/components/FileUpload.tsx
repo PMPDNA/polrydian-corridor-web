@@ -23,6 +23,8 @@ interface FileUploadProps {
   maxSize?: number; // in MB
   className?: string;
   label?: string;
+  category?: 'logos' | 'articles' | 'avatars' | 'general';
+  folder?: string;
 }
 
 export function FileUpload({
@@ -32,7 +34,9 @@ export function FileUpload({
   accept = "image/*",
   maxSize = 10,
   className = "",
-  label = "Upload Images"
+  label = "Upload Images",
+  category = 'general',
+  folder
 }: FileUploadProps) {
   const { toast } = useToast();
   const [isDragOver, setIsDragOver] = useState(false);
@@ -68,8 +72,9 @@ export function FileUpload({
       }
 
       try {
-        // Upload to Supabase Storage
-        const fileName = `${Date.now()}_${file.name}`;
+        // Upload to Supabase Storage with organized folder structure
+        const folderPath = folder || category;
+        const fileName = `${folderPath}/${Date.now()}_${file.name}`;
         const { data, error } = await supabase.storage
           .from('images')
           .upload(fileName, file);
@@ -101,7 +106,7 @@ export function FileUpload({
         newFiles.push(uploadedFile);
         uploadedUrls.push(publicUrl);
 
-        // Store in database
+        // Store in database with proper categorization
         await supabase
           .from('images')
           .insert({
@@ -109,8 +114,9 @@ export function FileUpload({
             name: file.name,
             file_type: file.type,
             file_size: file.size,
-            category: 'general',
-            is_public: true
+            category: category,
+            is_public: true,
+            uploaded_by: (await supabase.auth.getUser()).data.user?.id
           });
 
       } catch (error) {

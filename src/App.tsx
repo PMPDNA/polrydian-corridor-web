@@ -26,6 +26,7 @@ import AdminSocial from "./pages/admin/SocialMedia";
 import HeroEditor from "./pages/admin/HeroEditor";
 import ArticleManager from "./pages/admin/ArticleManager";
 import FredDashboard from "./pages/admin/FredDashboard";
+import ImageManager from "./pages/admin/ImageManager";
 
 import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
@@ -91,6 +92,13 @@ const App = () => {
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
                   <FredDashboard />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
+            <Route path="/admin/images" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <ImageManager />
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
