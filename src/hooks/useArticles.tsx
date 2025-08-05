@@ -19,6 +19,18 @@ export interface Article {
   reference_sources?: any[]
   related_articles?: string[]
   reading_time_minutes?: number
+  // Additional fields to support unified interface
+  content_type?: string
+  content_images?: string[]
+  video_url?: string
+  video_thumbnail?: string
+  transcript?: string
+  chapter_id?: string
+  auto_publish_linkedin?: boolean
+  auto_publish_substack?: boolean
+  auto_publish_medium?: boolean
+  image_associations?: any[]
+  video_duration?: number
 }
 
 export function useArticles() {

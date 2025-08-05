@@ -11,125 +11,170 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  // Initialize Supabase client
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  const supabase = createClient(supabaseUrl, supabaseKey)
-
   try {
-    console.log('🔍 Starting integration health monitoring...')
-    
-    const healthResults = {
-      overall_status: 'healthy',
-      integrations: {},
-      alerts: [],
-      timestamp: new Date().toISOString()
-    }
-    
-    // Check all active integrations
-    const { data: credentials, error: fetchError } = await supabase
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    console.log('🏥 Starting integration health check...')
+
+    // Check active credentials for each platform
+    const { data: credentials, error: credError } = await supabase
       .from('social_media_credentials')
-      .select('*')
-      .eq('is_active', true)
-    
-    if (fetchError) {
-      console.error('Error fetching credentials:', fetchError)
-      throw fetchError
+      .select('platform, is_active, expires_at, updated_at')
+
+    if (credError) {
+      throw credError
     }
+
+    console.log(`Found ${credentials?.length || 0} credentials`)
+
+    // Get recent integration logs for error analysis
+    const { data: logs, error: logsError } = await supabase
+      .from('integration_logs')
+      .select('integration_type, status, error_message, created_at')
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      .order('created_at', { ascending: false })
+      .limit(100)
+
+    if (logsError) {
+      console.warn('Failed to fetch logs:', logsError)
+    }
+
+    // Analyze health for each integration
+    const integrations: Record<string, any> = {}
+    const alerts: Array<{platform: string, severity: string, message: string, error?: string}> = []
+
+    const platforms = ['linkedin', 'instagram']
     
-    // Group credentials by platform
-    const platformGroups = (credentials || []).reduce((acc, cred) => {
-      if (!acc[cred.platform]) acc[cred.platform] = []
-      acc[cred.platform].push(cred)
-      return acc
-    }, {})
-    
-    // Monitor each platform
-    for (const [platform, platformCreds] of Object.entries(platformGroups)) {
-      try {
-        console.log(`🔍 Monitoring ${platform} integration...`)
-        
-        const platformHealth = await checkPlatformHealth(platform, platformCreds, supabase)
-        healthResults.integrations[platform] = platformHealth
-        
-        // Generate alerts if needed
-        if (platformHealth.status !== 'healthy') {
-          healthResults.alerts.push({
-            platform,
-            severity: platformHealth.status === 'error' ? 'high' : 'medium',
-            message: platformHealth.message || `${platform} integration has issues`,
-            details: platformHealth.details
-          })
-        }
-        
-        // Log health check
-        await supabase.rpc('log_integration_event', {
-          p_integration_type: platform,
-          p_operation: 'health_check',
-          p_status: platformHealth.status === 'healthy' ? 'success' : 'error',
-          p_response_data: platformHealth
-        })
-        
-      } catch (error) {
-        console.error(`❌ Health check failed for ${platform}:`, error)
-        
-        healthResults.integrations[platform] = {
-          status: 'error',
-          message: 'Health check failed',
-          error: error.message
-        }
-        
-        healthResults.alerts.push({
+    for (const platform of platforms) {
+      const platformCreds = credentials?.filter(c => c.platform === platform) || []
+      const activeCreds = platformCreds.filter(c => c.is_active)
+      const platformLogs = logs?.filter(l => l.integration_type === platform) || []
+      
+      // Check for expired tokens
+      const now = new Date()
+      const expiredCreds = activeCreds.filter(c => 
+        c.expires_at && new Date(c.expires_at) <= now
+      )
+
+      // Check for recent errors
+      const recentErrors = platformLogs
+        .filter(l => l.status === 'error')
+        .slice(0, 5)
+
+      // Calculate success rate
+      const totalOps = platformLogs.length
+      const successOps = platformLogs.filter(l => l.status === 'success').length
+      const successRate = totalOps > 0 ? (successOps / totalOps) * 100 : 0
+
+      // Determine health status
+      let status = 'healthy'
+      const issues: string[] = []
+
+      if (expiredCreds.length > 0) {
+        status = 'error'
+        issues.push(`${expiredCreds.length} expired token(s)`)
+        alerts.push({
           platform,
           severity: 'high',
-          message: `${platform} health check failed`,
-          error: error.message
+          message: `${expiredCreds.length} expired credential(s) found`,
+          error: 'Token refresh required'
         })
       }
+
+      if (activeCreds.length === 0) {
+        status = 'error'
+        issues.push('No active credentials')
+        alerts.push({
+          platform,
+          severity: 'high', 
+          message: 'No active credentials configured',
+          error: 'Setup required'
+        })
+      }
+
+      if (recentErrors.length > 3) {
+        status = status === 'healthy' ? 'warning' : status
+        issues.push(`${recentErrors.length} recent errors`)
+        alerts.push({
+          platform,
+          severity: 'medium',
+          message: `${recentErrors.length} errors in the last 24 hours`,
+          error: recentErrors[0]?.error_message || 'Multiple errors detected'
+        })
+      }
+
+      if (successRate < 80 && totalOps > 0) {
+        status = status === 'healthy' ? 'warning' : status
+        issues.push(`Low success rate: ${successRate.toFixed(1)}%`)
+      }
+
+      integrations[platform] = {
+        status,
+        active_credentials: activeCreds.length,
+        issues,
+        last_checked: new Date().toISOString(),
+        success_rate: successRate,
+        total_operations: totalOps,
+        recent_errors: recentErrors.length,
+        message: status === 'healthy' 
+          ? `${activeCreds.length} active connection(s), ${successRate.toFixed(1)}% success rate`
+          : issues.join(', ')
+      }
     }
-    
-    // Check integration logs for recent errors
-    const recentErrors = await checkRecentErrors(supabase)
-    if (recentErrors.length > 0) {
-      healthResults.alerts.push(...recentErrors)
-    }
-    
+
     // Determine overall status
-    const hasErrors = Object.values(healthResults.integrations).some(
-      (integration: any) => integration.status === 'error'
-    )
-    const hasWarnings = Object.values(healthResults.integrations).some(
-      (integration: any) => integration.status === 'warning'
-    )
+    const allStatuses = Object.values(integrations).map((i: any) => i.status)
+    let overallStatus = 'healthy'
     
-    if (hasErrors) {
-      healthResults.overall_status = 'error'
-    } else if (hasWarnings) {
-      healthResults.overall_status = 'warning'
+    if (allStatuses.includes('error')) {
+      overallStatus = 'error'
+    } else if (allStatuses.includes('warning')) {
+      overallStatus = 'warning'
     }
-    
-    // Send alerts if critical issues found
-    if (healthResults.alerts.length > 0) {
-      await sendHealthAlerts(healthResults.alerts, supabase)
+
+    const healthReport = {
+      overall_status: overallStatus,
+      integrations,
+      alerts: alerts.slice(0, 10), // Limit alerts
+      timestamp: new Date().toISOString(),
+      summary: {
+        total_integrations: platforms.length,
+        healthy_integrations: allStatuses.filter(s => s === 'healthy').length,
+        warning_integrations: allStatuses.filter(s => s === 'warning').length,
+        error_integrations: allStatuses.filter(s => s === 'error').length
+      }
     }
-    
-    console.log(`🏁 Health monitoring completed. Status: ${healthResults.overall_status}`)
-    
+
+    console.log('✅ Health check completed:', {
+      overall: overallStatus,
+      alerts: alerts.length,
+      integrations: Object.keys(integrations).length
+    })
+
     return new Response(
-      JSON.stringify(healthResults),
+      JSON.stringify(healthReport),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       }
     )
-    
+
   } catch (error) {
-    console.error('🚨 Health monitoring failed:', error)
+    console.error('🚨 Health check failed:', error)
     
     return new Response(
       JSON.stringify({ 
         error: error.message,
         overall_status: 'error',
+        integrations: {},
+        alerts: [{
+          platform: 'system',
+          severity: 'high',
+          message: 'Health check system failure',
+          error: error.message
+        }],
         timestamp: new Date().toISOString()
       }),
       {
@@ -139,139 +184,3 @@ serve(async (req) => {
     )
   }
 })
-
-async function checkPlatformHealth(platform: string, credentials: any[], supabase: any) {
-  const now = new Date()
-  const issues = []
-  
-  // Check token expiry
-  for (const cred of credentials) {
-    if (cred.expires_at) {
-      const expiresAt = new Date(cred.expires_at)
-      const hoursUntilExpiry = (expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60)
-      
-      if (hoursUntilExpiry < 0) {
-        issues.push(`Token expired for user ${cred.user_id}`)
-      } else if (hoursUntilExpiry < 24) {
-        issues.push(`Token expires in ${Math.round(hoursUntilExpiry)} hours for user ${cred.user_id}`)
-      }
-    }
-  }
-  
-  // Test API connectivity
-  try {
-    if (platform === 'linkedin') {
-      await testLinkedInConnectivity(credentials[0], supabase)
-    } else if (platform === 'instagram') {
-      await testInstagramConnectivity(credentials[0], supabase)
-    }
-  } catch (error) {
-    issues.push(`API connectivity test failed: ${error.message}`)
-  }
-  
-  // Determine status
-  let status = 'healthy'
-  if (issues.some(issue => issue.includes('expired') || issue.includes('failed'))) {
-    status = 'error'
-  } else if (issues.length > 0) {
-    status = 'warning'
-  }
-  
-  return {
-    status,
-    active_credentials: credentials.length,
-    issues,
-    last_checked: now.toISOString(),
-    message: issues.length > 0 ? issues[0] : 'All systems operational'
-  }
-}
-
-async function testLinkedInConnectivity(credential: any, supabase: any) {
-  if (!credential) return
-  
-  // Decrypt token
-  const { data: accessToken } = await supabase.rpc('decrypt_token_secure', {
-    encrypted_token: credential.access_token_encrypted
-  })
-  
-  if (!accessToken) {
-    throw new Error('Failed to decrypt access token')
-  }
-  
-  // Test API call to LinkedIn
-  const response = await fetch('https://api.linkedin.com/v2/me', {
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-      'cache-control': 'no-cache',
-      'X-Restli-Protocol-Version': '2.0.0'
-    }
-  })
-  
-  if (!response.ok) {
-    throw new Error(`LinkedIn API test failed: ${response.status}`)
-  }
-}
-
-async function testInstagramConnectivity(credential: any, supabase: any) {
-  if (!credential) return
-  
-  // Decrypt token
-  const { data: accessToken } = await supabase.rpc('decrypt_token_secure', {
-    encrypted_token: credential.access_token_encrypted
-  })
-  
-  if (!accessToken) {
-    throw new Error('Failed to decrypt access token')
-  }
-  
-  // Test API call to Instagram
-  const response = await fetch(
-    `https://graph.instagram.com/me?fields=id,username&access_token=${accessToken}`
-  )
-  
-  if (!response.ok) {
-    throw new Error(`Instagram API test failed: ${response.status}`)
-  }
-}
-
-async function checkRecentErrors(supabase: any) {
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-  
-  const { data: recentErrors } = await supabase
-    .from('integration_logs')
-    .select('integration_type, operation, error_message')
-    .eq('status', 'error')
-    .gte('created_at', oneHourAgo)
-    .limit(10)
-  
-  return (recentErrors || []).map(error => ({
-    platform: error.integration_type,
-    severity: 'medium',
-    message: `Recent ${error.operation} operation failed`,
-    error: error.error_message
-  }))
-}
-
-async function sendHealthAlerts(alerts: any[], supabase: any) {
-  // Log critical alerts
-  const criticalAlerts = alerts.filter(alert => alert.severity === 'high')
-  
-  for (const alert of criticalAlerts) {
-    await supabase.rpc('log_integration_event', {
-      p_integration_type: alert.platform,
-      p_operation: 'health_alert',
-      p_status: 'error',
-      p_error_message: alert.message,
-      p_response_data: alert
-    })
-    
-    console.log(`🚨 CRITICAL ALERT: ${alert.platform} - ${alert.message}`)
-  }
-  
-  // In a production environment, you could send these alerts to:
-  // - Email notifications
-  // - Slack webhooks
-  // - PagerDuty
-  // - SMS alerts
-  // etc.
-}

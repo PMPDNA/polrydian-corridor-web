@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Upload, X, Image as ImageIcon, FileImage, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UploadedFile {
   id: string;
@@ -42,6 +43,7 @@ export function FileUpload({
   const processFiles = useCallback(async (files: FileList | File[]) => {
     setIsUploading(true);
     const newFiles: UploadedFile[] = [];
+    const uploadedUrls: string[] = [];
     const fileArray = Array.from(files);
 
     for (const file of fileArray) {
@@ -65,31 +67,73 @@ export function FileUpload({
         continue;
       }
 
-      // Create URL for preview
-      const url = URL.createObjectURL(file);
-      const uploadedFile: UploadedFile = {
-        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-        file,
-        url,
-        name: file.name,
-        size: file.size,
-        type: file.type
-      };
+      try {
+        // Upload to Supabase Storage
+        const fileName = `${Date.now()}_${file.name}`;
+        const { data, error } = await supabase.storage
+          .from('images')
+          .upload(fileName, file);
 
-      newFiles.push(uploadedFile);
+        if (error) {
+          console.error('Upload error:', error);
+          toast({
+            title: "Upload failed",
+            description: `Failed to upload ${file.name}`,
+            variant: "destructive"
+          });
+          continue;
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(fileName);
+
+        const uploadedFile: UploadedFile = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          file,
+          url: publicUrl,
+          name: file.name,
+          size: file.size,
+          type: file.type
+        };
+
+        newFiles.push(uploadedFile);
+        uploadedUrls.push(publicUrl);
+
+        // Store in database
+        await supabase
+          .from('images')
+          .insert({
+            file_path: publicUrl,
+            name: file.name,
+            file_type: file.type,
+            file_size: file.size,
+            category: 'general',
+            is_public: true
+          });
+
+      } catch (error) {
+        console.error('Error processing file:', error);
+        toast({
+          title: "Processing error",
+          description: `Error processing ${file.name}`,
+          variant: "destructive"
+        });
+      }
     }
 
     if (newFiles.length > 0) {
       const updatedFiles = multiple ? [...uploadedFiles, ...newFiles] : newFiles;
       setUploadedFiles(updatedFiles);
       
-      // Extract URLs and pass to parent
-      const allUrls = [...currentFiles, ...updatedFiles.map(f => f.url)];
+      // Pass uploaded URLs to parent
+      const allUrls = multiple ? [...currentFiles, ...uploadedUrls] : uploadedUrls;
       onFilesChange(allUrls);
 
       toast({
-        title: "Files uploaded",
-        description: `${newFiles.length} image(s) uploaded successfully`,
+        title: "Files uploaded successfully",
+        description: `${newFiles.length} image(s) uploaded to storage`,
       });
     }
 

@@ -7,13 +7,22 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Simple base64 decryption to match linkedin-oauth implementation
-function decryptToken(encryptedToken: string): string {
+// Use secure token decryption
+async function decryptTokenSecure(encryptedToken: string, supabase: any): Promise<string> {
   try {
-    return atob(encryptedToken);
+    const { data, error } = await supabase.rpc('decrypt_token_secure', {
+      encrypted_token: encryptedToken
+    });
+    
+    if (error) {
+      console.error('Token decryption error:', error);
+      throw new Error('Failed to decrypt token');
+    }
+    
+    return data;
   } catch (error) {
     console.error('Decryption error:', error);
-    return encryptedToken; // Fallback for non-encrypted tokens
+    throw error;
   }
 }
 
@@ -124,20 +133,25 @@ serve(async (req) => {
 
     const personId = credentials.platform_user_id;
     
-    // Simple token decryption (implement proper decryption in production)
-    const accessToken = decryptToken(credentials.access_token_encrypted);
+    // Decrypt token securely
+    const accessToken = await decryptTokenSecure(credentials.access_token_encrypted, supabase);
     
     console.log('✅ Using LinkedIn person ID from database:', personId);
     console.log('🔐 Access token available:', !!accessToken);
 
-    // Check if token needs refresh
+    // Check if token needs refresh and attempt refresh if needed
     const now = new Date();
     const expiresAt = new Date(credentials.expires_at);
     const tenMinutesFromNow = new Date(now.getTime() + 10 * 60 * 1000);
 
     if (expiresAt <= tenMinutesFromNow) {
-      console.log('⚠️ Token expires soon but continuing with current token');
-      // In production, implement token refresh here
+      console.log('🔄 Token expires soon, attempting refresh...');
+      try {
+        await supabase.functions.invoke('token-refresh-cron');
+        console.log('✅ Token refresh triggered');
+      } catch (refreshError) {
+        console.warn('⚠️ Token refresh failed, continuing with current token:', refreshError);
+      }
     }
 
     // Prepare the post content

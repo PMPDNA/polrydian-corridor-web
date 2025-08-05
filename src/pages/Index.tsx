@@ -9,7 +9,7 @@ import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { SocialMediaFeed } from "@/components/SocialMediaFeed";
 import { LinkedInFeed } from "@/components/LinkedInFeed";
-import { OrganizationLogos } from "@/components/OrganizationLogos";
+import { UnifiedOrganizationManager } from "@/components/UnifiedOrganizationManager";
 import { PromotionalPopup } from "@/components/PromotionalPopup";
 import Footer from "@/components/Footer";
 import { GDPRConsentManager } from "@/components/GDPRConsentManager";
@@ -33,7 +33,7 @@ const Index = () => {
         </section>
         {/* Add testimonials after hero */}
         <TestimonialsSection />
-        <OrganizationLogos />
+        <UnifiedOrganizationManager />
         <section id="social-insights" aria-label="Professional insights" className="py-20 bg-gradient-to-br from-background via-background/50 to-primary/5">
           <div className="container mx-auto px-6">
             <div className="space-y-12">

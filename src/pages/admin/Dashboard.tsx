@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import TwoFactorSetup from "@/components/TwoFactorSetup"
+import { RealTimeDashboard } from "@/components/RealTimeDashboard"
 import {
   LayoutDashboard,
   FileText,
@@ -153,63 +154,8 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Status Cards */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4">System Status</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Website Status</CardTitle>
-                  <Activity className="h-4 w-4 text-green-600" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">Online</div>
-                <p className="text-xs text-muted-foreground">All systems operational</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Social Media</CardTitle>
-                  <MessageSquare className="h-4 w-4 text-blue-600" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-blue-600">Synced</div>
-                <p className="text-xs text-muted-foreground">LinkedIn & Instagram connected</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Security</CardTitle>
-                  <Shield className="h-4 w-4 text-purple-600" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-purple-600">Secure</div>
-                <p className="text-xs text-muted-foreground">All checks passed</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Performance</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-orange-600" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-orange-600">Optimal</div>
-                <p className="text-xs text-muted-foreground">Fast loading times</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        {/* Real-Time Status Dashboard */}
+        <RealTimeDashboard />
 
         {/* Security Configuration */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
