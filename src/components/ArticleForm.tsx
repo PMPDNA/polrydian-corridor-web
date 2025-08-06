@@ -103,6 +103,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       category: formData.category,
       excerpt: formData.excerpt,
       contentLength: formData.content.length,
+      linkedinUrl: formData.linkedinUrl,
       article: article ? { id: article.id, title: article.title } : null
     });
 
@@ -352,7 +353,10 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
                 <Label htmlFor="category">Category *</Label>
                 <Select 
                   value={formData.category} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, category: value as any }))}
+                  onValueChange={(value) => {
+                    console.log('ArticleForm: Category changed from', formData.category, 'to', value);
+                    setFormData(prev => ({ ...prev, category: value as any }));
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />
