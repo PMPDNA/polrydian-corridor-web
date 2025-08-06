@@ -24,6 +24,7 @@ import {
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import AdminConfigManager from "@/components/AdminConfigManager"
+import { AutomatedContentScheduler } from "@/components/AutomatedContentScheduler"
 
 const quickActions = [
   {
@@ -327,6 +328,12 @@ export default function AdminDashboard() {
             </h3>
             <TwoFactorSetup />
           </div>
+        </div>
+
+        {/* Content Automation */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Content Automation</h3>
+          <AutomatedContentScheduler />
         </div>
 
         {/* Session Timeout Info */}

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
 import { FredDataDisplay } from "@/components/FredDataDisplay";
+import { CorridorEconomicsIntelligence } from "@/components/CorridorEconomicsIntelligence";
 import { 
   Search, 
   Globe, 
@@ -254,6 +255,11 @@ export default function Insights() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Corridor Economics Intelligence */}
+        <section className="mb-12">
+          <CorridorEconomicsIntelligence />
+        </section>
 
         {/* FRED Economic Data */}
         <section className="mb-12">
