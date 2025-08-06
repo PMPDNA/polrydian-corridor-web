@@ -1,83 +1,27 @@
 import { AdminLayout } from "@/layouts/AdminLayout"
-import { SocialMediaManager } from "@/components/SocialMediaManager"
-import ZapierLinkedInIntegration from "@/components/ZapierLinkedInIntegration"
-import { InstagramIntegration } from "@/components/InstagramIntegration"
-import { EmailServiceSetup } from "@/components/EmailServiceSetup"
-import { IntegrationDashboard } from "@/components/IntegrationDashboard"
-import { IntegrationHub } from "@/components/IntegrationHub"
-import { IntegrationHealthDashboard } from "@/components/IntegrationHealthDashboard"
-import ImageManager from "@/components/ImageManager"
-import FredDashboard from "@/components/FredDashboard"
-import { BookSeriesManager } from "@/components/BookSeriesManager"
-import { PublishingPipeline } from "@/components/PublishingPipeline"
-import GalleryManager from "@/components/GalleryManager"
-import LinkedInSyncManager from "@/components/LinkedInSyncManager"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { ExternalLink } from "lucide-react"
 
 export default function AdminSocial() {
+  const handleRedirect = () => {
+    window.location.href = '/admin/social-dashboard';
+  };
+
   return (
     <AdminLayout title="Social Media Management">
-      <Tabs defaultValue="hub" className="w-full">
-        <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
-          <TabsTrigger value="hub">Integration Hub</TabsTrigger>
-          <TabsTrigger value="linkedin-sync">LinkedIn Sync</TabsTrigger>
-          <TabsTrigger value="health">Health Monitor</TabsTrigger>
-          <TabsTrigger value="status">Status Dashboard</TabsTrigger>
-          <TabsTrigger value="overview">Social Overview</TabsTrigger>
-          <TabsTrigger value="zapier">Zapier LinkedIn</TabsTrigger>
-          <TabsTrigger value="instagram">Instagram</TabsTrigger>
-          <TabsTrigger value="email">Email Setup</TabsTrigger>
-          <TabsTrigger value="images">Images</TabsTrigger>
-          <TabsTrigger value="gallery">Gallery</TabsTrigger>
-          <TabsTrigger value="fred">FRED</TabsTrigger>
-          <TabsTrigger value="book">Book Series</TabsTrigger>
-          <TabsTrigger value="publishing">Publishing</TabsTrigger>
-        </TabsList>
-        <TabsContent value="hub">
-          <IntegrationHub />
-        </TabsContent>
-        <TabsContent value="linkedin-sync">
-          <LinkedInSyncManager />
-        </TabsContent>
-        <TabsContent value="health">
-          <IntegrationHealthDashboard />
-        </TabsContent>
-        <TabsContent value="status">
-          <IntegrationDashboard />
-        </TabsContent>
-        <TabsContent value="overview">
-          <SocialMediaManager />
-        </TabsContent>
-        <TabsContent value="zapier">
-          <ZapierLinkedInIntegration />
-        </TabsContent>
-        <TabsContent value="instagram">
-          <InstagramIntegration />
-        </TabsContent>
-        <TabsContent value="email">
-          <EmailServiceSetup />
-        </TabsContent>
-        
-          <TabsContent value="images">
-            <ImageManager />
-          </TabsContent>
-
-          <TabsContent value="gallery">
-            <GalleryManager />
-          </TabsContent>
-
-          <TabsContent value="fred">
-            <FredDashboard />
-          </TabsContent>
-
-          <TabsContent value="book">
-            <BookSeriesManager />
-          </TabsContent>
-
-          <TabsContent value="publishing">
-            <PublishingPipeline />
-          </TabsContent>
-        </Tabs>
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-6 text-center">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold">Social Media Dashboard Has Moved!</h2>
+          <p className="text-muted-foreground max-w-md">
+            We've reorganized the social media management tools into a more streamlined interface. 
+            Click below to access the new dashboard.
+          </p>
+        </div>
+        <Button onClick={handleRedirect} size="lg" className="flex items-center gap-2">
+          <ExternalLink className="h-4 w-4" />
+          Go to New Social Media Dashboard
+        </Button>
+      </div>
     </AdminLayout>
   )
 }

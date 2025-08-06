@@ -137,7 +137,7 @@ export const EnhancedCorridorEconomics = () => {
               >
                 <Badge 
                   variant="secondary" 
-                  className="bg-accent/10 hover:bg-accent/20 text-accent-foreground cursor-pointer transition-colors px-4 py-2"
+                  className="bg-primary/80 hover:bg-primary text-primary-foreground cursor-pointer transition-colors px-4 py-2 font-medium"
                 >
                   {tag}
                 </Badge>
@@ -162,7 +162,7 @@ export const EnhancedCorridorEconomics = () => {
         <div className="flex items-center justify-between mb-4">
           <h4 className="font-semibold text-foreground flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-accent" />
-            Live Economic Corridor Indicators
+            Live USA Economic Indicators
           </h4>
           {loadingData && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -176,7 +176,8 @@ export const EnhancedCorridorEconomics = () => {
           {economicData.gdp && (
             <Card className="border-primary/20">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">GDP Growth</CardTitle>
+                <CardTitle className="text-sm">USA GDP Growth</CardTitle>
+                <p className="text-xs text-muted-foreground">Quarterly real GDP growth rate</p>
               </CardHeader>
               <CardContent>
                 <div className="text-lg font-bold text-primary">
@@ -200,7 +201,8 @@ export const EnhancedCorridorEconomics = () => {
           {economicData.unemployment && (
             <Card className="border-orange-200">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Unemployment Rate</CardTitle>
+                <CardTitle className="text-sm">USA Unemployment Rate</CardTitle>
+                <p className="text-xs text-muted-foreground">Civilian unemployment rate (seasonally adjusted)</p>
               </CardHeader>
               <CardContent>
                 <div className="text-lg font-bold text-orange-600">
@@ -224,7 +226,8 @@ export const EnhancedCorridorEconomics = () => {
           {economicData.inflation && (
             <Card className="border-red-200">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Inflation (CPI)</CardTitle>
+                <CardTitle className="text-sm">USA Inflation (CPI)</CardTitle>
+                <p className="text-xs text-muted-foreground">Consumer Price Index year-over-year change</p>
               </CardHeader>
               <CardContent>
                 <div className="text-lg font-bold text-red-600">
@@ -247,7 +250,7 @@ export const EnhancedCorridorEconomics = () => {
         </div>
         
         <p className="text-xs text-muted-foreground mt-4 text-center">
-          Live data powered by Federal Reserve Economic Data (FRED). Updated daily.
+          Live USA economic data from Federal Reserve Economic Data (FRED). Data reflects United States domestic economic conditions. Updated daily.
         </p>
       </div>
     </div>

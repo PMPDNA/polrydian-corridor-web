@@ -108,7 +108,7 @@ serve(async (req) => {
       case 'fetch_series':
         const seriesId = body.series_id;
         if (!seriesId) {
-          throw new Error('Series ID required');
+          throw new Error('Series ID required for fetch_series operation');
         }
         
         const seriesData = await fetchFredData(seriesId, fredApiKey, body.limit);

@@ -38,8 +38,9 @@ export function FredDataDisplay({ seriesIds, showControls = true }: FredDataDisp
 
       const { data: response, error } = await supabase.functions.invoke('fred-api-integration', {
         body: { 
-          operation: seriesIds ? 'fetch_series' : 'fetch_indicators',
-          series_ids: seriesIds 
+          operation: seriesIds ? 'fetch_indicators' : 'fetch_indicators',
+          indicators: seriesIds || undefined,
+          limit: 100
         }
       });
 
@@ -130,8 +131,8 @@ export function FredDataDisplay({ seriesIds, showControls = true }: FredDataDisp
       {showControls && (
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="text-lg font-semibold">Economic Indicators</h3>
-            <p className="text-sm text-muted-foreground">Latest data from Federal Reserve Economic Data (FRED)</p>
+            <h3 className="text-lg font-semibold">USA Economic Indicators</h3>
+            <p className="text-sm text-muted-foreground">Latest US economic data from Federal Reserve Economic Data (FRED) - Updated daily</p>
           </div>
           <Button onClick={fetchFredData} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />

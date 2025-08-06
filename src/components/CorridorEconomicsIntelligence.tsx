@@ -172,14 +172,14 @@ export function CorridorEconomicsIntelligence() {
                 <Card className={`cursor-pointer transition-all duration-300 hover:shadow-lg bg-gradient-to-br ${modal.color} border-primary/20 hover:border-primary/40`}>
                   <CardContent className="p-6">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-lg bg-primary/10">
+                      <div className="p-3 rounded-lg bg-primary/20 border border-primary/30">
                         <IconComponent className="h-6 w-6 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{modal.title}</h3>
-                        <p className="text-sm text-muted-foreground">{modal.description}</p>
+                        <h3 className="font-semibold text-lg text-foreground">{modal.title}</h3>
+                        <p className="text-sm text-foreground/80">{modal.description}</p>
                       </div>
-                      <ArrowUpRight className="h-5 w-5 text-muted-foreground" />
+                      <ArrowUpRight className="h-5 w-5 text-foreground/60" />
                     </div>
                   </CardContent>
                 </Card>

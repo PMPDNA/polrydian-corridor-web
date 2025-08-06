@@ -24,6 +24,7 @@ import { AuthCallback } from "./pages/AuthCallback";
 import AdminPage from "./pages/AdminPage";
 
 import AdminSocial from "./pages/admin/SocialMedia";
+import SocialMediaDashboard from "./pages/admin/SocialMediaDashboard";
 import HeroEditor from "./pages/admin/HeroEditor";
 import ArticleManager from "./pages/admin/ArticleManager";
 import FredDashboard from "./pages/admin/FredDashboard";
@@ -76,6 +77,13 @@ const App = () => {
             <Route path="/admin/social" element={
               <ErrorBoundary>
                 <AdminSocial />
+              </ErrorBoundary>
+            } />
+            <Route path="/admin/social-dashboard" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <SocialMediaDashboard />
+                </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
             <Route path="/admin/hero" element={
