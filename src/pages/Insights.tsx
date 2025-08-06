@@ -73,12 +73,7 @@ export default function Insights() {
         return
       }
       
-      // Get current session for authentication
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        setError('You must be logged in to access insights')
-        return
-      }
+      // For now, allow public access - authentication can be added later for premium features
       
       let searchSources = ['csis.org', 'tradeguys.org'];
       
@@ -100,9 +95,6 @@ export default function Insights() {
         body: { 
           query: sanitizedQuery,
           sources: searchSources
-        },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
         }
       });
 
