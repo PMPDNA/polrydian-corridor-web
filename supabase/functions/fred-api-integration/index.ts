@@ -42,13 +42,13 @@ serve(async (req) => {
     // Define core economic indicators with proper series IDs
     const coreIndicators = [
       {
-        id: 'GDPC1',
-        series_id: 'GDPC1',
-        title: 'Real GDP',
-        description: 'Real Gross Domestic Product, Seasonally Adjusted Annual Rate',
-        units: 'Billions of Chained 2017 Dollars',
+        id: 'A191RL1A225NBEA',
+        series_id: 'A191RL1A225NBEA',
+        title: 'Real GDP Growth Rate (US)',
+        description: 'Real Gross Domestic Product Growth Rate (Percent Change from Preceding Period, Seasonally Adjusted Annual Rate)',
+        units: 'Percent',
         frequency: 'Quarterly',
-        indicator_type: 'gdp'
+        indicator_type: 'gdp_growth'
       },
       {
         id: 'UNRATE',
@@ -60,13 +60,13 @@ serve(async (req) => {
         indicator_type: 'unemployment'
       },
       {
-        id: 'CPIAUCSL',
-        series_id: 'CPIAUCSL',
-        title: 'Consumer Price Index',
-        description: 'Consumer Price Index for All Urban Consumers: All Items',
-        units: 'Index 1982-1984=100',
+        id: 'CPIAUCSL_PCH',
+        series_id: 'CPIAUCSL_PCH',
+        title: 'US Inflation Rate',
+        description: 'Consumer Price Index for All Urban Consumers: All Items (Percent Change from Year Ago)',
+        units: 'Percent Change from Year Ago',
         frequency: 'Monthly',
-        indicator_type: 'inflation'
+        indicator_type: 'inflation_rate'
       },
       {
         id: 'FEDFUNDS',

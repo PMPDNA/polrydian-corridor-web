@@ -16,19 +16,19 @@ interface ThinkTankResource {
 
 const thinkTankResources: ThinkTankResource[] = [
   {
-    title: "Global Supply Chain Resilience and Strategic Competition",
+    title: "Building Resilient Global Supply Chains: Geopolitics and the Indo-Pacific",
     organization: "Center for Strategic & International Studies (CSIS)",
-    description: "Analysis of supply chain vulnerabilities and strategic responses to geopolitical disruptions",
-    url: "https://www.csis.org/programs/economics-program",
+    description: "Analysis of supply chain vulnerabilities and strategic responses to geopolitical disruptions in the Indo-Pacific region",
+    url: "https://www.csis.org/analysis/building-resilient-global-supply-chains-geopolitics-indo-pacific",
     date: "2024-01-15",
     category: "Supply Chain",
     relevanceNote: "Directly relevant to corridor economics methodology for building resilient trade pathways"
   },
   {
-    title: "The Future of Globalization: Reinventing Trade in the Digital Age",
+    title: "Data and the Transformation of International Trade",
     organization: "Brookings Institution",
     description: "Examination of how digital technologies are reshaping global trade patterns and economic corridors",
-    url: "https://www.brookings.edu/topic/trade-economics/",
+    url: "https://www.brookings.edu/research/data-and-the-transformation-of-international-trade/",
     date: "2024-01-10",
     category: "Digital Trade",
     relevanceNote: "Provides foundation for understanding how digital corridors intersect with physical trade routes"
@@ -43,10 +43,10 @@ const thinkTankResources: ThinkTankResource[] = [
     relevanceNote: "Essential context for corridor economics applications in policy-making environments"
   },
   {
-    title: "Geopolitical Risk and Investment Strategies",
+    title: "How Increased Geopolitical Tensions Are Affecting Global Trade",
     organization: "Peterson Institute for International Economics",
-    description: "Framework for assessing and mitigating geopolitical risks in international investments",
-    url: "https://www.piie.com/",
+    description: "Framework for assessing and mitigating geopolitical risks in international investments and trade flows",
+    url: "https://www.piie.com/blogs/realtime-economic-issues-watch/how-increased-geopolitical-tensions-are-affecting-global-trade",
     date: "2024-01-05",
     category: "Geopolitical Risk",
     relevanceNote: "Complements corridor economics approach to risk assessment and mitigation"
