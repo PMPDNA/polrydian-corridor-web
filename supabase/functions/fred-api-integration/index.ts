@@ -39,7 +39,7 @@ serve(async (req) => {
     
     console.log('📝 Request:', requestBody);
     
-    // Define core economic indicators with proper series IDs
+    // Define core economic indicators with proper series IDs and enhanced configuration
     const coreIndicators = [
       {
         id: 'A191RL1A225NBEA',
@@ -48,7 +48,9 @@ serve(async (req) => {
         description: 'Real Gross Domestic Product Growth Rate (Percent Change from Preceding Period, Seasonally Adjusted Annual Rate)',
         units: 'Percent',
         frequency: 'Quarterly',
-        indicator_type: 'gdp_growth'
+        indicator_type: 'gdp_growth',
+        expectedDataLagDays: 90, // GDP data typically lags by ~3 months
+        minDataPoints: 20 // Need more quarterly data points
       },
       {
         id: 'UNRATE',
@@ -57,7 +59,9 @@ serve(async (req) => {
         description: 'Civilian Unemployment Rate',
         units: 'Percent',
         frequency: 'Monthly',
-        indicator_type: 'unemployment'
+        indicator_type: 'unemployment',
+        expectedDataLagDays: 7, // Monthly data typically lags by 1 week
+        minDataPoints: 24
       },
       {
         id: 'CPIAUCSL',
@@ -66,7 +70,9 @@ serve(async (req) => {
         description: 'Consumer Price Index for All Urban Consumers: All Items',
         units: 'Index 1982-84=100',
         frequency: 'Monthly',
-        indicator_type: 'inflation_rate'
+        indicator_type: 'inflation_rate',
+        expectedDataLagDays: 14, // CPI data typically lags by 2 weeks
+        minDataPoints: 24
       },
       {
         id: 'FEDFUNDS',
@@ -133,7 +139,20 @@ serve(async (req) => {
       try {
         console.log(`📊 Fetching FRED data for series: ${indicator.series_id}`);
         
-        const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${indicator.series_id}&api_key=${fredApiKey}&file_type=json&limit=24&sort_order=desc`;
+        // Enhanced API parameters with better data coverage
+        const limit = indicator.minDataPoints || 50; // More data points for quarterly series
+        const startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 3); // Get 3 years of data
+        const startDateStr = startDate.toISOString().split('T')[0];
+        
+        const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${indicator.series_id}&api_key=${fredApiKey}&file_type=json&limit=${limit}&sort_order=desc&observation_start=${startDateStr}`;
+        
+        console.log(`🔍 Enhanced FRED API call for ${indicator.series_id}:`, {
+          limit,
+          startDate: startDateStr,
+          frequency: indicator.frequency,
+          expectedLag: indicator.expectedDataLagDays
+        });
         
         const fredResponse = await fetch(fredUrl);
         
@@ -143,14 +162,19 @@ serve(async (req) => {
         }
         
         const fredData = await fredResponse.json();
-        console.log(`✅ FRED API request completed successfully for ${indicator.series_id}`);
+        console.log(`✅ FRED API request completed for ${indicator.series_id}. Raw observations count: ${fredData.observations?.length || 0}`);
         
         if (!fredData.observations || fredData.observations.length === 0) {
           console.warn(`⚠️ No observations found for ${indicator.series_id}`);
           continue;
         }
         
-        const observations = fredData.observations.filter(obs => obs.value !== '.' && obs.value !== null);
+        // Enhanced data filtering and validation
+        const observations = fredData.observations.filter(obs => obs.value !== '.' && obs.value !== null && obs.value !== undefined);
+        console.log(`🔍 Valid observations for ${indicator.series_id}: ${observations.length}`);
+        
+        // Log the first few observations for debugging
+        console.log(`📊 Latest observations for ${indicator.series_id}:`, observations.slice(0, 5).map(obs => ({ date: obs.date, value: obs.value })));
         
         if (observations.length === 0) {
           console.warn(`⚠️ No valid observations for ${indicator.series_id}`);
@@ -159,6 +183,22 @@ serve(async (req) => {
         
         const latestObs = observations[0];
         const prevObs = observations[1];
+        
+        // Enhanced data validation
+        const latestDate = new Date(latestObs.date);
+        const today = new Date();
+        const daysSinceLatest = Math.floor((today.getTime() - latestDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        console.log(`📅 Data freshness check for ${indicator.series_id}:`, {
+          latestDate: latestObs.date,
+          daysSinceLatest,
+          expectedLag: indicator.expectedDataLagDays,
+          isDataFresh: daysSinceLatest <= (indicator.expectedDataLagDays + 30) // Add 30-day buffer
+        });
+        
+        if (daysSinceLatest > (indicator.expectedDataLagDays + 60)) {
+          console.warn(`⚠️ Data for ${indicator.series_id} may be stale. Latest: ${latestObs.date}, Days since: ${daysSinceLatest}`);
+        }
         
         // Calculate percentage change
         let changePercent = null;
@@ -195,7 +235,7 @@ serve(async (req) => {
         
         results.push(result);
         
-        // Store in insights table
+        // Enhanced data storage with validation metadata
         const { error: insertError } = await supabase
           .from('insights')
           .upsert({
@@ -205,7 +245,7 @@ serve(async (req) => {
             series_id: indicator.series_id,
             indicator_type: indicator.indicator_type,
             region: 'US',
-            data_points: observations.slice(0, 12).map(obs => ({
+            data_points: observations.slice(0, 24).map(obs => ({ // Store more data points
               date: obs.date,
               value: parseFloat(obs.value) || 0,
               series_id: indicator.series_id
@@ -216,7 +256,13 @@ serve(async (req) => {
               yAxisLabel: indicator.units,
               latest_value: latestValue,
               latest_date: latestObs.date,
-              change_percent: changePercent
+              change_percent: changePercent,
+              data_freshness: {
+                days_since_latest: daysSinceLatest,
+                expected_lag: indicator.expectedDataLagDays,
+                is_fresh: daysSinceLatest <= (indicator.expectedDataLagDays + 30),
+                total_observations: observations.length
+              }
             },
             is_published: true
           }, {
@@ -226,7 +272,7 @@ serve(async (req) => {
         if (insertError) {
           console.error(`❌ Error storing insight for ${indicator.series_id}:`, insertError);
         } else {
-          console.log(`✅ Successfully stored insight for ${indicator.series_id}`);
+          console.log(`✅ Successfully stored insight for ${indicator.series_id}. Latest value: ${latestValue} (${latestObs.date}), Data points: ${observations.length}`);
         }
         
         // Rate limiting to avoid hitting API limits

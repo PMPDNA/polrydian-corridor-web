@@ -13,6 +13,7 @@ import { CSISAnalysisFeed } from "@/components/CSISAnalysisFeed";
 import { TradeGuysPodcast } from "@/components/TradeGuysPodcast";
 import { PolicyUpdatesTimeline } from "@/components/PolicyUpdatesTimeline";
 import { TestDataCollection } from "@/components/TestDataCollection";
+import EconomicDataRefresh from "@/components/EconomicDataRefresh";
 import { 
   Search, 
   Globe, 
@@ -268,6 +269,11 @@ export default function Insights() {
         {/* Enhanced Economic Data Display */}
         <section className="mb-12">
           <EnhancedEconomicInsights />
+        </section>
+
+        {/* Economic Data Refresh Controls */}
+        <section className="mb-12">
+          <EconomicDataRefresh />
         </section>
 
         {/* Test Data Collection (Admin Only) */}
