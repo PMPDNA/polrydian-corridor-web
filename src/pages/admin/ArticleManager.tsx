@@ -23,7 +23,7 @@ import { AdminLayout } from "@/layouts/AdminLayout";
 import { sanitizeHtml } from "@/lib/security";
 
 export default function ArticleManager() {
-  const { articles, loading, createArticle, updateArticle, deleteArticle } = useArticles();
+  const { articles, loading, operationLoading, createArticle, updateArticle, deleteArticle } = useArticles();
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingArticle, setEditingArticle] = useState<any>(null);
@@ -77,7 +77,10 @@ export default function ArticleManager() {
     return (
       <AdminLayout title="Article Management">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading articles...</p>
+          </div>
         </div>
       </AdminLayout>
     );
@@ -103,7 +106,17 @@ export default function ArticleManager() {
               <DialogHeader>
                 <DialogTitle>Create New Article</DialogTitle>
               </DialogHeader>
-              <ArticleForm onSave={handleSaveArticle} onCancel={handleCancel} />
+              <div className="relative">
+                {operationLoading && (
+                  <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+                    <div className="flex items-center gap-3 bg-card px-6 py-4 rounded-lg border shadow-lg">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                      <span className="text-sm font-medium">Creating article...</span>
+                    </div>
+                  </div>
+                )}
+                <ArticleForm onSave={handleSaveArticle} onCancel={handleCancel} />
+              </div>
             </DialogContent>
           </Dialog>
         </div>

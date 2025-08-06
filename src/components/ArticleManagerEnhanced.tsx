@@ -9,6 +9,8 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ArticleForm } from "@/components/ArticleForm";
 import { useArticles, type Article } from "@/hooks/useArticles";
 import { useToast } from "@/hooks/use-toast";
+import { SafeErrorBoundary } from "@/components/SafeErrorBoundary";
+import { ArticleListSkeleton, FormLoadingOverlay } from "@/components/LoadingStates";
 import { sanitizeHtml } from "@/lib/security";
 import { 
   Search,
@@ -29,7 +31,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ArticleManagerEnhanced() {
-  const { articles, loading, createArticle, updateArticle, deleteArticle } = useArticles();
+  const { articles, loading, operationLoading, createArticle, updateArticle, deleteArticle } = useArticles();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -153,15 +155,22 @@ export default function ArticleManagerEnhanced() {
   if (loading) {
     return (
       <AdminLayout title="Article Manager">
-        <div className="flex items-center justify-center h-64">
-          <LoadingSpinner />
+        <div className="space-y-6">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+            <div className="animate-pulse">
+              <div className="h-8 bg-blue-200 rounded w-1/3 mb-2"></div>
+              <div className="h-4 bg-blue-100 rounded w-1/2"></div>
+            </div>
+          </div>
+          <ArticleListSkeleton count={3} />
         </div>
       </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout title="Article Manager">
+    <SafeErrorBoundary>
+      <AdminLayout title="Article Manager">
       <div className="space-y-6">
         {/* Header with Stats */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
@@ -246,10 +255,13 @@ export default function ArticleManagerEnhanced() {
               <DialogHeader>
                 <DialogTitle>Create New Article</DialogTitle>
               </DialogHeader>
-              <ArticleForm
-                onSave={handleCreateArticle}
-                onCancel={() => setShowCreateDialog(false)}
-              />
+              <div className="relative">
+                {operationLoading && <FormLoadingOverlay message="Creating article..." />}
+                <ArticleForm
+                  onSave={handleCreateArticle}
+                  onCancel={() => setShowCreateDialog(false)}
+                />
+              </div>
             </DialogContent>
           </Dialog>
         </div>
@@ -403,14 +415,17 @@ export default function ArticleManagerEnhanced() {
                         <DialogHeader>
                           <DialogTitle>Edit Article</DialogTitle>
                         </DialogHeader>
-                        <ArticleForm
-                          article={selectedArticle!}
-                          onSave={handleUpdateArticle}
-                          onCancel={() => {
-                            setShowEditDialog(false);
-                            setSelectedArticle(null);
-                          }}
-                        />
+                        <div className="relative">
+                          {operationLoading && <FormLoadingOverlay message="Updating article..." />}
+                          <ArticleForm
+                            article={selectedArticle!}
+                            onSave={handleUpdateArticle}
+                            onCancel={() => {
+                              setShowEditDialog(false);
+                              setSelectedArticle(null);
+                            }}
+                          />
+                        </div>
                       </DialogContent>
                     </Dialog>
 
@@ -444,6 +459,7 @@ export default function ArticleManagerEnhanced() {
           )}
         </div>
       </div>
-    </AdminLayout>
+      </AdminLayout>
+    </SafeErrorBoundary>
   );
 }
