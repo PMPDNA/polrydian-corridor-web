@@ -48,44 +48,63 @@ export const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Enhanced validation using the security schema
-      const { contactFormSchema, sanitizeFormData } = await import("@/lib/security")
+      // Enhanced validation and rate limiting
+      const { useRateLimit } = await import("@/hooks/useSecurityHeaders")
       
-      // Sanitize input data
-      const sanitizedData = sanitizeFormData(formData)
-      
-      // Validate the sanitized data
-      const validationResult = contactFormSchema.safeParse(sanitizedData)
-      
-      if (!validationResult.success) {
-        const errors = validationResult.error.errors.map(err => err.message).join(', ')
+      // Check rate limit
+      const lastSubmission = localStorage.getItem('last_contact_submission')
+      if (lastSubmission && Date.now() - parseInt(lastSubmission) < 60000) {
         toast({
-          title: "Validation Error",
-          description: errors,
+          title: "Rate Limited",
+          description: "Please wait a moment before submitting another message.",
           variant: "destructive",
         })
         setIsSubmitting(false)
         return
       }
 
-      const validData = validationResult.data
+      // Enhanced input validation
+      if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
+        toast({
+          title: "Validation Error",
+          description: "Please fill in all required fields.",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
 
-      // For now, just submit to consultation bookings table directly
-      const consultationData = {
-        first_name: validData.firstName,
-        last_name: validData.lastName,
-        email: validData.email,
-        company: validData.company,
-        message: validData.message,
-        urgency_level: validData.urgent ? 'urgent' : 'standard',
-        service_area: validData.service || 'General Inquiry'
-      };
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(formData.email)) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address.",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+
+      // Sanitize input data
+      const sanitizedData = {
+        first_name: formData.firstName.trim().slice(0, 50),
+        last_name: formData.lastName.trim().slice(0, 50),
+        email: formData.email.trim().toLowerCase().slice(0, 254),
+        company: formData.company?.trim().slice(0, 100) || '',
+        message: formData.message.trim().slice(0, 5000),
+        urgency_level: formData.urgent ? 'urgent' : 'standard',
+        service_area: formData.service || 'General Inquiry'
+      }
 
       const { data, error } = await supabase
         .from('consultation_bookings')
-        .insert([consultationData]);
+        .insert([sanitizedData]);
 
       if (error) throw error;
+
+      // Store submission timestamp for rate limiting
+      localStorage.setItem('last_contact_submission', Date.now().toString())
 
       toast({
         title: "Message Sent Successfully!",

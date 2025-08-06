@@ -152,10 +152,23 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signUp = async (email: string, password: string) => {
+    // Enhanced input validation for signup
+    if (!email || !password) {
+      return { data: null, error: { message: 'Email and password are required' } }
+    }
+    
+    if (email.length > 254 || password.length > 128) {
+      return { data: null, error: { message: 'Invalid input length' } }
+    }
+    
+    if (password.length < 8) {
+      return { data: null, error: { message: 'Password must be at least 8 characters' } }
+    }
+    
     const redirectUrl = `${window.location.origin}/`
     
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: email.trim().toLowerCase(),
       password,
       options: {
         emailRedirectTo: redirectUrl,
@@ -172,8 +185,17 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log('Attempting sign in for:', email);
       
+      // Enhanced input validation
+      if (!email || !password) {
+        throw new Error('Email and password are required')
+      }
+      
+      if (email.length > 254 || password.length > 128) {
+        throw new Error('Invalid input length')
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim().toLowerCase(),
         password,
       });
 

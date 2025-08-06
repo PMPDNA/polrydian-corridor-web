@@ -1388,6 +1388,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      check_admin_rate_limit: {
+        Args: {
+          operation_type: string
+          max_attempts?: number
+          window_minutes?: number
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           identifier_value: string
@@ -1463,9 +1471,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      rotate_expired_tokens: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       sync_linkedin_article_to_articles: {
         Args: { linkedin_article_id: string }
         Returns: string
+      }
+      validate_password_reset_token: {
+        Args: { reset_token: string }
+        Returns: boolean
       }
     }
     Enums: {
