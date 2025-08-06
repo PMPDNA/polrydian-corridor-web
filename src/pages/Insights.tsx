@@ -12,7 +12,7 @@ import { CorridorEconomicsIntelligence } from "@/components/CorridorEconomicsInt
 import { CSISAnalysisFeed } from "@/components/CSISAnalysisFeed";
 import { TradeGuysPodcast } from "@/components/TradeGuysPodcast";
 import { PolicyNewsUpdates } from "@/components/PolicyNewsUpdates";
-import { TestDataCollection } from "@/components/TestDataCollection";
+
 import EconomicDataRefresh from "@/components/EconomicDataRefresh";
 import { 
   Search, 
@@ -242,10 +242,6 @@ export default function Insights() {
           <EconomicDataRefresh />
         </section>
 
-        {/* Test Data Collection (Admin Only) */}
-        <section className="mb-12">
-          <TestDataCollection />
-        </section>
 
         {/* CSIS Analysis, Trade Guys Podcast, and Policy Updates */}
         <section className="mb-12">
