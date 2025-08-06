@@ -121,10 +121,10 @@ export class ErrorBoundary extends Component<Props, State> {
                 <p className="text-sm text-muted-foreground">
                   If this error persists, please contact us at{' '}
                   <a 
-                    href="mailto:patrick@polrydian.com" 
+                    href="mailto:info@polrydian.com" 
                     className="text-primary hover:underline"
                   >
-                    patrick@polrydian.com
+                    info@polrydian.com
                   </a>
                 </p>
               </div>

@@ -153,7 +153,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send notification email to Patrick
     const notificationResponse = await resend.emails.send({
       from: "Strategic Inquiry <noreply@polrydian.com>",
-      to: ["patrick@polrydian.com"],
+      to: ["info@polrydian.com"],
       subject: `${sanitizedData.urgent ? "🔴 URGENT " : ""}New Strategic Consultation Inquiry - ${sanitizedData.firstName} ${sanitizedData.lastName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -199,7 +199,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to the user
     const confirmationResponse = await resend.emails.send({
-      from: "Patrick Misiewicz <patrick@polrydian.com>",
+      from: "Patrick Misiewicz <info@polrydian.com>",
       to: [sanitizedData.email],
       subject: "Strategic Consultation Inquiry Received - Polrydian Group",
       html: `
@@ -231,12 +231,12 @@ const handler = async (req: Request): Promise<Response> => {
           <strong>Patrick Misiewicz</strong><br>
           Founder & Strategic Advisor<br>
           Polrydian Group<br>
-          <a href="mailto:patrick@polrydian.com" style="color: #2563eb;">patrick@polrydian.com</a></p>
+          <a href="mailto:info@polrydian.com" style="color: #2563eb;">info@polrydian.com</a></p>
 
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
           <p style="font-size: 12px; color: #6b7280;">
             This is an automated confirmation. Please do not reply to this email. 
-            For urgent matters, contact patrick@polrydian.com directly.
+            For urgent matters, contact info@polrydian.com directly.
           </p>
         </div>
       `,
@@ -311,7 +311,7 @@ const handler = async (req: Request): Promise<Response> => {
     
     return new Response(
       JSON.stringify({ 
-        error: "Failed to send email. Please try again or contact us directly at patrick@polrydian.com"
+        error: "Failed to send email. Please try again or contact us directly at info@polrydian.com"
       }),
       {
         status: 500,

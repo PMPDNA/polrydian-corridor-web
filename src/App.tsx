@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/SafeErrorBoundary";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import SupabaseProtectedRoute from "@/components/SupabaseProtectedRoute";
 import Index from "./pages/Index";

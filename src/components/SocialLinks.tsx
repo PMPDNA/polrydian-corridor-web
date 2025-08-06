@@ -14,7 +14,7 @@ export const SocialLinks = () => {
     {
       name: "Email",
       icon: Mail,
-      url: "mailto:patrick@polrydian.com",
+      url: "mailto:info@polrydian.com",
       description: "Direct consultation inquiries",
       color: "text-primary hover:bg-primary/10"
     },

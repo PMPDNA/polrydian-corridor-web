@@ -41,24 +41,35 @@ export const useSessionTimeout = () => {
   }, [showWarning, signOut]);
 
   useEffect(() => {
+    // Only run in browser environment
+    if (typeof window === 'undefined') return;
+    
     const activities = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
 
     const resetOnActivity = () => {
       resetTimeout();
     };
 
+    let mounted = true;
+
     // Check if user is authenticated
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      
       if (session) {
         resetTimeout();
         activities.forEach(activity => {
           document.addEventListener(activity, resetOnActivity, true);
         });
       }
+    }).catch(error => {
+      console.warn('Session check failed:', error);
     });
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      
       if (event === 'SIGNED_IN' && session) {
         resetTimeout();
         activities.forEach(activity => {
@@ -81,10 +92,14 @@ export const useSessionTimeout = () => {
     });
 
     return () => {
+      mounted = false;
       activities.forEach(activity => {
         document.removeEventListener(activity, resetOnActivity, true);
       });
-      subscription.unsubscribe();
+      
+      if (subscription) {
+        subscription.unsubscribe();
+      }
       
       // Clear timers on cleanup
       if (typeof window !== 'undefined') {
