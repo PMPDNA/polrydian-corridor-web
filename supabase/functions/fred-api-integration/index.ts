@@ -49,8 +49,9 @@ serve(async (req) => {
         units: 'Percent',
         frequency: 'Quarterly',
         indicator_type: 'gdp_growth',
-        expectedDataLagDays: 90, // GDP data typically lags by ~3 months
-        minDataPoints: 20 // Need more quarterly data points
+        expectedDataLagDays: 120, // Increased lag time for quarterly data
+        minDataPoints: 40, // Increased for better quarterly coverage
+        requestLimit: 60 // More data points for quarterly series
       },
       {
         id: 'UNRATE',

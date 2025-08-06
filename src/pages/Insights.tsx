@@ -11,7 +11,7 @@ import { EnhancedEconomicInsights } from "@/components/EnhancedEconomicInsights"
 import { CorridorEconomicsIntelligence } from "@/components/CorridorEconomicsIntelligence";
 import { CSISAnalysisFeed } from "@/components/CSISAnalysisFeed";
 import { TradeGuysPodcast } from "@/components/TradeGuysPodcast";
-import { PolicyUpdatesTimeline } from "@/components/PolicyUpdatesTimeline";
+import { PolicyNewsUpdates } from "@/components/PolicyNewsUpdates";
 import { TestDataCollection } from "@/components/TestDataCollection";
 import EconomicDataRefresh from "@/components/EconomicDataRefresh";
 import { 
@@ -96,7 +96,7 @@ export default function Insights() {
         }
       }
 
-      const { data, error } = await supabase.functions.invoke('fetch-economic-insights', {
+      const { data, error } = await supabase.functions.invoke('search-economic-intelligence', {
         body: { 
           query: sanitizedQuery,
           sources: searchSources
@@ -180,36 +180,6 @@ export default function Insights() {
           </p>
         </div>
 
-        {/* API Key Notice */}
-        <Card className="mb-8 bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <TrendingUp className="h-6 w-6 text-primary" />
-              <h3 className="font-semibold text-foreground">
-                Economic Intelligence Hub
-              </h3>
-              <Badge variant="outline">CSIS Integration</Badge>
-            </div>
-            <p className="text-muted-foreground text-sm mb-3">
-              Access real-time economic insights from CSIS, Trade Guys podcast, and other leading policy sources. 
-              This system provides strategic intelligence on corridor economics, trade policy, and geopolitical developments.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                <span>CSIS Analysis</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                <span>Trade Guys Podcast</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                <span>Policy Updates</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Search Section */}
         <Card className="mb-8 shadow-elegant">
@@ -266,10 +236,6 @@ export default function Insights() {
           <CorridorEconomicsIntelligence />
         </section>
 
-        {/* Enhanced Economic Data Display */}
-        <section className="mb-12">
-          <EnhancedEconomicInsights />
-        </section>
 
         {/* Economic Data Refresh Controls */}
         <section className="mb-12">
@@ -286,7 +252,7 @@ export default function Insights() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <CSISAnalysisFeed />
             <TradeGuysPodcast />
-            <PolicyUpdatesTimeline />
+            <PolicyNewsUpdates />
           </div>
         </section>
 

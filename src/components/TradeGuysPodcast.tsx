@@ -12,8 +12,8 @@ export function TradeGuysPodcast() {
     spotifyEmbed: "https://open.spotify.com/embed/show/0HxEH4XajR7D9wvdJfE7lw",
     links: {
       spotify: "https://open.spotify.com/show/0HxEH4XajR7D9wvdJfE7lw",
-      apple: "https://podcasts.apple.com/us/podcast/trade-guys/id1466653658",
-      google: "https://podcasts.google.com/feed/aHR0cHM6Ly9mZWVkcy5zaW1wbGVjYXN0LmNvbS9mNlFwM2VrRg",
+      apple: "https://podcasts.apple.com/us/podcast/the-trade-guys/id1380336613",
+      google: "https://music.youtube.com/playlist?list=PLnArnDQHeUqeQDLiQC8HIfBMF8dNS-1rS",
       csis: "https://www.csis.org/podcasts/trade-guys"
     }
   };
