@@ -44,7 +44,7 @@ serve(async (req) => {
       {
         id: 'A191RL1A225NBEA',
         series_id: 'A191RL1A225NBEA',
-        title: 'Real GDP Growth Rate (US)',
+        title: 'U.S. Real GDP Growth Rate',
         description: 'Real Gross Domestic Product Growth Rate (Percent Change from Preceding Period, Seasonally Adjusted Annual Rate)',
         units: 'Percent',
         frequency: 'Quarterly',
@@ -53,7 +53,7 @@ serve(async (req) => {
       {
         id: 'UNRATE',
         series_id: 'UNRATE',
-        title: 'Unemployment Rate',
+        title: 'U.S. Unemployment Rate',
         description: 'Civilian Unemployment Rate',
         units: 'Percent',
         frequency: 'Monthly',
@@ -62,7 +62,7 @@ serve(async (req) => {
       {
         id: 'CPIAUCSL_PCH',
         series_id: 'CPIAUCSL_PCH',
-        title: 'US Inflation Rate',
+        title: 'U.S. Inflation Rate',
         description: 'Consumer Price Index for All Urban Consumers: All Items (Percent Change from Year Ago)',
         units: 'Percent Change from Year Ago',
         frequency: 'Monthly',
@@ -71,7 +71,7 @@ serve(async (req) => {
       {
         id: 'FEDFUNDS',
         series_id: 'FEDFUNDS',
-        title: 'Federal Funds Rate',
+        title: 'U.S. Federal Funds Rate',
         description: 'Effective Federal Funds Rate',
         units: 'Percent',
         frequency: 'Monthly',
@@ -80,7 +80,7 @@ serve(async (req) => {
       {
         id: 'UMCSENT',
         series_id: 'UMCSENT',
-        title: 'Consumer Sentiment',
+        title: 'U.S. Consumer Sentiment',
         description: 'University of Michigan Consumer Sentiment Index',
         units: 'Index 1966:Q1=100',
         frequency: 'Monthly',
@@ -89,7 +89,7 @@ serve(async (req) => {
       {
         id: 'HOUST',
         series_id: 'HOUST',
-        title: 'Housing Starts',
+        title: 'U.S. Housing Starts',
         description: 'New Privately-Owned Housing Units Started',
         units: 'Thousands of Units, Annual Rate',
         frequency: 'Monthly',
@@ -98,7 +98,7 @@ serve(async (req) => {
       {
         id: 'RSXFS',
         series_id: 'RSXFS',
-        title: 'Retail Sales',
+        title: 'U.S. Retail Sales',
         description: 'Advance Real Retail and Food Services Sales',
         units: 'Millions of Dollars',
         frequency: 'Monthly',
@@ -107,7 +107,7 @@ serve(async (req) => {
       {
         id: 'INDPRO',
         series_id: 'INDPRO',
-        title: 'Industrial Production',
+        title: 'U.S. Industrial Production',
         description: 'Industrial Production Total Index',
         units: 'Index 2017=100',
         frequency: 'Monthly',
