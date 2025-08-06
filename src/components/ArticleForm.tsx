@@ -103,6 +103,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       category: formData.category,
       excerpt: formData.excerpt,
       contentLength: formData.content.length,
+      contentPreview: formData.content.substring(0, 100) + '...',
       linkedinUrl: formData.linkedinUrl,
       article: article ? { id: article.id, title: article.title } : null
     });
@@ -128,6 +129,8 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         featured: formData.featured,
         zapierWebhookUrl: zapierWebhook
       });
+      
+      console.log('ArticleForm: After sanitization - content length:', sanitizedData.content.length);
       
       // Validate with Zod schema  
       const validationResult = articleSchema.safeParse(sanitizedData);

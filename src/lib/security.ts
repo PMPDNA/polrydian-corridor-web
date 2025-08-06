@@ -133,12 +133,14 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
         .replace(/on\w+=/gi, '') // Remove event handlers
         .trim()
       
-      // Additional length validation
+      // Additional length validation - avoid truncating article content
       if (key === 'email' && sanitizedValue.length > 255) {
         sanitizedValue = sanitizedValue.substring(0, 255)
       } else if (key === 'message' && sanitizedValue.length > 2000) {
         sanitizedValue = sanitizedValue.substring(0, 2000)
-      } else if (sanitizedValue.length > 500) {
+      } else if (key === 'content' && sanitizedValue.length > 500000) {
+        sanitizedValue = sanitizedValue.substring(0, 500000)
+      } else if (key !== 'content' && sanitizedValue.length > 500) {
         sanitizedValue = sanitizedValue.substring(0, 500)
       }
       
