@@ -64,10 +64,14 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       case 'category':
         // Look for category in keywords array first, then fallback
         const dbKeywords = (article as any).keywords;
+        console.log('ArticleForm: Reading category from article:', { dbKeywords, article: article });
         if (dbKeywords && Array.isArray(dbKeywords) && dbKeywords.length > 0) {
+          console.log('ArticleForm: Found category in keywords:', dbKeywords[0]);
           return dbKeywords[0];
         }
-        return (article as any).category || "Strategy";
+        const fallbackCategory = (article as any).category || "Strategy";
+        console.log('ArticleForm: Using fallback category:', fallbackCategory);
+        return fallbackCategory;
       case 'linkedinUrl':
         return 'linkedin_url' in article ? article.linkedin_url : (article as any).linkedinUrl || fallback;
       default:
