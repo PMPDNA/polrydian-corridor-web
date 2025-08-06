@@ -181,65 +181,14 @@ export default function Insights() {
         </div>
 
 
-        {/* Search Section */}
-        <Card className="mb-8 shadow-elegant">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Search className="h-5 w-5" />
-              Search Economic Intelligence
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSearch} className="space-y-4">
-              <div className="flex gap-4">
-                <Input
-                  placeholder="Enter your strategic question or topic..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1"
-                />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.label}</option>
-                  ))}
-                </select>
-                <Button type="submit" disabled={loading}>
-                  {loading ? <LoadingSpinner size="sm" /> : <Search className="h-4 w-4" />}
-                </Button>
-              </div>
-            </form>
-
-            <div className="mt-4">
-              <p className="text-sm text-muted-foreground mb-2">Quick searches:</p>
-              <div className="flex flex-wrap gap-2">
-                {defaultQueries.slice(0, 3).map((query, index) => (
-                  <button
-                    key={index}
-                    onClick={() => fetchInsights(query)}
-                    className="px-3 py-1 bg-muted hover:bg-muted/80 rounded-full text-xs transition-colors"
-                    disabled={loading}
-                  >
-                    {query.slice(0, 50)}...
-                  </button>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Corridor Economics Intelligence */}
-        <section className="mb-12">
-          <CorridorEconomicsIntelligence />
-        </section>
-
-
         {/* Economic Data Refresh Controls */}
         <section className="mb-12">
           <EconomicDataRefresh />
+        </section>
+
+        {/* Enhanced Economic Insights - Single Unified Display */}
+        <section className="mb-12">
+          <EnhancedEconomicInsights />
         </section>
 
 

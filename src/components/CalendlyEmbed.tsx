@@ -1,141 +1,92 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react';
 
-interface CalendlyEmbedProps {
-  calendlyUrl: string
-  height?: string
-  title?: string
-  description?: string
-  prefill?: {
-    name?: string
-    email?: string
-    customAnswers?: Record<string, string>
+declare global {
+  interface Window {
+    Calendly: any;
   }
 }
 
-export default function CalendlyEmbed({
-  calendlyUrl,
-  height = "700px",
-  title = "Schedule Your Meeting",
-  description = "Choose a time that works best for you",
-  prefill = {}
+interface CalendlyEmbedProps {
+  calendlyUrl: string;
+  height?: string;
+  title?: string;
+  description?: string;
+}
+
+export default function CalendlyEmbed({ 
+  calendlyUrl, 
+  height = "600px", 
+  title = "Schedule a Meeting",
+  description = "Select your preferred time"
 }: CalendlyEmbedProps) {
-  const calendlyRef = useRef<HTMLDivElement>(null)
+  const calendlyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Clean up any existing Calendly widgets
+    // Clear any existing widget
     if (calendlyRef.current) {
-      calendlyRef.current.innerHTML = ''
+      calendlyRef.current.innerHTML = '';
     }
 
-    const loadCalendly = async () => {
-      try {
-        // Load Calendly CSS first
-        let link = document.querySelector('link[href*="calendly"]') as HTMLLinkElement
-        if (!link) {
-          link = document.createElement('link')
-          link.href = 'https://assets.calendly.com/assets/external/widget.css'
-          link.rel = 'stylesheet'
-          document.head.appendChild(link)
-        }
+    // Load Calendly script
+    const script = document.createElement('script');
+    script.src = 'https://assets.calendly.com/assets/external/widget.js';
+    script.async = true;
 
-        // Wait for CSS to load
-        await new Promise(resolve => {
-          if (link.onload) {
-            resolve(null)
-          } else {
-            link.onload = () => resolve(null)
-          }
-        })
+    script.onload = () => {
+      if (window.Calendly && calendlyRef.current) {
+        window.Calendly.initInlineWidget({
+          url: calendlyUrl,
+          parentElement: calendlyRef.current,
+          prefill: {},
+          utm: {}
+        });
+      }
+    };
 
-        // Load Calendly widget script
-        let script = document.querySelector('script[src*="calendly"]') as HTMLScriptElement
-        
-        const initWidget = () => {
-          if ((window as any).Calendly && calendlyRef.current) {
-            try {
-              (window as any).Calendly.initInlineWidget({
-                url: calendlyUrl,
-                parentElement: calendlyRef.current,
-                prefill: prefill,
-                utm: {
-                  utmCampaign: 'Website Embed',
-                  utmSource: window.location.hostname,
-                  utmMedium: 'inline'
-                }
-              })
-            } catch (error) {
-              console.error('Calendly widget initialization failed:', error)
-              // Fallback: show direct link
-              if (calendlyRef.current) {
-                calendlyRef.current.innerHTML = `
-                  <div class="flex items-center justify-center h-full">
-                    <a href="${calendlyUrl}" target="_blank" class="text-accent hover:underline">
-                      Click here to schedule your meeting
-                    </a>
-                  </div>
-                `
-              }
-            }
-          }
-        }
-
-        if (!script) {
-          script = document.createElement('script')
-          script.src = 'https://assets.calendly.com/assets/external/widget.js'
-          script.async = true
-          script.onload = initWidget
-          script.onerror = () => {
-            console.error('Failed to load Calendly script')
-            // Fallback: show direct link
-            if (calendlyRef.current) {
-              calendlyRef.current.innerHTML = `
-                <div class="flex items-center justify-center h-full">
-                  <a href="${calendlyUrl}" target="_blank" class="text-accent hover:underline">
-                    Click here to schedule your meeting
-                  </a>
-                </div>
-              `
-            }
-          }
-          document.head.appendChild(script)
-        } else {
-          // Script already exists, just initialize
-          if ((window as any).Calendly) {
-            initWidget()
-          } else {
-            script.addEventListener('load', initWidget)
-          }
-        }
-      } catch (error) {
-        console.error('Calendly setup failed:', error)
-        // Fallback: show direct link
-        if (calendlyRef.current) {
-          calendlyRef.current.innerHTML = `
-            <div class="flex items-center justify-center h-full">
-              <a href="${calendlyUrl}" target="_blank" class="text-accent hover:underline">
-                Click here to schedule your meeting
+    script.onerror = () => {
+      // Fallback to direct link if script fails to load
+      if (calendlyRef.current) {
+        calendlyRef.current.innerHTML = `
+          <div class="flex items-center justify-center h-full border border-dashed border-border rounded-lg">
+            <div class="text-center">
+              <p class="text-muted-foreground mb-4">Calendly widget failed to load</p>
+              <a href="${calendlyUrl}" target="_blank" rel="noopener noreferrer" 
+                 class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
+                Open Calendly in New Tab
               </a>
             </div>
-          `
-        }
+          </div>
+        `;
       }
-    }
+    };
 
-    loadCalendly()
-  }, [calendlyUrl, prefill])
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
+  }, [calendlyUrl]);
 
   return (
     <div className="w-full">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
       <div 
         ref={calendlyRef}
+        className="calendly-inline-widget w-full" 
         style={{ 
           minWidth: '320px', 
           height: height,
-          position: 'relative'
+          border: '1px solid hsl(var(--border))',
+          borderRadius: '8px',
+          overflow: 'hidden'
         }}
-        className="calendly-inline-widget"
-        data-url={calendlyUrl}
       />
     </div>
-  )
+  );
 }

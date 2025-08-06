@@ -49,7 +49,7 @@ export function PolicyNewsUpdates() {
   const refreshUpdates = async () => {
     setRefreshing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('policy-updates-news-api');
+      const { data, error } = await supabase.functions.invoke('policy-updates-fetcher');
       
       if (error) throw error;
       

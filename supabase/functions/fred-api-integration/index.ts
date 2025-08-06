@@ -51,7 +51,7 @@ serve(async (req) => {
         indicator_type: 'gdp_growth',
         expectedDataLagDays: 120, // Increased lag time for quarterly data
         minDataPoints: 40, // Increased for better quarterly coverage
-        requestLimit: 60 // More data points for quarterly series
+        requestLimit: 80 // More data points for quarterly series
       },
       {
         id: 'UNRATE',

@@ -13,6 +13,7 @@ import { useArticles } from "@/hooks/useArticles";
 import { sanitizeHtml } from "@/lib/security";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface Article {
   id: string;
@@ -76,6 +77,7 @@ export default function Articles() {
   // Use real articles from database instead of sample data
   const { articles: dbArticles, loading } = useArticles();
   const { user, isAdmin } = useSupabaseAuth();
+  const { toast } = useToast();
   const [currentHero, setCurrentHero] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showForm, setShowForm] = useState(false);
@@ -395,10 +397,16 @@ export default function Articles() {
                          onClick={(e) => {
                            if (!article.linkedinUrl) {
                              e.preventDefault();
+                             toast({
+                               title: "LinkedIn URL not available",
+                               description: "This article doesn't have a LinkedIn URL set.",
+                               variant: "default"
+                             });
                            }
                          }}
                        >
-                         <ExternalLink className="h-4 w-4" />
+                         <ExternalLink className="h-4 w-4 mr-2" />
+                         View on LinkedIn
                        </a>
                      </Button>
                    </div>

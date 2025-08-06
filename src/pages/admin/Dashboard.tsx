@@ -5,6 +5,7 @@ import { AdminLayout } from "@/layouts/AdminLayout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useToast } from "@/hooks/use-toast"
 import TwoFactorSetup from "@/components/TwoFactorSetup"
 import { RealTimeDashboard } from "@/components/RealTimeDashboard"
 import { IntegrationHealthMonitor } from "@/components/IntegrationHealthMonitor"
@@ -138,25 +139,32 @@ export default function AdminDashboard() {
     }
   };
 
+  const { toast } = useToast();
+
   const testFredIntegration = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('fred-api-integration', {
         body: {
           operation: 'fetch_indicators',
-          indicators: ['gdp'],
-          limit: 5
+          indicators: ['gdp', 'unemployment', 'inflation'],
+          limit: 10
         }
       });
-      
+
       if (error) throw error;
-      
-      if (data?.success) {
-        alert('FRED API integration working correctly');
-      } else {
-        alert('FRED API integration test failed');
-      }
+
+      toast({
+        title: "FRED API Test Successful",
+        description: `Fetched ${data?.processed_count || 'multiple'} economic indicators`,
+        variant: "default"
+      });
     } catch (error: any) {
-      alert('FRED API test failed: ' + error.message);
+      console.error('FRED API test failed:', error);
+      toast({
+        title: "FRED API Test Failed",
+        description: error.message || "Failed to connect to FRED API",
+        variant: "destructive"
+      });
     }
   };
 
