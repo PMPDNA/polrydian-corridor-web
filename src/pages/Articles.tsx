@@ -94,9 +94,11 @@ export default function Articles() {
     publishDate: dbArticle.published_at ? new Date(dbArticle.published_at).toISOString().split('T')[0] : new Date(dbArticle.created_at).toISOString().split('T')[0],
     readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
     linkedinUrl: dbArticle.linkedin_url || "",
-    featured: true,
+    featured: dbArticle.status === 'published',
     slug: dbArticle.slug, // Add slug from database
   })) || [];
+  
+  console.log('Articles with categories:', articles.map(a => ({ id: a.id, title: a.title, category: a.category })));
 
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
   const featuredArticles = articles.filter(article => article.featured);
