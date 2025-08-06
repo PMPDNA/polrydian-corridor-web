@@ -45,24 +45,31 @@ export const About = () => {
   }, [user]);
 
   const loadProfilePhoto = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log('No user ID available for profile photo loading');
+      return;
+    }
     
     try {
+      console.log('Loading profile photo for user:', user.id);
       // Load profile photo for current admin user
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('avatar_url')
         .eq('user_id', user.id)
         .not('avatar_url', 'is', null)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+      if (error) {
         console.error('Error loading profile:', error);
         return;
       }
 
-      if (profiles && profiles.avatar_url) {
+      if (profiles?.avatar_url) {
+        console.log('Profile photo loaded:', profiles.avatar_url);
         setProfilePhoto(profiles.avatar_url);
+      } else {
+        console.log('No profile photo found for user');
       }
     } catch (error) {
       console.error('Error loading profile photo:', error);
