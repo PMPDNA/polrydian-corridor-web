@@ -128,25 +128,28 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       
       // Save to Supabase database
       if (article && 'id' in article && article.id) {
-        // Update existing article
-        const updated = await updateArticle(article.id, {
-          title: validatedData.title,
-          content: sanitizeHtml(validatedData.content),
-          status: 'published'
-        });
+        // Update existing article with all fields at once
+        const { data: updated, error } = await supabase
+          .from('articles')
+          .update({
+            title: validatedData.title,
+            content: sanitizeHtml(validatedData.content),
+            meta_description: validatedData.excerpt,
+            featured_image: formData.heroImage,
+            reading_time_minutes: formData.readTime,
+            keywords: [formData.category],
+            status: 'published',
+            published_at: new Date().toISOString()
+          })
+          .eq('id', article.id)
+          .select()
+          .single();
+        
+        if (error) {
+          throw error;
+        }
         
         if (updated) {
-          // Update additional fields in the articles table
-          await supabase
-            .from('articles')
-            .update({
-              meta_description: validatedData.excerpt,
-              featured_image: formData.heroImage,
-              reading_time_minutes: formData.readTime,
-              keywords: [formData.category]
-            })
-            .eq('id', article.id);
-            
           onSave(updated as any);
         }
       } else {

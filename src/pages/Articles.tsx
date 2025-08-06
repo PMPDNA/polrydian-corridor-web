@@ -91,7 +91,7 @@ export default function Articles() {
     heroImage: dbArticle.featured_image || "/placeholder.svg",
     publishDate: dbArticle.published_at ? new Date(dbArticle.published_at).toISOString().split('T')[0] : new Date(dbArticle.created_at).toISOString().split('T')[0],
     readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
-    linkedinUrl: "",
+    linkedinUrl: dbArticle.linkedinUrl || "",
     featured: true,
     slug: dbArticle.slug, // Add slug from database
   })) || [];
@@ -169,8 +169,10 @@ export default function Articles() {
               </div>
 
               <div className="flex gap-4 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90">
-                  Read Full Article
+                <Button size="lg" className="bg-white text-primary hover:bg-white/90" asChild>
+                  <Link to={`/articles/${featuredArticles[currentHero]?.slug || featuredArticles[currentHero]?.id}`}>
+                    Read Full Article
+                  </Link>
                 </Button>
                 <Button 
                   size="lg" 
