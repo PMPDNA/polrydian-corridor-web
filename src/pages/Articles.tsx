@@ -319,7 +319,7 @@ export default function Articles() {
                        className="flex-1"
                        asChild
                      >
-                       <Link to={`/articles/${article.id}`}>
+                       <Link to={`/articles/${article.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
                          Read Full Article
                        </Link>
                      </Button>

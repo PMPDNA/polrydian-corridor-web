@@ -70,9 +70,20 @@ export const Contact = () => {
 
       const validData = validationResult.data
 
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: validData
-      });
+      // For now, just submit to consultation bookings table directly
+      const consultationData = {
+        first_name: validData.firstName,
+        last_name: validData.lastName,
+        email: validData.email,
+        company: validData.company,
+        message: validData.message,
+        urgency_level: validData.urgent ? 'urgent' : 'standard',
+        service_area: validData.service || 'General Inquiry'
+      };
+
+      const { data, error } = await supabase
+        .from('consultation_bookings')
+        .insert([consultationData]);
 
       if (error) throw error;
 

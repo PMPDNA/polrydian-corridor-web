@@ -3,7 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ExternalLink, Globe2, TrendingUp, FileText, Calendar } from 'lucide-react';
+import { ExternalLink, Globe2, TrendingUp, FileText, Calendar, BarChart3, Zap } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import corridorDiagram from "@/assets/corridor-economics-diagram.jpg";
 
 interface ThinkTankArticle {
@@ -70,6 +72,47 @@ const thinkTankArticles: ThinkTankArticle[] = [
 export const EnhancedCorridorEconomics = () => {
   const [selectedArticle, setSelectedArticle] = useState<ThinkTankArticle | null>(null);
   const [showAllArticles, setShowAllArticles] = useState(false);
+  const [economicData, setEconomicData] = useState<any>({});
+  const [loadingData, setLoadingData] = useState(false);
+
+  // Fetch real-time economic data from FRED
+  const fetchEconomicIndicators = async () => {
+    setLoadingData(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fred-api-integration', {
+        body: {
+          operation: 'fetch_indicators',
+          indicators: ['gdp', 'unemployment', 'inflation'],
+          limit: 10
+        }
+      });
+
+      if (data?.success) {
+        setEconomicData(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch economic data:', error);
+    } finally {
+      setLoadingData(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEconomicIndicators();
+  }, []);
+
+  const formatEconomicData = (data: any[], label: string) => {
+    if (!data || !Array.isArray(data)) return [];
+    return data
+      .filter(item => item.value !== '.')
+      .slice(0, 5)
+      .map(item => ({
+        date: new Date(item.date).toLocaleDateString(),
+        value: parseFloat(item.value),
+        label
+      }))
+      .reverse();
+  };
 
   return (
     <div className="bg-background/50 backdrop-blur-sm border border-accent/20 rounded-xl p-6 max-w-4xl mx-auto mb-6">
@@ -203,6 +246,100 @@ export const EnhancedCorridorEconomics = () => {
             className="w-full max-w-sm rounded-lg shadow-md"
           />
         </div>
+      </div>
+
+      {/* Real-time Economic Indicators */}
+      <div className="mt-8 p-6 bg-gradient-to-r from-primary/5 to-accent/5 rounded-lg border border-accent/20">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="font-semibold text-foreground flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-accent" />
+            Live Economic Corridor Indicators
+          </h4>
+          {loadingData && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Zap className="h-4 w-4 animate-pulse" />
+              Updating...
+            </div>
+          )}
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-4">
+          {economicData.gdp && (
+            <Card className="border-primary/20">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">GDP Growth</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-lg font-bold text-primary">
+                  {Array.isArray(economicData.gdp) && economicData.gdp.length > 0
+                    ? `${parseFloat(economicData.gdp[0].value).toFixed(1)}%`
+                    : 'Loading...'}
+                </div>
+                {Array.isArray(economicData.gdp) && economicData.gdp.length > 0 && (
+                  <div className="h-16 mt-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={formatEconomicData(economicData.gdp, 'GDP')}>
+                        <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+          
+          {economicData.unemployment && (
+            <Card className="border-orange-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Unemployment Rate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-lg font-bold text-orange-600">
+                  {Array.isArray(economicData.unemployment) && economicData.unemployment.length > 0
+                    ? `${parseFloat(economicData.unemployment[0].value).toFixed(1)}%`
+                    : 'Loading...'}
+                </div>
+                {Array.isArray(economicData.unemployment) && economicData.unemployment.length > 0 && (
+                  <div className="h-16 mt-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={formatEconomicData(economicData.unemployment, 'Unemployment')}>
+                        <Line type="monotone" dataKey="value" stroke="#ea580c" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+          
+          {economicData.inflation && (
+            <Card className="border-red-200">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Inflation (CPI)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-lg font-bold text-red-600">
+                  {Array.isArray(economicData.inflation) && economicData.inflation.length > 0
+                    ? `${parseFloat(economicData.inflation[0].value).toFixed(1)}%`
+                    : 'Loading...'}
+                </div>
+                {Array.isArray(economicData.inflation) && economicData.inflation.length > 0 && (
+                  <div className="h-16 mt-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={formatEconomicData(economicData.inflation, 'Inflation')}>
+                        <Line type="monotone" dataKey="value" stroke="#dc2626" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+        
+        <p className="text-xs text-muted-foreground mt-4 text-center">
+          Live data powered by Federal Reserve Economic Data (FRED). Updated daily.
+        </p>
       </div>
     </div>
   );

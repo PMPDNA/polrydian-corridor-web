@@ -15,7 +15,7 @@ import FAQ from "./pages/FAQ";
 import Privacy from "./pages/Privacy";
 import CookieSettings from "./pages/CookieSettings";
 import Articles from "./pages/Articles";
-import ArticleDetailPage from "./pages/ArticleDetailPage";
+import ArticleDetail from "./pages/ArticleDetail";
 import ContributeArticle from "./pages/ContributeArticle";
 import ProfileManager from "./pages/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
@@ -59,7 +59,7 @@ const App = () => {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/cookie-settings" element={<CookieSettings />} />
             <Route path="/articles" element={<Articles />} />
-            <Route path="/articles/:slug" element={<ArticleDetailPage />} />
+            <Route path="/articles/:slug" element={<ArticleDetail />} />
             <Route path="/contribute" element={<ContributeArticle />} />
             <Route path="/admin" element={
               <ErrorBoundary>
