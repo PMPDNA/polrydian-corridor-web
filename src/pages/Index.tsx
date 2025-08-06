@@ -38,23 +38,11 @@ const Index = () => {
             <UnifiedOrganizationManager />
           </div>
         </section>
-        <section id="insights" aria-label="Economic insights" className="py-20 bg-gradient-to-br from-background via-background/50 to-primary/5">
-          <div className="container mx-auto px-6 space-y-12">
-            <FredDataDisplay />
-            <div className="grid md:grid-cols-2 gap-8">
-              <LinkedInFeed />
-              <NewsletterSignup variant="compact" />
-            </div>
-          </div>
-        </section>
         <section id="services" aria-label="Services section">
           <Services />
         </section>
         <section id="experience" aria-label="Experience section">
           <Experience />
-        </section>
-        <section id="about" aria-label="About section">
-          <About />
         </section>
         <section id="contact" aria-label="Contact section">
           <Contact />
