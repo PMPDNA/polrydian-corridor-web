@@ -37,15 +37,16 @@ export const LinkedInFeed = () => {
       if (error) throw error;
 
       // Transform the data to match the expected format
-      const transformedPosts = posts?.map(post => ({
+      const transformedPosts = Array.isArray(posts) ? posts.map(post => ({
         id: post.id,
         title: post.message?.substring(0, 100) + '...' || 'LinkedIn Post',
         content: post.message || '',
         published_at: post.created_at,
         visibility: 'PUBLIC',
         linkedin_id: post.id
-      })) || [];
+      })) : [];
 
+      console.log('LinkedIn posts loaded:', transformedPosts.length);
       setPosts(transformedPosts);
     } catch (error) {
       console.error('Error loading LinkedIn data:', error);
@@ -135,7 +136,7 @@ export const LinkedInFeed = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.map((post) => (
+        {Array.isArray(posts) && posts.map((post) => (
           <Card key={post.id} className="w-full hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">

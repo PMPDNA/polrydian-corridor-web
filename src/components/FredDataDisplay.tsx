@@ -45,10 +45,13 @@ export function FredDataDisplay({ seriesIds, showControls = true }: FredDataDisp
 
       if (error) throw error;
 
-      if (response?.success && response?.data) {
+      if (response?.success && response?.data && Array.isArray(response.data)) {
+        console.log('FRED data received:', response.data);
         setData(response.data);
       } else {
-        throw new Error(response?.error || 'Failed to fetch data');
+        console.log('FRED response format issue:', response);
+        setData([]);
+        throw new Error(response?.error || 'Failed to fetch data or invalid data format');
       }
     } catch (err: any) {
       console.error('Error fetching FRED data:', err);
@@ -138,7 +141,7 @@ export function FredDataDisplay({ seriesIds, showControls = true }: FredDataDisp
       )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.map((indicator) => (
+        {Array.isArray(data) && data.map((indicator) => (
           <Card key={indicator.id} className="hover:shadow-md transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
@@ -192,7 +195,7 @@ export function FredDataDisplay({ seriesIds, showControls = true }: FredDataDisp
         ))}
       </div>
       
-      {data.length === 0 && !loading && (
+      {Array.isArray(data) && data.length === 0 && !loading && (
         <Card>
           <CardContent className="p-6 text-center">
             <p className="text-muted-foreground">No economic data available.</p>
