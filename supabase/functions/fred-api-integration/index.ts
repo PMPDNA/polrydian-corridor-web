@@ -60,11 +60,11 @@ serve(async (req) => {
         indicator_type: 'unemployment'
       },
       {
-        id: 'CPIAUCSL_PCH',
-        series_id: 'CPIAUCSL_PCH',
-        title: 'U.S. Inflation Rate',
-        description: 'Consumer Price Index for All Urban Consumers: All Items (Percent Change from Year Ago)',
-        units: 'Percent Change from Year Ago',
+        id: 'CPIAUCSL',
+        series_id: 'CPIAUCSL',
+        title: 'U.S. Inflation Rate (CPI)',
+        description: 'Consumer Price Index for All Urban Consumers: All Items',
+        units: 'Index 1982-84=100',
         frequency: 'Monthly',
         indicator_type: 'inflation_rate'
       },
