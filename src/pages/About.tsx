@@ -10,35 +10,30 @@ import profileImage from "@/assets/patrick-profile.jpg";
 export default function About() {
   const [showFullBio, setShowFullBio] = useState(false);
 
-  const shortBio = "Patrick Misiewicz is a strategic advisor specializing in corridor economics, global trade analysis, and geopolitical risk assessment. With extensive experience in international business development and supply chain optimization, Patrick helps organizations navigate complex global economic landscapes.";
+  const shortBio = "Patrick Misiewicz is founder of Polrydian Group, specializing in corridor economics—turning complexity and geopolitical friction into strategic clarity. His approach draws from Stoicism and experience across 60 countries, applying disciplined analysis to create sustainable pathways for organizations.";
 
-  const fullBio = `Patrick Misiewicz is a strategic advisor, analyst, and thought leader specializing in corridor economics—a disciplined framework for understanding how capital flows, technology transfer, and strategic pathways interact across global economic systems.
+  const fullBio = `"The impediment to action advances action. What stands in the way becomes the way."
+— Marcus Aurelius
 
-With a Master of Science in Logistics and Supply Chain Management from Florida International University and extensive experience across multiple industries, Patrick brings a unique perspective to complex geopolitical and economic challenges. His work focuses on transforming uncertainty into strategic opportunity through systematic analysis of global trade corridors, supply chain resilience, and economic interdependencies.
+I'm Patrick Oscar Misiewicz, founder of Polrydian Group. My work revolves around a single guiding principle: turning complexity and geopolitical friction into strategic clarity. I call this approach corridor economics—the disciplined practice of mapping and managing flows of capital, technology, policy, and expertise across critical regions, transforming obstacles into sustainable pathways forward.
 
-**Professional Experience:**
-Patrick has advised organizations ranging from emerging growth companies to established multinational corporations on strategic positioning, market entry, and operational optimization. His expertise spans across sectors including technology, manufacturing, logistics, and financial services, with particular focus on Central and Eastern European markets.
+My worldview—and indeed, my professional discipline—draws heavily from Stoicism, the philosophy of calmly responding to uncertainty by seeing challenges clearly and acting decisively. Born in Florida and raised in Bydgoszcz, Poland, my journey was shaped early by constant navigation between cultures. Academic milestones—a BA in International Economic Relations at the University of Gdańsk, enhanced by an Erasmus year in Amsterdam and scholarship study at Kyungpook National University in Daegu, South Korea—laid the theoretical groundwork. Later, a Master's in Logistics & Supply Chain Management and executive studies in International Business at Florida International University, followed by Public Policy at Georgetown University, deepened my analytical toolkit. But the real foundation has always been shaped through experience, refined through travel to 60 countries across Africa, Asia, Europe, Latin America, and North America.
 
-**Corridor Economics Framework:**
-At the core of Patrick's approach is the corridor economics methodology—a systematic way of mapping and analyzing the flows of capital, technology, and strategic influence across geographic and economic boundaries. This framework helps organizations identify sustainable pathways for growth while managing geopolitical risks and market volatility.
+My professional trajectory demonstrates the value of applying this disciplined clarity. In 2014, when Miami-Dade Aviation Director Emilio González asked if connecting Warsaw directly to Miami via LOT Polish Airlines was feasible, I stepped in to facilitate initial discussions, moving carefully but decisively to create pathways where none existed. Similarly, from 2017 onward, following Port Gdańsk's sister-port agreement with PortMiami, I worked with the port of Gdansk to diversify cargo away from China-centric dependencies, mapping a pragmatic route forward toward capturing new Central European exports bound for North America and Latin America. Co-founding the Amber Route Initiative (2016–2021), I applied the same clarity: strategically linking Central European manufacturing strength with Latin American and Central American near-shoring and American market access.
 
-**Thought Leadership:**
-Patrick regularly publishes analysis on global economic trends, geopolitical developments, and strategic business insights. His work has been featured in industry publications and he is a frequent speaker at conferences focusing on international trade, supply chain management, and strategic planning.
+Simultaneously, I'm passionate about bettering the world for people co-leading a West African agritech economic development, integrating universities, policy makers, businesses, guarantee funds to create a comprehensive economic mobility model for Cote d'Ivoire. In parallel, as Food-Security & Agritech expert, I represented Zab and World Affairs Council of Miami at the Future Investment Initiative summits in Rio, presenting strategic frameworks that allowed Gulf Cooperation Council stakeholders to diversify and secure critical food supply chains, by fostering a ecosystem framework based on Genevieve Levelle model that was implemented in Haiti in 2019 that led to onboarding over 3500 small farmers driving 42% increase in Haiti's export of mangoes and delivered 750% increase in individual farmer income.
 
-**Education & Credentials:**
-- Master of Science in Logistics and Supply Chain Management, Florida International University
-- Bachelor's degree in International Business
-- Various professional certifications in strategic planning and risk management
+Between 2024 and 2025, serving as Senior Adviser & Director of Infrastructure & M&A at Zab Capital Holdings, I structured complex multi-region projects spanning energy, transportation, and digital infrastructure.
 
-**Areas of Expertise:**
-- Corridor Economics Analysis
-- Global Trade and Supply Chain Strategy
-- Geopolitical Risk Assessment
-- Market Entry and Business Development
-- Strategic Planning and Scenario Analysis
-- International Finance and Investment Strategies
+My previous roles—North American Business Development Manager at Source International Corp, guiding Fortune 500 clients through logistics-software deployments, and multimillion-dollar negotiations in Miami's luxury real-estate market, where I earned Global Luxury Expert certification—have further sharpened my practical understanding of strategic decision-making under pressure.
 
-Patrick's approach combines rigorous analytical methods with practical business insight, helping clients navigate complex global challenges while identifying opportunities for sustainable growth and competitive advantage.`;
+Effective strategy requires testing ideas against real-world conditions. As Board Director and Central & Eastern Europe Chair at the World Affairs Council of Miami, I convene senior diplomats, SOUTHCOM officials, economic development leaders, and private-sector stakeholders, translating global volatility into actionable strategies. Recent engagements include organizing strategic dialogues on Haiti's security crisis (2023), co-leading programme planning for the Concordia Americas Summit, and representing the Council at the 75th NATO Summit in Washington (2024). These forums provide a practical Stoic test: refining theoretical strategy into resilient, actionable policy.
+
+Stoicism reminds us that lasting impact requires aligning private ambitions with public good. After Hurricane Matthew devastated Haiti in 2016, I coordinated the delivery of sixty emergency shipments of essential goods—medical supplies, baby formula, shelf-stable foods—through complex logistical channels, guided by a clear, disciplined focus on serving communities directly. Closer to home, my cultural initiatives in Miami, including Polish-American art exhibitions and community programs conducted alongside the Polish Consulate, the American Institute of Polish Culture, and Miami Heat, reinforce a belief central to corridor economics: communities that find meaning and value in a corridor will naturally protect and sustain it.
+
+Chess sharpens my capacity to see patterns, sailing refines adaptive decision-making, and Stoic journaling provides daily practice in composure. These habits are not tangential; they directly inform how I help clients navigate complexity, uncertainty, and volatility.
+
+Let's talk about your challenges clearly, and create the corridor that moves you decisively forward.`;
 
   const expertise = [
     "Corridor Economics Analysis",
@@ -51,19 +46,34 @@ Patrick's approach combines rigorous analytical methods with practical business 
 
   const achievements = [
     {
+      title: "Senior Adviser & Director of Infrastructure & M&A",
+      org: "Zab Capital Holdings (2024-2025)",
+      icon: Award
+    },
+    {
+      title: "Board Director & Central & Eastern Europe Chair",
+      org: "World Affairs Council of Miami", 
+      icon: Users
+    },
+    {
       title: "MS in Logistics & Supply Chain Management",
       org: "Florida International University",
       icon: Award
     },
     {
-      title: "Strategic Advisory Experience",
-      org: "Multiple Industries & Sectors", 
-      icon: Users
+      title: "Co-founder, Amber Route Initiative",
+      org: "Central European Trade Corridor (2016-2021)",
+      icon: MapPin
     },
     {
-      title: "Global Market Focus",
-      org: "Central & Eastern Europe",
-      icon: MapPin
+      title: "Global Luxury Expert Certification",
+      org: "Miami Luxury Real Estate",
+      icon: Award
+    },
+    {
+      title: "NATO Summit Representative",
+      org: "75th NATO Summit, Washington (2024)",
+      icon: Users
     }
   ];
 
@@ -168,17 +178,17 @@ Patrick's approach combines rigorous analytical methods with practical business 
             <h2 className="text-3xl font-bold text-foreground text-center mb-12">
               Qualifications & Experience
             </h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {achievements.map((achievement, index) => (
                 <Card key={index} className="text-center hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                       <achievement.icon className="h-8 w-8 text-primary" />
                     </div>
-                    <h3 className="font-semibold text-foreground mb-2">
+                    <h3 className="font-semibold text-foreground mb-2 text-sm">
                       {achievement.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {achievement.org}
                     </p>
                   </CardContent>

@@ -28,3 +28,15 @@ verify_jwt = false
 
 [functions.test-function]
 verify_jwt = false
+
+[functions.multi-source-economic-data]
+verify_jwt = false
+
+[functions.fred-api-integration]
+verify_jwt = false
+
+[functions.enhanced-data-collection]
+verify_jwt = false
+
+[functions.research-link-generator]
+verify_jwt = false
