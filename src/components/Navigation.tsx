@@ -52,8 +52,8 @@ export const Navigation = () => {
                 {item.label}
               </Link>
             ))}
-            <Button variant="default" size="sm" onClick={() => window.location.href = 'https://calendly.com/patrickmisiewicz/consultation'}>
-              Get in Touch
+            <Button variant="default" size="sm" onClick={() => window.location.href = '/schedule'}>
+              Schedule Consultation
             </Button>
           </div>
 
@@ -89,8 +89,8 @@ export const Navigation = () => {
                     {item.label}
                   </Link>
                 ))}
-                <Button variant="default" size="sm" className="mt-2 w-full" onClick={() => window.location.href = 'https://calendly.com/patrickmisiewicz/consultation'}>
-                  Get in Touch
+                <Button variant="default" size="sm" className="mt-2 w-full" onClick={() => window.location.href = '/schedule'}>
+                  Schedule Consultation
                 </Button>
               </div>
             </div>

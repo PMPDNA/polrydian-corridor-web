@@ -128,19 +128,19 @@ export default function Services() {
       title: "Global Manufacturing Expansion",
       challenge: "Fortune 500 manufacturer facing complex regulatory barriers in 15 new markets",
       solution: "Mapped regulatory corridors and identified strategic partnerships to accelerate market entry",
-      result: "Reduced market entry time by 60% and increased revenue by $45M in first year"
+      result: "Successfully streamlined market entry process and established strong operational presence across all target markets"
     },
     {
       title: "Supply Chain Resilience",
       challenge: "Technology company vulnerable to supply chain disruptions affecting 40% of revenue",
       solution: "Developed diversified supply corridors with built-in redundancy and risk mitigation",
-      result: "Achieved 99.2% supply chain reliability and reduced costs by 15%"
+      result: "Established robust supply chain resilience with improved reliability and operational efficiency"
     },
     {
       title: "Strategic M&A Integration",
       challenge: "Private equity firm struggling with complex acquisition integration across multiple jurisdictions",
       solution: "Created integration corridors that addressed regulatory, cultural, and operational complexities",
-      result: "Completed integration 3 months ahead of schedule with 25% higher than projected synergies"
+      result: "Delivered seamless integration ahead of schedule with synergies exceeding initial projections"
     }
   ];
 

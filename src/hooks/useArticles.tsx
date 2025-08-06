@@ -70,9 +70,9 @@ export function useArticles() {
         .select('*')
         .order('created_at', { ascending: false })
 
-      // If not admin, only show user's own articles and published articles
+      // If not admin, only show published articles
       if (!isAdmin) {
-        query = query.or(`user_id.eq.${user.id},and(status.eq.published)`)
+        query = query.eq('status', 'published')
       }
 
       const { data, error } = await query

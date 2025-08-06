@@ -7,6 +7,7 @@ import { ProofChips } from "@/components/ProofChips";
 import { StoicQuoteRotator } from "@/components/StoicQuoteRotator";
 import { EnhancedCorridorEconomics } from "@/components/EnhancedCorridorEconomics";
 import CalendlyPopup from "./CalendlyPopup";
+import { LearnMoreModal } from "./LearnMoreModal";
 
 export const Hero = () => {
   return (

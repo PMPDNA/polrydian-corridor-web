@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { LearnMoreModal } from '@/components/LearnMoreModal';
 import { ExternalLink, Globe2, TrendingUp, FileText, Calendar, BarChart3, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
@@ -133,110 +134,7 @@ export const EnhancedCorridorEconomics = () => {
             <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Strategic Pathways</span>
           </div>
           
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full">
-                <FileText className="h-4 w-4 mr-2" />
-                Learn More from Leading Think Tanks
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Globe2 className="h-5 w-5 text-accent" />
-                  Corridor Economics Research & Analysis
-                </DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3">Core Principles</h4>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>• Strategic flow mapping between regions</li>
-                      <li>• Geopolitical friction as opportunity</li>
-                      <li>• Infrastructure-enabled competitive advantage</li>
-                      <li>• Risk diversification through corridor development</li>
-                      <li>• Technology and capital pathway optimization</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <img 
-                      src={corridorDiagram} 
-                      alt="Corridor Economics Network Diagram"
-                      className="w-full rounded-lg shadow-md"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" />
-                    Latest Research from Leading Think Tanks
-                  </h4>
-                  <div className="grid gap-4">
-                    {thinkTankArticles.map((article, index) => (
-                      <Card key={index} className="hover:shadow-md transition-shadow">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <CardTitle className="text-lg">{article.title}</CardTitle>
-                              <CardDescription className="flex items-center gap-2 mt-1">
-                                <Badge variant="outline">{article.source}</Badge>
-                                <span className="flex items-center gap-1 text-xs">
-                                  <Calendar className="h-3 w-3" />
-                                  {new Date(article.publishDate).toLocaleDateString()}
-                                </span>
-                              </CardDescription>
-                            </div>
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={article.url} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink className="h-4 w-4" />
-                              </a>
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-sm text-muted-foreground mb-3">{article.summary}</p>
-                          <div className="flex flex-wrap gap-1">
-                            {article.tags.map((tag, tagIndex) => (
-                              <Badge key={tagIndex} variant="secondary" className="text-xs">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-accent/5 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Strategic Applications</h4>
-                  <div className="grid md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <h5 className="font-medium mb-2">For Businesses:</h5>
-                      <ul className="space-y-1 text-muted-foreground">
-                        <li>• Supply chain diversification strategies</li>
-                        <li>• Market entry pathway optimization</li>
-                        <li>• Risk mitigation through corridor development</li>
-                        <li>• Strategic partnership identification</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h5 className="font-medium mb-2">For Policymakers:</h5>
-                      <ul className="space-y-1 text-muted-foreground">
-                        <li>• Infrastructure investment prioritization</li>
-                        <li>• Economic diplomacy strategy</li>
-                        <li>• Regional development planning</li>
-                        <li>• Trade agreement optimization</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <LearnMoreModal />
         </div>
         
         <div className="flex justify-center">
