@@ -9,6 +9,9 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
 import { EnhancedEconomicInsights } from "@/components/EnhancedEconomicInsights";
 import { CorridorEconomicsIntelligence } from "@/components/CorridorEconomicsIntelligence";
+import { CSISAnalysisFeed } from "@/components/CSISAnalysisFeed";
+import { TradeGuysPodcast } from "@/components/TradeGuysPodcast";
+import { PolicyUpdatesTimeline } from "@/components/PolicyUpdatesTimeline";
 import { 
   Search, 
   Globe, 
@@ -264,6 +267,15 @@ export default function Insights() {
         {/* Enhanced Economic Data Display */}
         <section className="mb-12">
           <EnhancedEconomicInsights />
+        </section>
+
+        {/* CSIS Analysis, Trade Guys Podcast, and Policy Updates */}
+        <section className="mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <CSISAnalysisFeed />
+            <TradeGuysPodcast />
+            <PolicyUpdatesTimeline />
+          </div>
         </section>
 
         {/* Categories */}

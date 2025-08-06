@@ -535,6 +535,39 @@ export type Database = {
         }
         Relationships: []
       }
+      csis_articles: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          link: string
+          published_at: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          link: string
+          published_at?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          link?: string
+          published_at?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       data_processing_log: {
         Row: {
           action: string
@@ -1065,6 +1098,42 @@ export type Database = {
           name?: string
           updated_at?: string
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      policy_updates: {
+        Row: {
+          created_at: string
+          headline: string
+          id: string
+          published_at: string
+          source: string
+          summary: string | null
+          tags: string[] | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          headline: string
+          id?: string
+          published_at?: string
+          source: string
+          summary?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          headline?: string
+          id?: string
+          published_at?: string
+          source?: string
+          summary?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          url?: string
         }
         Relationships: []
       }

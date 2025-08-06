@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { CorridorEconomicsModal } from './CorridorEconomicsModals';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -57,7 +57,6 @@ const corridorModals = [
 export function CorridorEconomicsIntelligence() {
   const [insights, setInsights] = useState<Insight[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedModal, setSelectedModal] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -83,13 +82,13 @@ export function CorridorEconomicsIntelligence() {
   const triggerDataCollection = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('enhanced-data-collection');
+      const { data, error } = await supabase.functions.invoke('fred-api-integration');
       
       if (error) throw error;
       
       toast({
         title: "Data Collection Started",
-        description: "Enhanced economic data is being collected from multiple sources.",
+        description: "Enhanced economic data is being collected from FRED.",
       });
       
       // Refresh insights after collection
@@ -111,20 +110,29 @@ export function CorridorEconomicsIntelligence() {
 
   const getIndicatorIcon = (type: string) => {
     switch (type) {
+      case 'gdp_growth': 
       case 'economic': return TrendingUp;
+      case 'unemployment': return Factory;
+      case 'inflation_rate': 
+      case 'inflation': return BarChart3;
+      case 'interest_rate': return Banknote;
       case 'supply_chain': return Factory;
       case 'shipping': return Ship;
       default: return BarChart3;
     }
   };
 
-  const formatValue = (value: string, config: any) => {
+  const formatValue = (value: any, config: any) => {
     if (!value || value === '.') return 'N/A';
     
-    const numValue = parseFloat(value);
+    const numValue = typeof value === 'number' ? value : parseFloat(value);
     if (isNaN(numValue)) return value;
     
-    if (config?.latest_value && Math.abs(numValue) > 1000) {
+    if (config?.units?.includes('Percent')) {
+      return `${numValue.toFixed(1)}%`;
+    }
+    
+    if (Math.abs(numValue) > 1000) {
       return new Intl.NumberFormat('en-US', { 
         notation: 'compact',
         maximumFractionDigits: 1 
@@ -149,7 +157,7 @@ export function CorridorEconomicsIntelligence() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Corridor Economics Intelligence</h2>
           <p className="text-muted-foreground">
-            Real-time economic indicators and corridor analysis powered by multiple data sources
+            Real-time economic indicators and corridor analysis powered by FRED and other data sources
           </p>
         </div>
         <Button 
@@ -163,93 +171,31 @@ export function CorridorEconomicsIntelligence() {
       </div>
 
       {/* Corridor Modals */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {corridorModals.map((modal) => {
           const IconComponent = modal.icon;
           return (
-            <Dialog key={modal.id}>
-              <DialogTrigger asChild>
-                <Card className={`cursor-pointer transition-all duration-300 hover:shadow-lg bg-gradient-to-br ${modal.color} border-primary/20 hover:border-primary/40`}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-lg bg-primary/20 border border-primary/30">
-                        <IconComponent className="h-6 w-6 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg text-foreground">{modal.title}</h3>
-                        <p className="text-sm text-foreground/80">{modal.description}</p>
-                      </div>
-                      <ArrowUpRight className="h-5 w-5 text-foreground/60" />
+            <CorridorEconomicsModal 
+              key={modal.id}
+              type={modal.id as 'capital-flows' | 'technology-transfer' | 'strategic-pathways'}
+            >
+              <Card className={`hover:shadow-lg transition-all duration-300 cursor-pointer bg-gradient-to-br ${modal.color} border-primary/20`}>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <IconComponent className="h-5 w-5 text-primary" />
                     </div>
-                  </CardContent>
-                </Card>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <IconComponent className="h-5 w-5" />
-                    {modal.title}
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <p className="text-muted-foreground">{modal.description}</p>
-                  
-                  {/* Relevant insights for this modal */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {insights
-                      .filter(insight => {
-                        if (modal.id === 'capital-flows') return insight.indicator_type === 'economic';
-                        if (modal.id === 'technology-transfer') return insight.indicator_type === 'supply_chain';
-                        if (modal.id === 'strategic-pathways') return insight.indicator_type === 'shipping';
-                        return false;
-                      })
-                      .slice(0, 4)
-                      .map((insight) => {
-                        const IconComp = getIndicatorIcon(insight.indicator_type);
-                        return (
-                          <Card key={insight.id}>
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-2 mb-2">
-                                <IconComp className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium">{insight.title}</span>
-                              </div>
-                              <div className="text-2xl font-bold mb-1">
-                                {formatValue(insight.chart_config?.latest_value, insight.chart_config)}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs">
-                                  {insight.data_source}
-                                </Badge>
-                                {insight.chart_config?.change_percent && (
-                                  <span className={`text-xs ${getTrendColor(insight.chart_config.change_percent)}`}>
-                                    {insight.chart_config.change_percent > 0 ? '+' : ''}
-                                    {insight.chart_config.change_percent.toFixed(1)}%
-                                  </span>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
+                    <h3 className="font-semibold text-foreground">{modal.title}</h3>
                   </div>
-                  
-                  <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-                    <h4 className="font-semibold mb-2">Analysis Framework</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {modal.id === 'capital-flows' && 
-                        "Track foreign direct investment, portfolio flows, and cross-border financing patterns that drive corridor development and economic integration."
-                      }
-                      {modal.id === 'technology-transfer' && 
-                        "Monitor innovation diffusion, supply chain digitization, and technology adoption rates across corridor regions."
-                      }
-                      {modal.id === 'strategic-pathways' && 
-                        "Analyze transportation costs, infrastructure capacity, and trade route efficiency to identify optimal corridor development opportunities."
-                      }
-                    </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {modal.description}
+                  </p>
+                  <div className="mt-4 flex items-center text-primary text-sm font-medium">
+                    Explore Analysis <ArrowUpRight className="h-4 w-4 ml-1" />
                   </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+                </CardContent>
+              </Card>
+            </CorridorEconomicsModal>
           );
         })}
       </div>
