@@ -6,6 +6,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { PartnerLogoSelector } from '@/components/PartnerLogoSelector';
 import { 
   Upload, 
   ExternalLink, 
@@ -13,7 +14,8 @@ import {
   Trash2, 
   Eye,
   Plus,
-  Building2
+  Building2,
+  Edit
 } from 'lucide-react';
 
 interface Partner {
@@ -32,6 +34,8 @@ interface Partner {
 export function EnhancedPartnerLogosManager() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showSelector, setShowSelector] = useState(false);
+  const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
   const { isAdmin } = useSupabaseAuth();
   const { toast } = useToast();
 
@@ -142,6 +146,20 @@ export function EnhancedPartnerLogosManager() {
     }
   };
 
+  const handleEditPartner = (partner: Partner) => {
+    setEditingPartner(partner);
+    setShowSelector(true);
+  };
+
+  const handleSelectorClose = () => {
+    setShowSelector(false);
+    setEditingPartner(null);
+  };
+
+  const handleSelectorSuccess = () => {
+    loadPartners();
+  };
+
   useEffect(() => {
     loadPartners();
   }, []);
@@ -182,7 +200,7 @@ export function EnhancedPartnerLogosManager() {
           </p>
         </div>
         <Button 
-          onClick={() => window.location.href = '/admin/partners/new'}
+          onClick={() => setShowSelector(true)}
           className="flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
@@ -216,7 +234,11 @@ export function EnhancedPartnerLogosManager() {
               <CardContent>
                 <div className="space-y-4">
                   {/* Logo Display */}
-                  <div className="bg-muted/30 rounded-lg p-4 flex items-center justify-center min-h-[120px]">
+                  <div 
+                    className="bg-muted/30 rounded-lg p-4 flex items-center justify-center min-h-[120px] cursor-pointer hover:bg-muted/50 transition-colors border-2 border-dashed border-muted-foreground/20 hover:border-primary/30"
+                    onClick={() => handleEditPartner(partner)}
+                    title="Click to edit logo"
+                  >
                     {partner.logo_url ? (
                       <img 
                         src={partner.logo_url} 
@@ -227,7 +249,10 @@ export function EnhancedPartnerLogosManager() {
                         }}
                       />
                     ) : (
-                      <div className="text-muted-foreground text-sm">No logo</div>
+                      <div className="text-muted-foreground text-sm flex flex-col items-center gap-2">
+                        <Upload className="h-8 w-8" />
+                        <span>Click to upload logo</span>
+                      </div>
                     )}
                   </div>
 
@@ -239,7 +264,17 @@ export function EnhancedPartnerLogosManager() {
                   )}
 
                   {/* Action Buttons */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEditPartner(partner)}
+                      className="flex items-center gap-1"
+                    >
+                      <Edit className="h-3 w-3" />
+                      Edit
+                    </Button>
+
                     <Button
                       size="sm"
                       variant="outline"
@@ -306,7 +341,7 @@ export function EnhancedPartnerLogosManager() {
               Start by adding your first partner organization and their logo.
             </p>
             <Button 
-              onClick={() => window.location.href = '/admin/partners/new'}
+              onClick={() => setShowSelector(true)}
               className="flex items-center gap-2 mx-auto"
             >
               <Plus className="h-4 w-4" />
@@ -354,6 +389,14 @@ export function EnhancedPartnerLogosManager() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Partner Logo Selector Modal */}
+      <PartnerLogoSelector
+        open={showSelector}
+        onClose={handleSelectorClose}
+        onSuccess={handleSelectorSuccess}
+        editingPartner={editingPartner}
+      />
     </div>
   );
 }
