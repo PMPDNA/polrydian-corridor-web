@@ -1,29 +1,28 @@
 import { useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useErrorHandler } from '@/utils/errorHandling';
 
 const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour in milliseconds
 const WARNING_TIME = 5 * 60 * 1000; // 5 minutes before timeout
 
 export const useSessionTimeout = () => {
-  const { toast } = useToast();
+  const { handleError } = useErrorHandler();
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
-    toast({
+    handleError(new Error('Session expired due to inactivity'), {
       title: 'Session Expired',
-      description: 'You have been logged out due to inactivity.',
-      variant: 'destructive',
+      action: 'Session timeout'
     });
-  }, [toast]);
+  }, [handleError]);
 
   const showWarning = useCallback(() => {
-    toast({
+    handleError(new Error('Session expiring soon'), {
       title: 'Session Expiring Soon',
-      description: 'Your session will expire in 5 minutes due to inactivity. Click anywhere to extend.',
-      duration: 10000,
+      action: 'Session warning',
+      logLevel: 'info'
     });
-  }, [toast]);
+  }, [handleError]);
 
   const resetTimeout = useCallback(() => {
     // Clear existing timers

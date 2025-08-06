@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useErrorHandler } from '@/utils/errorHandling';
 
 interface WebsiteContent {
   id: string;
@@ -16,7 +16,7 @@ export function useWebsiteContent(sectionName?: string) {
   const [content, setContent] = useState<Record<string, string>>({});
   const [allContent, setAllContent] = useState<WebsiteContent[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const { handleError } = useErrorHandler();
 
   const loadContent = async () => {
     try {
@@ -45,11 +45,9 @@ export function useWebsiteContent(sectionName?: string) {
         setContent(contentMap);
       }
     } catch (error: any) {
-      console.error('Error loading content:', error);
-      toast({
-        title: "Error Loading Content",
-        description: error.message || "Failed to load website content",
-        variant: "destructive",
+      handleError(error, {
+        action: 'Loading website content',
+        title: 'Error Loading Content'
       });
     } finally {
       setLoading(false);
@@ -67,19 +65,11 @@ export function useWebsiteContent(sectionName?: string) {
 
       // Reload content to get updated values
       await loadContent();
-
-      toast({
-        title: "Content Updated",
-        description: "Website content has been updated successfully.",
-      });
-
       return true;
     } catch (error: any) {
-      console.error('Error updating content:', error);
-      toast({
-        title: "Update Failed",
-        description: error.message || "Failed to update content",
-        variant: "destructive",
+      handleError(error, {
+        action: 'Updating website content',
+        title: 'Update Failed'
       });
       return false;
     }

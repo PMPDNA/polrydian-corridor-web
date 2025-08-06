@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { useSupabaseAuth } from '@/hooks/useSupabaseAuth'
-import { useToast } from '@/hooks/use-toast'
+import { useErrorHandler, dbOperations } from '@/utils/errorHandling'
+import { useOptimizedData } from '@/utils/performanceOptimization'
 
 // Unified Article interface for consistent usage across the app
 export interface Article {
@@ -56,7 +57,7 @@ export function useArticles() {
   const [loading, setLoading] = useState(true)
   const [operationLoading, setOperationLoading] = useState(false)
   const { user, isAdmin } = useSupabaseAuth()
-  const { toast } = useToast()
+  const { handleError, createAsyncHandler } = useErrorHandler()
 
   // Optimize: Cache articles to avoid redundant queries
   const [lastFetchTime, setLastFetchTime] = useState<number>(0)
@@ -92,30 +93,23 @@ export function useArticles() {
       setArticles((data || []) as Article[])
       setLastFetchTime(now)
     } catch (error: any) {
-      console.error('Error loading articles:', error)
-      toast({
-        title: "Error Loading Articles",
-        description: error.message,
-        variant: "destructive",
+      handleError(error, { 
+        action: 'Loading articles',
+        title: "Error Loading Articles"
       })
     } finally {
       setLoading(false)
     }
   }
 
-  // Create new article
-  const createArticle = async (title: string, content: string) => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "You must be logged in to create articles.",
-        variant: "destructive",
-      })
-      return null
-    }
+  const createArticle = createAsyncHandler(
+    async (title: string, content: string) => {
+      if (!user) {
+        throw new Error("You must be logged in to create articles.")
+      }
 
-    setOperationLoading(true)
-    try {
+      setOperationLoading(true)
+      try {
       const { data, error } = await supabase
         .from('articles')
         .insert({
@@ -131,31 +125,18 @@ export function useArticles() {
         throw error
       }
 
-      toast({
-        title: "Article Created",
-        description: "Your article has been created successfully.",
-      })
-
       // Optimistically update local state instead of refetching all articles
       setArticles(prev => [data as Article, ...prev])
       return data
-    } catch (error: any) {
-      console.error('Error creating article:', error)
-      toast({
-        title: "Error Creating Article",
-        description: error.message,
-        variant: "destructive",
-      })
-      return null
     } finally {
       setOperationLoading(false)
     }
-  }
+  }, { action: 'Creating article', title: 'Article Creation Failed' })
 
-  // Update article
-  const updateArticle = async (id: string, updates: Partial<Pick<Article, 'title' | 'content' | 'status'>>) => {
-    setOperationLoading(true)
-    try {
+  const updateArticle = createAsyncHandler(
+    async (id: string, updates: Partial<Pick<Article, 'title' | 'content' | 'status'>>) => {
+      setOperationLoading(true)
+      try {
       const updateData: any = { ...updates }
       
       // Set published_at when publishing
@@ -174,34 +155,21 @@ export function useArticles() {
         throw error
       }
 
-      toast({
-        title: "Article Updated",
-        description: "Your article has been updated successfully.",
-      })
-
       // Optimistically update local state
       setArticles(prev => prev.map(article => 
         article.id === id ? { ...article, ...data } as Article : article
       ))
       return data
-    } catch (error: any) {
-      console.error('Error updating article:', error)
-      toast({
-        title: "Error Updating Article",
-        description: error.message,
-        variant: "destructive",
-      })
-      return null
     } finally {
       setOperationLoading(false)
     }
-  }
+  }, { action: 'Updating article', title: 'Article Update Failed' })
 
-  // Delete article
-  const deleteArticle = async (id: string) => {
-    setOperationLoading(true)
-    try {
-      const { error } = await supabase
+  const deleteArticle = createAsyncHandler(
+    async (id: string) => {
+      setOperationLoading(true)
+      try {
+        const { error } = await supabase
         .from('articles')
         .delete()
         .eq('id', id)
@@ -210,26 +178,13 @@ export function useArticles() {
         throw error
       }
 
-      toast({
-        title: "Article Deleted",
-        description: "The article has been deleted successfully.",
-      })
-
       // Optimistically update local state
       setArticles(prev => prev.filter(article => article.id !== id))
       return true
-    } catch (error: any) {
-      console.error('Error deleting article:', error)
-      toast({
-        title: "Error Deleting Article",
-        description: error.message,
-        variant: "destructive",
-      })
-      return false
     } finally {
       setOperationLoading(false)
     }
-  }
+  }, { action: 'Deleting article', title: 'Article Deletion Failed' })
 
   // Load articles on mount and when user changes
   useEffect(() => {
