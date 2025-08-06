@@ -36,6 +36,7 @@ const contentItems = [
   { title: "Content Manager", url: "/admin/content", icon: Edit },
   { title: "Hero Section", url: "/admin/hero-editor", icon: Home },
   { title: "Manage Articles", url: "/admin/articles", icon: FileText },
+  { title: "Images & Logos", url: "/admin/images", icon: Image },
 ]
 
 const mediaItems = [
@@ -44,7 +45,6 @@ const mediaItems = [
 
 const systemItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Profile", url: "/admin/profile", icon: Settings },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Security", url: "/security", icon: Shield },
 ]

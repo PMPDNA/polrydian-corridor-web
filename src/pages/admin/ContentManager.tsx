@@ -8,6 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useWebsiteContent } from "@/hooks/useWebsiteContent";
+import { StandardizedImageUpload } from "@/components/StandardizedImageUpload";
+import { PartnerLogosManager } from "@/components/PartnerLogosManager";
+import ImageManager from "@/components/ImageManager";
 import { 
   Save, 
   Eye, 
@@ -17,13 +20,15 @@ import {
   Briefcase, 
   Mail, 
   Undo2,
-  Settings
+  Settings,
+  Image,
+  Building2
 } from "lucide-react";
 
 interface ContentEditor {
   id: string;
   label: string;
-  type: 'text' | 'textarea';
+  type: 'text' | 'textarea' | 'image';
   description?: string;
 }
 
@@ -37,17 +42,19 @@ const contentSections = {
       { id: 'subtitle', label: 'Subtitle', type: 'text' as const },
       { id: 'description', label: 'Description', type: 'textarea' as const },
       { id: 'primary_cta', label: 'Primary Button Text', type: 'text' as const },
-      { id: 'secondary_cta', label: 'Secondary Button Text', type: 'text' as const }
+      { id: 'secondary_cta', label: 'Secondary Button Text', type: 'text' as const },
+      { id: 'background_image', label: 'Background Image', type: 'image' as const, description: 'Hero section background image' }
     ]
   },
   about: {
     title: "About Section",
     icon: User,
-    description: "About page content",
+    description: "About page content and profile image",
     editors: [
       { id: 'title', label: 'Section Title', type: 'text' as const },
       { id: 'subtitle', label: 'Subtitle', type: 'text' as const },
-      { id: 'description', label: 'Description', type: 'textarea' as const }
+      { id: 'description', label: 'Description', type: 'textarea' as const },
+      { id: 'profile_image', label: 'Profile Image', type: 'image' as const, description: 'Your professional profile photo' }
     ]
   },
   services: {
@@ -105,6 +112,12 @@ export default function ContentManager() {
     }));
   };
 
+  const handleImageUpload = (sectionName: string, key: string, urls: string[]) => {
+    if (urls.length > 0) {
+      handleInputChange(sectionName, key, urls[0]);
+    }
+  };
+
   const handleSave = async (sectionName: string, key: string) => {
     const content = allContent.find(
       item => item.section_name === sectionName && item.content_key === key
@@ -118,7 +131,6 @@ export default function ContentManager() {
     if (newValue !== undefined && newValue !== content.content_value) {
       const success = await updateContent(content.id, newValue);
       if (success) {
-        // Clear the editing value after successful save
         setEditingValues(prev => {
           const newValues = { ...prev };
           delete newValues[editKey];
@@ -142,7 +154,6 @@ export default function ContentManager() {
 
     await Promise.all(promises);
     
-    // Clear all editing values for this section
     setEditingValues(prev => {
       const newValues = { ...prev };
       sectionContent.forEach(content => {
@@ -175,16 +186,14 @@ export default function ContentManager() {
     );
   }
 
-  const currentSection = contentSections[activeSection as keyof typeof contentSections];
-
   return (
-    <AdminLayout title="Universal Content Management">
+    <AdminLayout title="Enhanced Content Management">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold">Website Content Editor</h2>
-            <p className="text-muted-foreground">Manage all website content from one centralized location</p>
+            <h2 className="text-2xl font-bold">Enhanced Content Manager</h2>
+            <p className="text-muted-foreground">Manage all website content, images, and partner logos from one place</p>
           </div>
           <div className="flex gap-2">
             <Button 
@@ -210,9 +219,9 @@ export default function ContentManager() {
           </div>
         </div>
 
-        {/* Section Tabs */}
+        {/* Enhanced Section Tabs */}
         <Tabs value={activeSection} onValueChange={setActiveSection}>
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             {Object.entries(contentSections).map(([key, section]) => {
               const Icon = section.icon;
               return (
@@ -222,8 +231,17 @@ export default function ContentManager() {
                 </TabsTrigger>
               );
             })}
+            <TabsTrigger value="images" className="flex items-center gap-2">
+              <Image className="h-4 w-4" />
+              Images
+            </TabsTrigger>
+            <TabsTrigger value="partners" className="flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              Partners
+            </TabsTrigger>
           </TabsList>
 
+          {/* Content Section Tabs */}
           {Object.entries(contentSections).map(([sectionKey, section]) => (
             <TabsContent key={sectionKey} value={sectionKey}>
               <Card>
@@ -250,7 +268,27 @@ export default function ContentManager() {
                         </Button>
                       </div>
                       
-                      {editor.type === 'textarea' ? (
+                      {editor.type === 'image' ? (
+                        <div className="space-y-4">
+                          <StandardizedImageUpload
+                            title={`Upload ${editor.label}`}
+                            description={editor.description || `Upload ${editor.label.toLowerCase()}`}
+                            onFilesChange={(urls) => handleImageUpload(sectionKey, editor.id, urls)}
+                            currentFiles={getContentValue(sectionKey, editor.id) ? [getContentValue(sectionKey, editor.id)] : []}
+                            multiple={false}
+                            category={sectionKey === 'about' ? 'avatars' : 'articles'}
+                          />
+                          {getContentValue(sectionKey, editor.id) && (
+                            <div className="mt-2">
+                              <img 
+                                src={getContentValue(sectionKey, editor.id)} 
+                                alt={editor.label}
+                                className="w-32 h-32 object-cover rounded-lg border"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ) : editor.type === 'textarea' ? (
                         <Textarea
                           id={`${sectionKey}_${editor.id}`}
                           value={getContentValue(sectionKey, editor.id)}
@@ -276,6 +314,38 @@ export default function ContentManager() {
               </Card>
             </TabsContent>
           ))}
+
+          {/* Images Management Tab */}
+          <TabsContent value="images">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Image className="h-5 w-5" />
+                  Image Library Management
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Upload and manage all website images</p>
+              </CardHeader>
+              <CardContent>
+                <ImageManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Partner Logos Tab */}
+          <TabsContent value="partners">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5" />
+                  Partner Logo Management
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">Upload and manage partner organization logos</p>
+              </CardHeader>
+              <CardContent>
+                <PartnerLogosManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         {/* Content Status */}
