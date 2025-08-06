@@ -104,7 +104,7 @@ Let's talk about your challenges clearly, and create the corridor that moves you
                   <a href="/schedule">Schedule Consultation</a>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <a href="https://linkedin.com/in/patrick-misiewicz" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.linkedin.com/in/patrick-misiewicz-mslscm-28299b40" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4 mr-2" />
                     LinkedIn Profile
                   </a>

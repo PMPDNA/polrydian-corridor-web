@@ -12,9 +12,6 @@ export const About = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { user, isAdmin } = useSupabaseAuth();
   const { toast } = useToast();
-  
-  // Debug authentication state
-  console.log('About component auth state:', { user: !!user, userId: user?.id, isAdmin });
   const highlights = [
     {
       icon: MapPin,
@@ -80,14 +77,9 @@ export const About = () => {
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('Photo upload started');
     const file = event.target.files?.[0];
-    if (!file || !user) {
-      console.log('Upload cancelled - file or user missing:', { file: !!file, user: !!user });
-      return;
-    }
+    if (!file || !user) return;
 
-    console.log('Starting upload for file:', file.name, 'User:', user.id);
     setIsUploading(true);
 
     try {

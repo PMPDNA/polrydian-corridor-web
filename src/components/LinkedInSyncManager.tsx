@@ -118,7 +118,7 @@ export default function LinkedInSyncManager() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => window.open('https://linkedin.com/in/patrick-misiewicz', '_blank')}
+            onClick={() => window.open('https://www.linkedin.com/in/patrick-misiewicz-mslscm-28299b40', '_blank')}
             className="gap-2"
           >
             <ExternalLink className="h-4 w-4" />

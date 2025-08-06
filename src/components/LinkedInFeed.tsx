@@ -127,7 +127,7 @@ export const LinkedInFeed = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => window.open('https://linkedin.com/in/patrick-misiewicz', '_blank')}
+          onClick={() => window.open('https://www.linkedin.com/in/patrick-misiewicz-mslscm-28299b40', '_blank')}
           className="flex items-center space-x-2"
         >
           <ExternalLink className="w-4 h-4" />

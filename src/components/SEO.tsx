@@ -86,7 +86,7 @@ export function SEO({
           },
           ...(type === 'website' && {
             "sameAs": [
-              "https://linkedin.com/in/patrick-misiewicz",
+              "https://www.linkedin.com/in/patrick-misiewicz-mslscm-28299b40",
               "https://twitter.com/polrydian"
             ],
             "address": {
