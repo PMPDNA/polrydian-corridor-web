@@ -1,5 +1,5 @@
-import { PartnerLogosUpload } from "@/components/PartnerLogosUpload";
+import { PartnerLogosDisplay } from "@/components/PartnerLogosDisplay";
 
 export const OrganizationLogos = () => {
-  return <PartnerLogosUpload />;
+  return <PartnerLogosDisplay />;
 };

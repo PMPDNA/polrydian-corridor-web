@@ -183,7 +183,7 @@ export default function ArticleDetail() {
                       Transform your challenges into strategic opportunities.
                     </p>
                     <Button size="sm" className="w-full" asChild>
-                      <a href="#contact">Schedule Consultation</a>
+                      <a href="/schedule">Schedule Consultation</a>
                     </Button>
                   </CardContent>
                 </Card>

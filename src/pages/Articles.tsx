@@ -80,21 +80,19 @@ export default function Articles() {
   const [showForm, setShowForm] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
-  // Convert database articles to the expected format, fallback to sample if no DB articles
-  const articles: Article[] = dbArticles?.length > 0 
-    ? dbArticles.map(dbArticle => ({
-        id: dbArticle.id,
-        title: dbArticle.title,
-        excerpt: dbArticle.meta_description || dbArticle.content.replace(/<[^>]*>/g, '').substring(0, 200) + "...",
-        content: dbArticle.content,
-        category: (dbArticle.keywords?.[0] as any) || "Strategy",
-        heroImage: dbArticle.featured_image || "/placeholder.svg",
-        publishDate: dbArticle.published_at ? new Date(dbArticle.published_at).toISOString().split('T')[0] : new Date(dbArticle.created_at).toISOString().split('T')[0],
-        readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
-        linkedinUrl: "",
-        featured: true,
-      }))
-    : sampleArticles; // Fallback to sample data if no database articles
+  // Convert database articles to the expected format
+  const articles: Article[] = dbArticles?.map(dbArticle => ({
+    id: dbArticle.id,
+    title: dbArticle.title,
+    excerpt: dbArticle.meta_description || dbArticle.content.replace(/<[^>]*>/g, '').substring(0, 200) + "...",
+    content: dbArticle.content,
+    category: (dbArticle.keywords?.[0] as any) || "Strategy",
+    heroImage: dbArticle.featured_image || "/placeholder.svg",
+    publishDate: dbArticle.published_at ? new Date(dbArticle.published_at).toISOString().split('T')[0] : new Date(dbArticle.created_at).toISOString().split('T')[0],
+    readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
+    linkedinUrl: "",
+    featured: true,
+  })) || [];
 
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
   const featuredArticles = articles.filter(article => article.featured);
