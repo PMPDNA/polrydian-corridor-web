@@ -62,6 +62,11 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       case 'heroImage':
         return 'featured_image' in article ? article.featured_image : (article as any).heroImage || fallback;
       case 'category':
+        // Look for category in keywords array first, then fallback
+        const dbKeywords = (article as any).keywords;
+        if (dbKeywords && Array.isArray(dbKeywords) && dbKeywords.length > 0) {
+          return dbKeywords[0];
+        }
         return (article as any).category || "Strategy";
       case 'linkedinUrl':
         return 'linkedin_url' in article ? article.linkedin_url : (article as any).linkedinUrl || fallback;
@@ -88,6 +93,14 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
     e.preventDefault();
     setIsLoading(true);
     setErrors({});
+
+    console.log('ArticleForm: Starting submit with formData:', {
+      title: formData.title,
+      category: formData.category,
+      excerpt: formData.excerpt,
+      contentLength: formData.content.length,
+      article: article ? { id: article.id, title: article.title } : null
+    });
 
     // Check admin privileges
     if (!isAdmin || !user) {
@@ -130,6 +143,8 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       
       // Save to Supabase database
       if (article && 'id' in article && article.id) {
+        console.log('ArticleForm: Updating existing article with ID:', article.id);
+        
         // Update all fields in one go instead of using the hook first
         const { data: updated, error: updateError } = await supabase
           .from('articles')
@@ -149,12 +164,15 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           .select()
           .single();
         
+        console.log('ArticleForm: Update result:', { updated, updateError });
+        
         if (updateError) {
           console.error('Error updating article:', updateError);
           throw updateError;
         }
         
         if (updated) {
+          console.log('ArticleForm: Article updated successfully:', updated);
           toast({
             title: "Article Updated",
             description: "Your article has been updated successfully.",
@@ -162,6 +180,8 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           onSave(updated as any);
         }
       } else {
+        console.log('ArticleForm: Creating new article');
+        
         // Create new article with all fields at once
         const { data: created, error: createError } = await supabase
           .from('articles')
@@ -180,12 +200,15 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           .select()
           .single();
         
+        console.log('ArticleForm: Create result:', { created, createError });
+        
         if (createError) {
           console.error('Error creating article:', createError);
           throw createError;
         }
         
         if (created) {
+          console.log('ArticleForm: Article created successfully:', created);
           toast({
             title: "Article Created",
             description: "Your article has been created successfully.",

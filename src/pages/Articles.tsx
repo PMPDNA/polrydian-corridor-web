@@ -98,7 +98,12 @@ export default function Articles() {
     slug: dbArticle.slug, // Add slug from database
   })) || [];
   
-  console.log('Articles with categories:', articles.map(a => ({ id: a.id, title: a.title, category: a.category })));
+  console.log('Articles with categories:', articles.map(a => ({ 
+    id: a.id, 
+    title: a.title, 
+    category: a.category,
+    dbKeywords: dbArticles?.find(db => db.id === a.id)?.keywords 
+  })));
 
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
   const featuredArticles = articles.filter(article => article.featured);
