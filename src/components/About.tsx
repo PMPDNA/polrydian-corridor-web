@@ -44,20 +44,21 @@ export const About = () => {
 
   const loadProfilePhoto = async () => {
     try {
-      // Load profile photo specifically for Patrick (admin user)
+      // Load profile photo for current admin user
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('avatar_url')
+        .eq('user_id', user?.id)
         .not('avatar_url', 'is', null)
-        .limit(1);
+        .single();
 
       if (error) {
         console.error('Error loading profile:', error);
         return;
       }
 
-      if (profiles && profiles.length > 0 && profiles[0].avatar_url) {
-        setProfilePhoto(profiles[0].avatar_url);
+      if (profiles && profiles.avatar_url) {
+        setProfilePhoto(profiles.avatar_url);
       }
     } catch (error) {
       console.error('Error loading profile photo:', error);
