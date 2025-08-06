@@ -81,18 +81,19 @@ export default function Articles() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
   // Convert database articles to the expected format
-  const articles: Article[] = dbArticles?.map(dbArticle => ({
-    id: dbArticle.id,
-    title: dbArticle.title,
-    excerpt: dbArticle.meta_description || dbArticle.content.substring(0, 200) + "...",
-    content: dbArticle.content,
-    category: (dbArticle.keywords?.[0] as any) || "Strategy",
-    heroImage: dbArticle.featured_image || "/placeholder.svg",
-    publishDate: new Date(dbArticle.created_at).toISOString().split('T')[0],
-    readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.length / 200),
-    linkedinUrl: "",
-    featured: dbArticle.status === 'published',
-  })) || [];
+  const articles: Article[] = dbArticles?.filter(dbArticle => dbArticle.status === 'published')
+    .map(dbArticle => ({
+      id: dbArticle.id,
+      title: dbArticle.title,
+      excerpt: dbArticle.meta_description || dbArticle.content.replace(/<[^>]*>/g, '').substring(0, 200) + "...",
+      content: dbArticle.content,
+      category: (dbArticle.keywords?.[0] as any) || "Strategy",
+      heroImage: dbArticle.featured_image || "/placeholder.svg",
+      publishDate: new Date(dbArticle.created_at).toISOString().split('T')[0],
+      readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
+      linkedinUrl: "",
+      featured: true, // All published articles are featured for now
+    })) || [];
 
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
   const featuredArticles = articles.filter(article => article.featured);
@@ -319,7 +320,7 @@ export default function Articles() {
                        className="flex-1"
                        asChild
                      >
-                       <Link to={`/articles/${article.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
+                       <Link to={`/articles/${article.id}`}>
                          Read Full Article
                        </Link>
                      </Button>

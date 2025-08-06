@@ -14,7 +14,7 @@ import { PromotionalPopup } from "@/components/PromotionalPopup";
 import Footer from "@/components/Footer";
 import { GDPRConsentManager } from "@/components/GDPRConsentManager";
 import { useAnalytics } from "@/hooks/useAnalytics";
-import { FREDDataDisplay } from "@/components/FREDDataDisplay";
+import { FredDataDisplay } from "@/components/FredDataDisplay";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 const Index = () => {
@@ -36,7 +36,7 @@ const Index = () => {
         <UnifiedOrganizationManager />
         <section id="insights" aria-label="Economic insights" className="py-20 bg-gradient-to-br from-background via-background/50 to-primary/5">
           <div className="container mx-auto px-6 space-y-12">
-            <FREDDataDisplay variant="compact" />
+            <FredDataDisplay />
             <div className="grid md:grid-cols-2 gap-8">
               <LinkedInFeed />
               <NewsletterSignup variant="compact" />

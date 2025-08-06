@@ -19,10 +19,10 @@ export default function ArticleDetail() {
 
   useEffect(() => {
     if (articles && slug) {
-      // Try to find article by slug, or by converting title to slug format
+      // Find article by ID or slug format
       const found = articles.find(a => {
         const titleSlug = a.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        return titleSlug === slug || a.id === slug;
+        return a.id === slug || titleSlug === slug;
       });
       setArticle(found);
     }

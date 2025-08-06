@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
+import { FredDataDisplay } from "@/components/FredDataDisplay";
 import { 
   Search, 
   Globe, 
@@ -253,6 +254,11 @@ export default function Insights() {
             </div>
           </CardContent>
         </Card>
+
+        {/* FRED Economic Data */}
+        <section className="mb-12">
+          <FredDataDisplay />
+        </section>
 
         {/* Categories */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
