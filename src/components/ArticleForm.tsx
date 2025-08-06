@@ -149,22 +149,27 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       // Save to Supabase database
       if (article && 'id' in article && article.id) {
         console.log('ArticleForm: Updating existing article with ID:', article.id);
+        console.log('ArticleForm: Saving with category:', formData.category);
         
-        // Update all fields in one go instead of using the hook first
+        // Update all fields in one go - using direct formData values
+        const updatePayload = {
+          title: validatedData.title,
+          content: sanitizeHtml(validatedData.content),
+          meta_description: validatedData.excerpt,
+          featured_image: formData.heroImage,
+          reading_time_minutes: formData.readTime,
+          keywords: [formData.category], // This should be the current formData.category
+          linkedin_url: formData.linkedinUrl,
+          status: 'published',
+          published_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        console.log('ArticleForm: Update payload keywords:', updatePayload.keywords);
+        
         const { data: updated, error: updateError } = await supabase
           .from('articles')
-          .update({
-            title: validatedData.title,
-            content: sanitizeHtml(validatedData.content),
-            meta_description: validatedData.excerpt,
-            featured_image: formData.heroImage,
-            reading_time_minutes: formData.readTime,
-            keywords: [formData.category],
-            linkedin_url: formData.linkedinUrl,
-            status: 'published',
-            published_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
+          .update(updatePayload)
           .eq('id', article.id)
           .select()
           .single();
