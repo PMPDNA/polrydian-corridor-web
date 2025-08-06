@@ -8,15 +8,17 @@ const corsHeaders = {
 
 // FRED API endpoints and series
 const FRED_BASE_URL = 'https://api.stlouisfed.org/fred';
+
+// Correct FRED series IDs for economic indicators
 const ECONOMIC_INDICATORS = {
-  gdp: 'GDP',
-  unemployment: 'UNRATE',
-  inflation: 'CPIAUCSL',
-  interest_rate: 'FEDFUNDS',
-  consumer_confidence: 'UMCSENT',
-  housing_starts: 'HOUST',
-  retail_sales: 'RSXFS',
-  industrial_production: 'INDPRO'
+  gdp: 'A191RL1Q225SBEA', // Real GDP Percent Change from Preceding Period (Quarterly, Seasonally Adjusted Annual Rate)
+  unemployment: 'UNRATE', // Unemployment Rate (Monthly, Seasonally Adjusted)
+  inflation: 'CPIAUCSL', // Consumer Price Index for All Urban Consumers (we'll calculate YoY change)
+  interest_rate: 'FEDFUNDS', // Federal Funds Effective Rate
+  consumer_confidence: 'UMCSENT', // University of Michigan Consumer Sentiment
+  housing_starts: 'HOUST', // Housing Starts
+  retail_sales: 'RSXFS', // Retail Sales
+  industrial_production: 'INDPRO' // Industrial Production Index
 };
 
 async function fetchFredData(seriesId: string, apiKey: string, limit = 100) {
@@ -31,6 +33,35 @@ async function fetchFredData(seriesId: string, apiKey: string, limit = 100) {
   
   const data = await response.json();
   return data.observations || [];
+}
+
+// Calculate inflation rate from CPI data (Year-over-Year percentage change)
+function calculateInflationRate(cpiData: any[]): any[] {
+  if (!cpiData || cpiData.length < 12) return cpiData;
+  
+  return cpiData.map((current, index) => {
+    // Find the observation from 12 months ago
+    const yearAgoIndex = cpiData.findIndex(obs => {
+      const currentDate = new Date(current.date);
+      const obsDate = new Date(obs.date);
+      const monthsDiff = (currentDate.getFullYear() - obsDate.getFullYear()) * 12 + 
+                        (currentDate.getMonth() - obsDate.getMonth());
+      return Math.abs(monthsDiff - 12) < 2; // Allow 1-2 months tolerance
+    });
+    
+    if (yearAgoIndex !== -1 && current.value !== '.' && cpiData[yearAgoIndex].value !== '.') {
+      const currentValue = parseFloat(current.value);
+      const yearAgoValue = parseFloat(cpiData[yearAgoIndex].value);
+      const inflationRate = ((currentValue - yearAgoValue) / yearAgoValue) * 100;
+      
+      return {
+        ...current,
+        value: inflationRate.toFixed(1)
+      };
+    }
+    
+    return current;
+  });
 }
 
 async function logIntegrationEvent(supabase: any, operation: string, status: string, details: any, userId?: string) {
@@ -87,7 +118,14 @@ serve(async (req) => {
           const seriesId = ECONOMIC_INDICATORS[indicator];
           if (seriesId) {
             try {
-              fredData[indicator] = await fetchFredData(seriesId, fredApiKey, body.limit);
+              let rawData = await fetchFredData(seriesId, fredApiKey, body.limit);
+              
+              // Special processing for inflation - calculate YoY change from CPI level data
+              if (indicator === 'inflation') {
+                rawData = calculateInflationRate(rawData);
+              }
+              
+              fredData[indicator] = rawData;
             } catch (error) {
               console.error(`❌ Failed to fetch ${indicator}:`, error);
               fredData[indicator] = { error: error.message };
