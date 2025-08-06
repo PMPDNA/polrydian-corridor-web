@@ -60,10 +60,10 @@ Deno.serve(async (req) => {
           const userAgent = visitorData.user_agent || ''
           const deviceInfo = parseUserAgent(userAgent)
           
-          // Insert visitor analytics data with proper IP handling
+          // Insert visitor analytics data with proper IP handling using upsert to handle duplicates
           const { error: trackError } = await supabase
             .from('visitor_analytics')
-            .insert({
+            .upsert({
               visitor_id: visitorData.visitor_id,
               ip_address: clientIP === 'unknown' ? null : clientIP,
               user_agent: userAgent,
@@ -75,12 +75,20 @@ Deno.serve(async (req) => {
               os: deviceInfo.os,
               screen_resolution: visitorData.screen_resolution,
               language: visitorData.language,
-              timezone: visitorData.timezone
+              timezone: visitorData.timezone,
+              page_views: 1,
+              updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'visitor_id,session_id,page_url',
+              ignoreDuplicates: false
             })
 
           if (trackError) {
             console.error('Visitor tracking error:', trackError)
-            throw trackError
+            // Don't throw error for constraint violations, just log them
+            if (trackError.code !== '23505') {
+              throw trackError
+            }
           }
 
           // Log data processing activity
