@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface CalendlyEmbedProps {
   calendlyUrl: string
@@ -23,12 +22,23 @@ export default function CalendlyEmbed({
   const calendlyRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // Clean up any existing Calendly widgets
+    if (calendlyRef.current) {
+      calendlyRef.current.innerHTML = ''
+    }
+
+    // Load Calendly CSS first
+    let link = document.querySelector('link[href*="calendly"]') as HTMLLinkElement
+    if (!link) {
+      link = document.createElement('link')
+      link.href = 'https://assets.calendly.com/assets/external/widget.css'
+      link.rel = 'stylesheet'
+      document.head.appendChild(link)
+    }
+
     // Load Calendly widget script
-    const script = document.createElement('script')
-    script.src = 'https://assets.calendly.com/assets/external/widget.js'
-    script.async = true
-    
-    script.onload = () => {
+    let script = document.querySelector('script[src*="calendly"]') as HTMLScriptElement
+    const initWidget = () => {
       if ((window as any).Calendly && calendlyRef.current) {
         (window as any).Calendly.initInlineWidget({
           url: calendlyUrl,
@@ -42,43 +52,35 @@ export default function CalendlyEmbed({
         })
       }
     }
-    
-    document.head.appendChild(script)
 
-    // Load Calendly CSS
-    const link = document.createElement('link')
-    link.href = 'https://assets.calendly.com/assets/external/widget.css'
-    link.rel = 'stylesheet'
-    document.head.appendChild(link)
-
-    return () => {
-      // Cleanup
-      const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')
-      const existingLink = document.querySelector('link[href="https://assets.calendly.com/assets/external/widget.css"]')
-      
-      if (existingScript) document.head.removeChild(existingScript)
-      if (existingLink) document.head.removeChild(existingLink)
+    if (!script) {
+      script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      script.onload = initWidget
+      document.head.appendChild(script)
+    } else {
+      // Script already exists, just initialize
+      if ((window as any).Calendly) {
+        initWidget()
+      } else {
+        script.addEventListener('load', initWidget)
+      }
     }
   }, [calendlyUrl, prefill])
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div 
-          ref={calendlyRef}
-          style={{ 
-            minWidth: '320px', 
-            height: height,
-            position: 'relative'
-          }}
-          className="calendly-inline-widget"
-          data-url={calendlyUrl}
-        />
-      </CardContent>
-    </Card>
+    <div className="w-full">
+      <div 
+        ref={calendlyRef}
+        style={{ 
+          minWidth: '320px', 
+          height: height,
+          position: 'relative'
+        }}
+        className="calendly-inline-widget"
+        data-url={calendlyUrl}
+      />
+    </div>
   )
 }
