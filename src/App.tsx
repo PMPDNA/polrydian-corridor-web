@@ -34,6 +34,7 @@ import ImageManager from "./pages/admin/ImageManager";
 import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
 import Search from "./pages/Search";
+import PerformanceDashboard from "./pages/admin/PerformanceDashboard";
 
 import NotFound from "./pages/NotFound";
 import CookieConsent from "./components/CookieConsent";
@@ -115,6 +116,29 @@ const App = () => {
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
                   <ImageManager />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
+            <Route path="/profile" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute>
+                  <ProfileManager />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
+            
+            <Route path="/search" element={<Search />} />
+            <Route path="/security" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <SecurityDashboard />
+                </SupabaseProtectedRoute>
+              </ErrorBoundary>
+            } />
+            <Route path="/admin/performance" element={
+              <ErrorBoundary>
+                <SupabaseProtectedRoute requireAdmin={true}>
+                  <PerformanceDashboard />
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />

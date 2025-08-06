@@ -16,6 +16,7 @@ import {
   Briefcase,
   Info,
   Phone,
+  Activity,
 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
@@ -45,6 +46,7 @@ const mediaItems = [
 
 const systemItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
+  { title: "Performance", url: "/admin/performance", icon: Activity },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Security", url: "/security", icon: Shield },
 ]
