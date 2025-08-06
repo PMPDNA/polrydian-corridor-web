@@ -52,8 +52,10 @@ export const Navigation = () => {
                 {item.label}
               </Link>
             ))}
-            <Button variant="default" size="sm" onClick={() => window.location.href = '/schedule'}>
-              Schedule Consultation
+            <Button variant="default" size="sm" asChild>
+              <Link to="/schedule">
+                Schedule Consultation
+              </Link>
             </Button>
           </div>
 
@@ -89,8 +91,10 @@ export const Navigation = () => {
                     {item.label}
                   </Link>
                 ))}
-                <Button variant="default" size="sm" className="mt-2 w-full" onClick={() => window.location.href = '/schedule'}>
-                  Schedule Consultation
+                <Button variant="default" size="sm" className="mt-2 w-full" asChild>
+                  <Link to="/schedule">
+                    Schedule Consultation
+                  </Link>
                 </Button>
               </div>
             </div>

@@ -79,7 +79,7 @@ export function TradeGuysPodcast() {
                 className="flex items-center gap-2"
               >
                 <ExternalLink className="h-3 w-3" />
-                Google Podcasts
+                Google/YouTube Music
               </a>
             </Button>
             <Button variant="outline" size="sm" asChild className="col-span-2">
