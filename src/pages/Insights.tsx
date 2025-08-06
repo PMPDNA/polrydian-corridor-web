@@ -12,6 +12,7 @@ import { CorridorEconomicsIntelligence } from "@/components/CorridorEconomicsInt
 import { CSISAnalysisFeed } from "@/components/CSISAnalysisFeed";
 import { TradeGuysPodcast } from "@/components/TradeGuysPodcast";
 import { PolicyUpdatesTimeline } from "@/components/PolicyUpdatesTimeline";
+import { TestDataCollection } from "@/components/TestDataCollection";
 import { 
   Search, 
   Globe, 
@@ -269,9 +270,14 @@ export default function Insights() {
           <EnhancedEconomicInsights />
         </section>
 
+        {/* Test Data Collection (Admin Only) */}
+        <section className="mb-12">
+          <TestDataCollection />
+        </section>
+
         {/* CSIS Analysis, Trade Guys Podcast, and Policy Updates */}
         <section className="mb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <CSISAnalysisFeed />
             <TradeGuysPodcast />
             <PolicyUpdatesTimeline />
