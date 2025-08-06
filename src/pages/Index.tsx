@@ -49,6 +49,9 @@ const Index = () => {
         <section id="experience" aria-label="Experience section">
           <Experience />
         </section>
+        <section id="about" aria-label="About section">
+          <About />
+        </section>
         <section id="contact" aria-label="Contact section">
           <Contact />
         </section>

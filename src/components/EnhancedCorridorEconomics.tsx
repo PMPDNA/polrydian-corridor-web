@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { LearnMoreModal } from '@/components/LearnMoreModal';
+import { ThinkTankModal } from '@/components/ThinkTankModal';
 import { ExternalLink, Globe2, TrendingUp, FileText, Calendar, BarChart3, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
@@ -134,7 +134,7 @@ export const EnhancedCorridorEconomics = () => {
             <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Strategic Pathways</span>
           </div>
           
-          <LearnMoreModal />
+          <ThinkTankModal />
         </div>
         
         <div className="flex justify-center">

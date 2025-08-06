@@ -1,287 +1,243 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ExternalLink, BookOpen, Users, Building, TrendingUp } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ExternalLink, BookOpen, Calendar, Users } from "lucide-react";
 
-interface ThinkTankSource {
-  name: string;
-  url: string;
+interface ThinkTankResource {
+  title: string;
+  organization: string;
   description: string;
-  specialty: string;
-  articles: {
-    title: string;
-    url: string;
-    description: string;
-    topic: string;
-  }[];
+  url: string;
+  date: string;
+  category: string;
+  relevanceNote: string;
 }
 
-const thinkTankSources: ThinkTankSource[] = [
+const thinkTankResources: ThinkTankResource[] = [
   {
-    name: "Center for Strategic and International Studies (CSIS)",
-    url: "https://www.csis.org",
-    description: "Leading research institution on global security and economic policy",
-    specialty: "Trade Policy & Supply Chain Resilience",
-    articles: [
-      {
-        title: "Supply Chain Resilience: Mapping Corridors of Trade",
-        url: "https://www.csis.org/programs/economics-program/supply-chain-security",
-        description: "Analysis of global supply chain vulnerabilities and strategic trade corridors",
-        topic: "corridor-economics"
-      },
-      {
-        title: "The Trade Wars: Implications for Global Commerce",
-        url: "https://www.csis.org/analysis/trade-wars",
-        description: "Impact of trade disputes on global economic corridors",
-        topic: "trade-policy"
-      },
-      {
-        title: "China's Belt and Road Initiative: Economic Corridors",
-        url: "https://www.csis.org/programs/china-power-project/belt-and-road-tracker",
-        description: "Strategic analysis of China's infrastructure and trade corridor development",
-        topic: "geopolitics"
-      }
-    ]
+    title: "Global Supply Chain Resilience and Strategic Competition",
+    organization: "Center for Strategic & International Studies (CSIS)",
+    description: "Analysis of supply chain vulnerabilities and strategic responses to geopolitical disruptions",
+    url: "https://www.csis.org/programs/economics-program",
+    date: "2024-01-15",
+    category: "Supply Chain",
+    relevanceNote: "Directly relevant to corridor economics methodology for building resilient trade pathways"
   },
   {
-    name: "Brookings Institution",
-    url: "https://www.brookings.edu",
-    description: "Independent research on economic policy and global governance",
-    specialty: "Economic Development & Innovation",
-    articles: [
-      {
-        title: "Economic Corridors and Regional Development",
-        url: "https://www.brookings.edu/research/economic-corridors/",
-        description: "Research on how economic corridors drive regional development and connectivity",
-        topic: "corridor-economics"
-      },
-      {
-        title: "Technology Transfer and Innovation Ecosystems",
-        url: "https://www.brookings.edu/topic/technology-innovation/",
-        description: "Analysis of technology flows across borders and innovation hubs",
-        topic: "technology-transfer"
-      },
-      {
-        title: "Global Trade and Economic Integration",
-        url: "https://www.brookings.edu/topic/trade/",
-        description: "Policy research on trade integration and economic partnerships",
-        topic: "trade-policy"
-      }
-    ]
+    title: "The Future of Globalization: Reinventing Trade in the Digital Age",
+    organization: "Brookings Institution",
+    description: "Examination of how digital technologies are reshaping global trade patterns and economic corridors",
+    url: "https://www.brookings.edu/topic/trade-economics/",
+    date: "2024-01-10",
+    category: "Digital Trade",
+    relevanceNote: "Provides foundation for understanding how digital corridors intersect with physical trade routes"
   },
   {
-    name: "Organisation for Economic Co-operation and Development (OECD)",
-    url: "https://www.oecd.org",
-    description: "International economic research and policy recommendations",
-    specialty: "Economic Analysis & Statistics",
-    articles: [
-      {
-        title: "OECD Economic Outlook: Global Trade Flows",
-        url: "https://www.oecd.org/economic-outlook/",
-        description: "Comprehensive analysis of global economic trends and trade patterns",
-        topic: "economic-data"
-      },
-      {
-        title: "Trade in Value Added Database",
-        url: "https://www.oecd.org/sti/ind/measuring-trade-in-value-added.htm",
-        description: "Statistical analysis of global value chains and trade flows",
-        topic: "corridor-economics"
-      },
-      {
-        title: "Digital Economy Outlook",
-        url: "https://www.oecd.org/digital/oecd-digital-economy-outlook-2020-bb167041-en.htm",
-        description: "Research on digital transformation and cross-border data flows",
-        topic: "technology-transfer"
-      }
-    ]
+    title: "OECD Economic Outlook: Navigating Uncertainty",
+    organization: "OECD",
+    description: "Comprehensive analysis of global economic trends and policy recommendations for uncertain times",
+    url: "https://www.oecd.org/economic-outlook/",
+    date: "2024-01-08",
+    category: "Economic Policy",
+    relevanceNote: "Essential context for corridor economics applications in policy-making environments"
   },
   {
-    name: "World Economic Forum",
-    url: "https://www.weforum.org",
-    description: "Global platform for public-private cooperation on economic issues",
-    specialty: "Strategic Partnerships & Future of Work",
-    articles: [
-      {
-        title: "The Future of Supply Chains",
-        url: "https://www.weforum.org/agenda/supply-chains/",
-        description: "Strategic insights on supply chain transformation and resilience",
-        topic: "corridor-economics"
-      },
-      {
-        title: "Fourth Industrial Revolution and Trade",
-        url: "https://www.weforum.org/centre-for-the-fourth-industrial-revolution/",
-        description: "Impact of emerging technologies on global trade patterns",
-        topic: "technology-transfer"
-      },
-      {
-        title: "Strategic Intelligence on Geopolitics",
-        url: "https://intelligence.weforum.org/topics/a1G0X000006O6EHUA0",
-        description: "Comprehensive analysis of geopolitical trends affecting global economics",
-        topic: "geopolitics"
-      }
-    ]
+    title: "Geopolitical Risk and Investment Strategies",
+    organization: "Peterson Institute for International Economics",
+    description: "Framework for assessing and mitigating geopolitical risks in international investments",
+    url: "https://www.piie.com/",
+    date: "2024-01-05",
+    category: "Geopolitical Risk",
+    relevanceNote: "Complements corridor economics approach to risk assessment and mitigation"
+  },
+  {
+    title: "Strategic Industries and National Security",
+    organization: "Atlantic Council",
+    description: "Analysis of critical industries and their role in national economic security",
+    url: "https://www.atlanticcouncil.org/programs/geoeconomics-center/",
+    date: "2024-01-03",
+    category: "National Security",
+    relevanceNote: "Demonstrates application of strategic thinking to critical economic infrastructure"
+  },
+  {
+    title: "Infrastructure Investment and Economic Growth",
+    organization: "World Economic Forum",
+    description: "Global perspective on infrastructure investment needs and economic impact",
+    url: "https://www.weforum.org/topics/infrastructure/",
+    date: "2024-01-01",
+    category: "Infrastructure",
+    relevanceNote: "Provides global context for infrastructure corridor development strategies"
   }
 ];
 
-interface LearnMoreModalProps {
-  children: React.ReactNode;
-}
+const organizations = [
+  {
+    name: "Center for Strategic & International Studies (CSIS)",
+    focus: "Strategic analysis of global security and economic issues",
+    url: "https://www.csis.org/"
+  },
+  {
+    name: "Brookings Institution",
+    focus: "Non-partisan research on public policy challenges",
+    url: "https://www.brookings.edu/"
+  },
+  {
+    name: "OECD",
+    focus: "International economic cooperation and development",
+    url: "https://www.oecd.org/"
+  },
+  {
+    name: "Peterson Institute for International Economics",
+    focus: "International economic policy research",
+    url: "https://www.piie.com/"
+  },
+  {
+    name: "Atlantic Council",
+    focus: "International affairs and global challenges",
+    url: "https://www.atlanticcouncil.org/"
+  },
+  {
+    name: "World Economic Forum",
+    focus: "Global economic cooperation and development",
+    url: "https://www.weforum.org/"
+  }
+];
 
-export function LearnMoreModal({ children }: LearnMoreModalProps) {
-  const [selectedTopic, setSelectedTopic] = useState<string>('all');
-
-  const topics = [
-    { id: 'all', label: 'All Topics', icon: BookOpen },
-    { id: 'corridor-economics', label: 'Corridor Economics', icon: TrendingUp },
-    { id: 'trade-policy', label: 'Trade Policy', icon: Building },
-    { id: 'technology-transfer', label: 'Technology Transfer', icon: Users },
-    { id: 'geopolitics', label: 'Geopolitics', icon: ExternalLink }
-  ];
-
-  const filteredArticles = selectedTopic === 'all' 
-    ? thinkTankSources.flatMap(source => 
-        source.articles.map(article => ({
-          ...article,
-          sourceName: source.name,
-          sourceUrl: source.url
-        }))
-      )
-    : thinkTankSources.flatMap(source => 
-        source.articles
-          .filter(article => article.topic === selectedTopic)
-          .map(article => ({
-            ...article,
-            sourceName: source.name,
-            sourceUrl: source.url
-          }))
-      );
+export function ThinkTankModal() {
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {children}
+        <Button variant="outline" className="hover:bg-accent/10">
+          <BookOpen className="h-4 w-4 mr-2" />
+          Learn More from Leading Think Tanks
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Research from Leading Think Tanks</DialogTitle>
-          <DialogDescription>
-            Curated insights from CSIS, Brookings, OECD, and other leading institutions 
-            on corridor economics, trade policy, and strategic pathways.
-          </DialogDescription>
+          <DialogTitle className="text-2xl flex items-center gap-2">
+            <Users className="h-6 w-6 text-accent" />
+            Leading Think Tank Research
+          </DialogTitle>
+          <p className="text-muted-foreground">
+            Curated insights from premier research institutions, analyzed through the lens of corridor economics
+          </p>
         </DialogHeader>
-
-        <div className="space-y-6">
-          {/* Topic Filter */}
-          <div className="flex flex-wrap gap-2">
-            {topics.map((topic) => (
-              <Button
-                key={topic.id}
-                variant={selectedTopic === topic.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedTopic(topic.id)}
-                className="flex items-center gap-2"
-              >
-                <topic.icon className="h-4 w-4" />
-                {topic.label}
-              </Button>
-            ))}
+        
+        <div className="space-y-8">
+          {/* Featured Resources */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4">Featured Research & Analysis</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {thinkTankResources.map((resource, index) => (
+                <Card key={index} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start gap-2">
+                      <CardTitle className="text-sm font-medium line-clamp-2">
+                        {resource.title}
+                      </CardTitle>
+                      <Badge variant="outline" className="text-xs shrink-0">
+                        {resource.category}
+                      </Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Users className="h-3 w-3" />
+                        {resource.organization}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {formatDate(resource.date)}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {resource.description}
+                    </p>
+                    
+                    <div className="bg-accent/5 p-3 rounded-lg">
+                      <h4 className="text-xs font-semibold text-accent mb-1">
+                        Corridor Economics Relevance:
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        {resource.relevanceNote}
+                      </p>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start text-xs"
+                      asChild
+                    >
+                      <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-3 w-3 mr-2" />
+                        Read Full Analysis
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
 
-          {/* Think Tank Sources */}
-          <div className="grid gap-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Research Institutions</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {thinkTankSources.map((source, index) => (
-                  <Card key={index} className="hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base flex items-start justify-between">
-                        <span className="flex-1">{source.name}</span>
-                        <Button variant="ghost" size="sm" asChild>
-                          <a href={source.url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        </Button>
-                      </CardTitle>
-                      <CardDescription className="text-sm">
-                        {source.description}
-                      </CardDescription>
-                      <Badge variant="secondary" className="text-xs w-fit">
-                        {source.specialty}
-                      </Badge>
-                    </CardHeader>
-                  </Card>
-                ))}
-              </div>
+          {/* Think Tank Organizations */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4">Premier Research Institutions</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {organizations.map((org, index) => (
+                <Card key={index} className="hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-medium">
+                      {org.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      {org.focus}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start text-xs"
+                      asChild
+                    >
+                      <a href={org.url} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-3 w-3 mr-2" />
+                        Visit Institution
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
+          </div>
 
-            {/* Filtered Articles */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">
-                Research Articles {selectedTopic !== 'all' && `- ${topics.find(t => t.id === selectedTopic)?.label}`}
-              </h3>
-              <div className="space-y-4">
-                {filteredArticles.map((article, index) => (
-                  <Card key={index} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-foreground mb-2">
-                            {article.title}
-                          </h4>
-                          <p className="text-sm text-muted-foreground mb-3">
-                            {article.description}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              {article.sourceName}
-                            </Badge>
-                            <Badge variant="secondary" className="text-xs">
-                              {topics.find(t => t.id === article.topic)?.label || article.topic}
-                            </Badge>
-                          </div>
-                        </div>
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={article.url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Read
-                          </a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Commentary Section */}
-            <Card className="bg-primary/5 border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-lg">Corridor Economics Commentary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  These research institutions provide critical insights into how economic corridors, 
-                  technology transfer, and strategic pathways shape global commerce. Their analysis 
-                  helps organizations understand:
-                </p>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li>• How supply chain resilience impacts regional economic development</li>
-                  <li>• The role of technology transfer in creating competitive advantages</li>
-                  <li>• Strategic implications of trade policy on corridor economics</li>
-                  <li>• Geopolitical factors influencing global value chains</li>
-                </ul>
-                <div className="mt-4 pt-4 border-t border-primary/20">
-                  <Button asChild>
-                    <a href="/schedule">
-                      Discuss Strategic Applications
-                    </a>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Commentary */}
+          <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 p-6 rounded-lg border border-accent/20">
+            <h3 className="text-lg font-semibold mb-3 text-foreground">
+              Corridor Economics Perspective
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              While these institutions provide valuable analysis, corridor economics offers a unique methodology 
+              for synthesizing complex geopolitical and economic information into actionable strategic pathways. 
+              By mapping the interconnections between seemingly separate challenges, we can identify opportunities 
+              that traditional analysis might miss.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              <strong>Key Insight:</strong> "What stands in the way becomes the way." This Stoic principle, 
+              when applied to these research findings, reveals how apparent obstacles in global trade, 
+              supply chains, and geopolitical tensions can be transformed into strategic corridors for competitive advantage.
+            </p>
           </div>
         </div>
       </DialogContent>

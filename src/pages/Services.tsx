@@ -132,7 +132,7 @@ export default function Services() {
     },
     {
       title: "Supply Chain Resilience",
-      challenge: "Technology company vulnerable to supply chain disruptions affecting 40% of revenue",
+      challenge: "Technology company vulnerable to supply chain disruptions",
       solution: "Developed diversified supply corridors with built-in redundancy and risk mitigation",
       result: "Established robust supply chain resilience with improved reliability and operational efficiency"
     },
@@ -140,7 +140,7 @@ export default function Services() {
       title: "Strategic M&A Integration",
       challenge: "Private equity firm struggling with complex acquisition integration across multiple jurisdictions",
       solution: "Created integration corridors that addressed regulatory, cultural, and operational complexities",
-      result: "Delivered seamless integration ahead of schedule with synergies exceeding initial projections"
+      result: "Delivered seamless integration with strong synergy realization"
     }
   ];
 

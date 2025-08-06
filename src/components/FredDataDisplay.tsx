@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ExternalLink, TrendingUp, TrendingDown, Minus, RefreshCw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, Minus, ExternalLink } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+// Data structure for FRED economic indicators
 interface FredData {
   id: string;
   title: string;
   series_id: string;
   latest_value: number;
   latest_date: string;
-  change_percent: number;
+  change_percent?: number;
   description: string;
   units: string;
   frequency: string;
@@ -23,37 +25,38 @@ interface FredDataDisplayProps {
   showControls?: boolean;
 }
 
-export function FredDataDisplay({ 
-  seriesIds = ['GDP', 'UNRATE', 'CPIAUCNS', 'FEDFUNDS'], 
-  showControls = true 
-}: FredDataDisplayProps) {
+export function FredDataDisplay({ seriesIds, showControls = true }: FredDataDisplayProps) {
   const [data, setData] = useState<FredData[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const fetchFredData = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
+      setError(null);
+
       const { data: response, error } = await supabase.functions.invoke('fred-api-integration', {
         body: { 
-          action: 'fetch_multiple',
+          operation: seriesIds ? 'fetch_series' : 'fetch_indicators',
           series_ids: seriesIds 
         }
       });
 
       if (error) throw error;
 
-      if (response?.success) {
+      if (response?.success && response?.data) {
         setData(response.data);
       } else {
-        throw new Error(response?.error || 'Failed to fetch FRED data');
+        throw new Error(response?.error || 'Failed to fetch data');
       }
-    } catch (error: any) {
-      console.error('Error fetching FRED data:', error);
+    } catch (err: any) {
+      console.error('Error fetching FRED data:', err);
+      setError(err.message);
       toast({
-        title: 'Error',
-        description: 'Failed to fetch economic data. Please try again.',
-        variant: 'destructive'
+        title: "Error Loading Economic Data",
+        description: err.message,
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -64,38 +67,58 @@ export function FredDataDisplay({
     fetchFredData();
   }, [seriesIds]);
 
-  const getTrendIcon = (change: number) => {
+  const getTrendIcon = (change?: number) => {
+    if (!change) return <Minus className="h-4 w-4 text-muted-foreground" />;
     if (change > 0) return <TrendingUp className="h-4 w-4 text-green-600" />;
-    if (change < 0) return <TrendingDown className="h-4 w-4 text-red-600" />;
-    return <Minus className="h-4 w-4 text-gray-500" />;
+    return <TrendingDown className="h-4 w-4 text-red-600" />;
   };
 
   const formatValue = (value: number, units: string) => {
-    if (units.includes('Percent')) {
-      return `${value.toFixed(1)}%`;
+    if (units.toLowerCase().includes('percent') || units.includes('%')) {
+      return `${value.toFixed(2)}%`;
     }
-    if (units.includes('Billions')) {
-      return `$${(value / 1000).toFixed(1)}T`;
+    if (units.toLowerCase().includes('billion')) {
+      return `$${(value).toFixed(1)}B`;
+    }
+    if (units.toLowerCase().includes('million')) {
+      return `$${(value).toFixed(1)}M`;
+    }
+    if (units.toLowerCase().includes('index')) {
+      return value.toFixed(1);
     }
     return value.toLocaleString();
   };
 
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
-            <CardHeader className="pb-2">
-              <div className="h-4 bg-muted rounded w-3/4"></div>
-              <div className="h-3 bg-muted rounded w-1/2"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <Card key={i}>
+            <CardHeader className="pb-3">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
             </CardHeader>
             <CardContent>
-              <div className="h-8 bg-muted rounded w-full mb-2"></div>
-              <div className="h-4 bg-muted rounded w-2/3"></div>
+              <Skeleton className="h-8 w-1/2 mb-2" />
+              <Skeleton className="h-4 w-1/3" />
             </CardContent>
           </Card>
         ))}
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="border-destructive">
+        <CardContent className="p-6 text-center">
+          <p className="text-destructive mb-4">Error loading economic data: {error}</p>
+          <Button onClick={fetchFredData} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Retry
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -104,62 +127,62 @@ export function FredDataDisplay({
       {showControls && (
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold">Economic Indicators</h2>
-            <p className="text-muted-foreground">Live data from the Federal Reserve Economic Data (FRED)</p>
+            <h3 className="text-lg font-semibold">Economic Indicators</h3>
+            <p className="text-sm text-muted-foreground">Latest data from Federal Reserve Economic Data (FRED)</p>
           </div>
-          <Button onClick={fetchFredData} disabled={loading}>
+          <Button onClick={fetchFredData} variant="outline" size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
             Refresh Data
           </Button>
         </div>
       )}
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {data.map((item) => (
-          <Card key={item.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-2">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg leading-tight">{item.title}</CardTitle>
-                  <CardDescription className="text-xs">
-                    {item.frequency} • {new Date(item.latest_date).toLocaleDateString()}
-                  </CardDescription>
-                </div>
-                <Badge variant="outline" className="ml-2 text-xs">
-                  {item.series_id}
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {data.map((indicator) => (
+          <Card key={indicator.id} className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-sm font-medium line-clamp-2">
+                  {indicator.title}
+                </CardTitle>
+                <Badge variant="outline" className="text-xs">
+                  {indicator.frequency}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold">
-                    {formatValue(item.latest_value, item.units)}
+                    {formatValue(indicator.latest_value, indicator.units)}
                   </span>
                   <div className="flex items-center gap-1">
-                    {getTrendIcon(item.change_percent)}
-                    <span className={`text-sm font-medium ${
-                      item.change_percent > 0 ? 'text-green-600' : 
-                      item.change_percent < 0 ? 'text-red-600' : 'text-gray-500'
-                    }`}>
-                      {item.change_percent > 0 ? '+' : ''}{item.change_percent.toFixed(1)}%
-                    </span>
+                    {getTrendIcon(indicator.change_percent)}
+                    {indicator.change_percent && (
+                      <span className={`text-sm ${indicator.change_percent > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {Math.abs(indicator.change_percent).toFixed(2)}%
+                      </span>
+                    )}
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground line-clamp-2">
-                  {item.description}
-                </p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full text-xs"
+                
+                <div className="text-xs text-muted-foreground">
+                  <p>As of {new Date(indicator.latest_date).toLocaleDateString()}</p>
+                  <p className="line-clamp-2 mt-1">{indicator.description}</p>
+                </div>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full justify-start text-xs"
                   asChild
                 >
                   <a 
-                    href={`https://fred.stlouisfed.org/series/${item.series_id}`}
-                    target="_blank"
+                    href={`https://fred.stlouisfed.org/series/${indicator.series_id}`} 
+                    target="_blank" 
                     rel="noopener noreferrer"
                   >
-                    <ExternalLink className="h-3 w-3 mr-1" />
+                    <ExternalLink className="h-3 w-3 mr-2" />
                     View on FRED
                   </a>
                 </Button>
@@ -168,6 +191,14 @@ export function FredDataDisplay({
           </Card>
         ))}
       </div>
+      
+      {data.length === 0 && !loading && (
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">No economic data available.</p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

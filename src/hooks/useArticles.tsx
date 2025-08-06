@@ -56,22 +56,16 @@ export function useArticles() {
   const { user, isAdmin } = useSupabaseAuth()
   const { toast } = useToast()
 
-  // Load articles based on user permissions
+  // Load articles - available to public for published articles
   const loadArticles = async () => {
-    if (!user) {
-      setArticles([])
-      setLoading(false)
-      return
-    }
-
     try {
       let query = supabase
         .from('articles')
         .select('*')
         .order('created_at', { ascending: false })
 
-      // If not admin, only show published articles
-      if (!isAdmin) {
+      // For public access, always filter to published articles unless user is admin
+      if (!user || !isAdmin) {
         query = query.eq('status', 'published')
       }
 
@@ -208,7 +202,7 @@ export function useArticles() {
     }
   }
 
-  // Load articles when user changes
+  // Load articles on mount and when user changes
   useEffect(() => {
     loadArticles()
   }, [user?.id, isAdmin])
