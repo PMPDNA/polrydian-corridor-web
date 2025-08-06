@@ -165,7 +165,7 @@ export default function ArticleDetailPage() {
                       <Button 
                         size="sm" 
                         className="w-full"
-                        onClick={() => window.location.href = 'https://calendly.com/patrickmisiewicz/consultation'}
+                        onClick={() => window.location.href = 'https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call'}
                       >
                         Schedule Consultation
                       </Button>

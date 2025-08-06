@@ -62,7 +62,7 @@ export const PromotionalPopup = () => {
   if (showCalendly) {
     return (
       <CalendlyPopup
-        calendlyUrl="https://calendly.com/patrickmisiewicz/30min-consultation?primary_color=8b5cf6"
+        calendlyUrl="https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
         buttonText="Book Your $100 Consultation"
         prefill={{
           name: "",

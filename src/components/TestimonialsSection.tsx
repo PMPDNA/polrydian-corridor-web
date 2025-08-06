@@ -139,7 +139,7 @@ export const TestimonialsSection = () => {
             Schedule your strategic consultation today.
           </p>
           <CalendlyPopup
-            calendlyUrl="https://calendly.com/patrickmisiewicz/consultation"
+            calendlyUrl="https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
             buttonText="Schedule Your Strategic Consultation"
             variant="default"
             size="lg"
