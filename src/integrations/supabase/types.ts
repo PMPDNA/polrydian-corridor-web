@@ -1416,6 +1416,10 @@ export type Database = {
         Args: { ip_string: string }
         Returns: unknown
       }
+      generate_slug: {
+        Args: { title_text: string }
+        Returns: string
+      }
       get_admin_emails: {
         Args: Record<PropertyKey, never>
         Returns: Json
