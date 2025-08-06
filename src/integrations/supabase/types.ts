@@ -97,6 +97,7 @@ export type Database = {
           auto_publish_linkedin: boolean | null
           auto_publish_medium: boolean | null
           auto_publish_substack: boolean | null
+          category: string | null
           chapter_id: string | null
           content: string
           content_images: string[] | null
@@ -126,6 +127,7 @@ export type Database = {
           auto_publish_linkedin?: boolean | null
           auto_publish_medium?: boolean | null
           auto_publish_substack?: boolean | null
+          category?: string | null
           chapter_id?: string | null
           content: string
           content_images?: string[] | null
@@ -155,6 +157,7 @@ export type Database = {
           auto_publish_linkedin?: boolean | null
           auto_publish_medium?: boolean | null
           auto_publish_substack?: boolean | null
+          category?: string | null
           chapter_id?: string | null
           content?: string
           content_images?: string[] | null
