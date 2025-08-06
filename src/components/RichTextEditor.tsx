@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, lazy, Suspense } from 'react';
 import { cn } from '@/lib/utils';
 
 interface RichTextEditorProps {
@@ -11,8 +11,6 @@ interface RichTextEditorProps {
 
 // Dynamically import ReactQuill to avoid SSR issues
 const ReactQuill = lazy(() => import('react-quill'));
-
-import { lazy, Suspense } from 'react';
 
 const modules = {
   toolbar: [
