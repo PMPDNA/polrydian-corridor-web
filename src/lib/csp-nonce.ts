@@ -33,7 +33,7 @@ export const generateCSPHeader = (nonce?: string): string => {
     'font-src': "'self' data: https://fonts.gstatic.com https://fonts.googleapis.com",
     'object-src': "'none'",
     'media-src': "'self' https://*.supabase.co",
-    'frame-src': "'self' https://calendly.com",
+    'frame-src': "'self' https://calendly.com https://open.spotify.com",
     'base-uri': "'self'",
     'form-action': "'self'",
     'upgrade-insecure-requests': ''
