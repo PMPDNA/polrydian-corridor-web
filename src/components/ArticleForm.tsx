@@ -130,29 +130,32 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       
       // Save to Supabase database
       if (article && 'id' in article && article.id) {
-        // Update existing article with all fields at once
-        const { data: updated, error } = await supabase
-          .from('articles')
-          .update({
-            title: validatedData.title,
-            content: sanitizeHtml(validatedData.content),
-            meta_description: validatedData.excerpt,
-            featured_image: formData.heroImage,
-            reading_time_minutes: formData.readTime,
-            keywords: [formData.category],
-            linkedin_url: formData.linkedinUrl,
-            status: 'published',
-            published_at: new Date().toISOString()
-          })
-          .eq('id', article.id)
-          .select()
-          .single();
-        
-        if (error) {
-          throw error;
-        }
+        // Update existing article using the hook
+        const updated = await updateArticle(article.id, {
+          title: validatedData.title,
+          content: sanitizeHtml(validatedData.content),
+          status: 'published'
+        });
         
         if (updated) {
+          // Update additional fields directly
+          const { error: updateError } = await supabase
+            .from('articles')
+            .update({
+              meta_description: validatedData.excerpt,
+              featured_image: formData.heroImage,
+              reading_time_minutes: formData.readTime,
+              keywords: [formData.category],
+              linkedin_url: formData.linkedinUrl,
+              published_at: new Date().toISOString()
+            })
+            .eq('id', article.id);
+          
+          if (updateError) {
+            console.error('Error updating additional fields:', updateError);
+            throw updateError;
+          }
+          
           onSave(updated as any);
         }
       } else {
@@ -176,6 +179,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           
           if (updateError) {
             console.error('Error updating article fields:', updateError);
+            throw updateError;
           }
             
           onSave(created as any);
