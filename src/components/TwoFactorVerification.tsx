@@ -58,34 +58,19 @@ export default function TwoFactorVerification({ onSuccess }: TwoFactorVerificati
 
     setIsLoading(true)
     try {
-      console.log('Mobile MFA verification starting:', {
-        isMobile: window.innerWidth <= 768,
-        userAgent: navigator.userAgent
-      })
-      
       const mfaResponse = await verifyMFA(factorId, challengeId, verificationCode)
-      console.log('MFA verification successful:', mfaResponse)
       
-      // Wait for session refresh with proper error handling
-      const { data: session, error: sessionError } = await supabase.auth.refreshSession()
-      console.log('Session after MFA refresh:', session?.session?.access_token ? 'Token present' : 'No token', sessionError)
-      
-      if (sessionError) {
-        console.error('Session refresh failed:', sessionError)
-        throw sessionError
-      }
+      // Simple session refresh without complex timing logic
+      await supabase.auth.refreshSession()
       
       toast({
         title: "Welcome back!",
         description: "Two-factor authentication successful.",
       })
       
-      // Let the auth system handle the state change naturally
-      console.log('Calling onSuccess callback')
       onSuccess()
       
     } catch (error: any) {
-      console.error('MFA verification failed:', error)
       toast({
         title: "Verification Failed",
         description: "Please check your code and try again.",

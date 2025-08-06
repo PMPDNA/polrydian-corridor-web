@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Save, X, Webhook, Link, Upload, Image as ImageIcon } from "lucide-react";
+import { Save, X, Link, Upload, Image as ImageIcon } from "lucide-react";
 import { FileUpload } from "@/components/FileUpload";
 import { ImageGalleryPicker } from "@/components/ImageGalleryPicker";
 import { useToast } from "@/hooks/use-toast";
@@ -44,7 +44,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
   const { isAdmin, user } = useSupabaseAuth();
   const { createArticle, updateArticle } = useArticles();
   const [isLoading, setIsLoading] = useState(false);
-  const [zapierWebhook, setZapierWebhook] = useState("");
+  
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   // Handle both legacy Article interface and new DBArticle interface
@@ -62,16 +62,10 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
       case 'heroImage':
         return 'featured_image' in article ? article.featured_image : (article as any).heroImage || fallback;
       case 'category':
-        // Look for category in keywords array first, then fallback
-        const dbKeywords = (article as any).keywords;
-        console.log('ArticleForm: Reading category from article:', { dbKeywords, article: article });
-        if (dbKeywords && Array.isArray(dbKeywords) && dbKeywords.length > 0) {
-          console.log('ArticleForm: Found category in keywords:', dbKeywords[0]);
-          return dbKeywords[0];
-        }
-        const fallbackCategory = (article as any).category || "Strategy";
-        console.log('ArticleForm: Using fallback category:', fallbackCategory);
-        return fallbackCategory;
+        // Use direct category field if available, fallback to first keyword for legacy compatibility
+        const directCategory = (article as any).category;
+        const legacyCategory = (article as any).keywords?.[0];
+        return directCategory || legacyCategory || "Strategy";
       case 'linkedinUrl':
         return 'linkedin_url' in article ? article.linkedin_url : (article as any).linkedinUrl || fallback;
       default:
@@ -127,7 +121,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         content: formData.content,
         category: formData.category,
         featured: formData.featured,
-        zapierWebhookUrl: zapierWebhook
+        
       });
       
       console.log('ArticleForm: After sanitization - content length:', sanitizedData.content.length);
@@ -161,7 +155,8 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           meta_description: validatedData.excerpt,
           featured_image: formData.heroImage,
           reading_time_minutes: formData.readTime,
-          keywords: [formData.category], // This should be the current formData.category
+          keywords: [formData.category], // Maintain backward compatibility
+          category: formData.category, // Store as direct field for consistency
           linkedin_url: formData.linkedinUrl,
           status: 'published',
           published_at: new Date().toISOString(),
@@ -204,7 +199,8 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
             meta_description: validatedData.excerpt,
             featured_image: formData.heroImage,
             reading_time_minutes: formData.readTime,
-            keywords: [formData.category],
+            keywords: [formData.category], // Maintain backward compatibility
+            category: formData.category, // Store as direct field for consistency
             linkedin_url: formData.linkedinUrl,
             status: 'published',
             published_at: new Date().toISOString(),
@@ -253,43 +249,10 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         }
       }
 
-      // Trigger Zapier webhook if provided and valid
-      if (zapierWebhook && isValidUrl(zapierWebhook)) {
-        try {
-          await fetch(zapierWebhook, {
-            method: "POST",
-            headers: { 
-              "Content-Type": "application/json",
-              "User-Agent": "PolrydianApp/1.0"
-            },
-            body: JSON.stringify({
-              action: "article_published",
-              article: {
-                title: validatedData.title,
-                content: sanitizeHtml(validatedData.content),
-                excerpt: validatedData.excerpt
-              },
-              timestamp: new Date().toISOString()
-            })
-          });
-
-          toast({
-            title: "Article Published & Synced",
-            description: "Article saved to database and Zapier webhook triggered.",
-          });
-        } catch (error) {
-          toast({
-            title: "Article Published",
-            description: "Article saved to database, but webhook failed. Check URL security.",
-            variant: "destructive"
-          });
-        }
-      } else {
-        toast({
-          title: "Article Published!",
-          description: "Your article has been saved successfully.",
-        });
-      }
+      toast({
+        title: "Article Published!",
+        description: "Your article has been saved successfully.",
+      });
     } catch (error: any) {
       console.error('Error saving article:', error);
       toast({

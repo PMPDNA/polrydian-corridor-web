@@ -21,9 +21,6 @@ export const articleSchema = z.object({
   
   featured: z.boolean().optional(),
   
-  zapierWebhookUrl: z.string()
-    .optional()
-    .refine(val => !val || isValidUrl(val), 'Invalid webhook URL')
 })
 
 export const passwordSchema = z.string()
@@ -58,11 +55,10 @@ export const sanitizeText = (text: string): string => {
   return text.replace(/<[^>]*>/g, '').trim()
 }
 
-// URL validation with whitelist
-const ALLOWED_WEBHOOK_DOMAINS = [
-  'hooks.zapier.com',
-  'webhook.site',
-  'httpbin.org'
+// URL validation for general use
+const ALLOWED_DOMAINS = [
+  'linkedin.com',
+  'supabase.co'
 ]
 
 export const isValidUrl = (url: string): boolean => {
@@ -74,10 +70,8 @@ export const isValidUrl = (url: string): boolean => {
       return false
     }
     
-    // Check against whitelist
-    return ALLOWED_WEBHOOK_DOMAINS.some(domain => 
-      urlObj.hostname === domain || urlObj.hostname.endsWith('.' + domain)
-    )
+    // Basic domain validation
+    return urlObj.hostname.length > 0 && !urlObj.hostname.includes('localhost')
   } catch {
     return false
   }

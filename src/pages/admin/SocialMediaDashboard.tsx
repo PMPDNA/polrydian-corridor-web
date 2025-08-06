@@ -1,6 +1,6 @@
 import { AdminLayout } from "@/layouts/AdminLayout"
 import { SocialMediaManager } from "@/components/SocialMediaManager"
-import ZapierLinkedInIntegration from "@/components/ZapierLinkedInIntegration"
+
 import { InstagramIntegration } from "@/components/InstagramIntegration"
 import { EmailServiceSetup } from "@/components/EmailServiceSetup"
 import { IntegrationDashboard } from "@/components/IntegrationDashboard"
@@ -47,12 +47,6 @@ export default function SocialMediaDashboard() {
       icon: Camera,
       component: <InstagramIntegration />
     },
-    {
-      id: "zapier",
-      label: "Zapier",
-      icon: Zap,
-      component: <ZapierLinkedInIntegration />
-    }
   ];
 
   const contentTabs = [
@@ -128,7 +122,7 @@ export default function SocialMediaDashboard() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsList className="grid w-full grid-cols-3 mb-6">
                 {socialTabs.map((tab) => {
                   const Icon = tab.icon;
                   return (

@@ -43,7 +43,7 @@ export interface Article {
   
   // Display properties for unified interface
   excerpt?: string
-  category?: "Strategy" | "Geopolitics" | "Philosophy" | "Defense & Aerospace"
+  category?: string // Standardized to use string instead of keywords array
   heroImage?: string
   publishDate?: string
   readTime?: number
