@@ -47,7 +47,17 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 export function EnhancedAnalyticsDashboard() {
   const { events, performance } = useAnalytics();
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData>({
+    pageViews: 0,
+    uniqueVisitors: 0,
+    avgSessionDuration: 0,
+    bounceRate: 0,
+    conversionRate: 0,
+    topPages: [],
+    trafficSources: [],
+    deviceTypes: [],
+    timeData: []
+  });
   const [socialMetrics, setSocialMetrics] = useState<SocialMetrics[]>([]);
   const [timeRange, setTimeRange] = useState('7d');
   const [loading, setLoading] = useState(true);
@@ -159,7 +169,7 @@ export function EnhancedAnalyticsDashboard() {
     }
   };
 
-  if (loading || !analyticsData) {
+  if (loading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-center py-12">
@@ -350,7 +360,7 @@ export function EnhancedAnalyticsDashboard() {
                       outerRadius={80}
                       fill="#8884d8"
                     >
-                      {analyticsData.trafficSources.map((entry, index) => (
+                      {Array.isArray(analyticsData.trafficSources) && analyticsData.trafficSources.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -358,7 +368,7 @@ export function EnhancedAnalyticsDashboard() {
                 </ResponsiveContainer>
                 
                 <div className="mt-4 space-y-2">
-                  {analyticsData.trafficSources.map((source, index) => (
+                  {Array.isArray(analyticsData.trafficSources) && analyticsData.trafficSources.map((source, index) => (
                     <div key={source.source} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div 
@@ -383,7 +393,7 @@ export function EnhancedAnalyticsDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {analyticsData.deviceTypes.map((device, index) => (
+                {Array.isArray(analyticsData.deviceTypes) && analyticsData.deviceTypes.map((device, index) => (
                   <div key={device.device} className="flex items-center justify-between">
                     <span className="text-sm font-medium">{device.device}</span>
                     <div className="flex items-center gap-2">
@@ -391,7 +401,7 @@ export function EnhancedAnalyticsDashboard() {
                         <div 
                           className="bg-primary h-2 rounded-full" 
                           style={{ 
-                            width: `${(device.count / Math.max(...analyticsData.deviceTypes.map(d => d.count))) * 100}%` 
+                            width: `${analyticsData.deviceTypes.length > 0 ? (device.count / Math.max(...analyticsData.deviceTypes.map(d => d.count))) * 100 : 0}%` 
                           }}
                         />
                       </div>

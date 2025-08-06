@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
           const userAgent = visitorData.user_agent || ''
           const deviceInfo = parseUserAgent(userAgent)
           
-          // Insert visitor analytics data with proper IP handling using upsert to handle duplicates
+          // Insert or update visitor analytics data
           const { error: trackError } = await supabase
             .from('visitor_analytics')
             .upsert({
@@ -80,15 +80,16 @@ Deno.serve(async (req) => {
               updated_at: new Date().toISOString()
             }, {
               onConflict: 'visitor_id,session_id,page_url',
-              ignoreDuplicates: false
+              ignoreDuplicates: true
             })
 
           if (trackError) {
             console.error('Visitor tracking error:', trackError)
-            // Don't throw error for constraint violations, just log them
+            // Silently handle duplicate entries, only throw for other errors
             if (trackError.code !== '23505') {
               throw trackError
             }
+            console.log('Duplicate visitor entry ignored - this is normal behavior')
           }
 
           // Log data processing activity
