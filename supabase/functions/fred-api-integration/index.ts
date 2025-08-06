@@ -6,205 +6,266 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// FRED API endpoints and series
-const FRED_BASE_URL = 'https://api.stlouisfed.org/fred';
-
-// Correct FRED series IDs for economic indicators
-const ECONOMIC_INDICATORS = {
-  gdp: 'A191RL1Q225SBEA', // Real GDP Percent Change from Preceding Period (Quarterly, Seasonally Adjusted Annual Rate)
-  unemployment: 'UNRATE', // Unemployment Rate (Monthly, Seasonally Adjusted)
-  inflation: 'CPIAUCSL', // Consumer Price Index for All Urban Consumers (we'll calculate YoY change)
-  interest_rate: 'FEDFUNDS', // Federal Funds Effective Rate
-  consumer_confidence: 'UMCSENT', // University of Michigan Consumer Sentiment
-  housing_starts: 'HOUST', // Housing Starts
-  retail_sales: 'RSXFS', // Retail Sales
-  industrial_production: 'INDPRO' // Industrial Production Index
-};
-
-async function fetchFredData(seriesId: string, apiKey: string, limit = 100) {
-  const url = `${FRED_BASE_URL}/series/observations?series_id=${seriesId}&api_key=${apiKey}&file_type=json&limit=${limit}&sort_order=desc`;
-  
-  console.log(`📊 Fetching FRED data for series: ${seriesId}`);
-  
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`FRED API error: ${response.status} - ${await response.text()}`);
-  }
-  
-  const data = await response.json();
-  return data.observations || [];
-}
-
-// Calculate inflation rate from CPI data (Year-over-Year percentage change)
-function calculateInflationRate(cpiData: any[]): any[] {
-  if (!cpiData || cpiData.length < 12) return cpiData;
-  
-  return cpiData.map((current, index) => {
-    // Find the observation from 12 months ago
-    const yearAgoIndex = cpiData.findIndex(obs => {
-      const currentDate = new Date(current.date);
-      const obsDate = new Date(obs.date);
-      const monthsDiff = (currentDate.getFullYear() - obsDate.getFullYear()) * 12 + 
-                        (currentDate.getMonth() - obsDate.getMonth());
-      return Math.abs(monthsDiff - 12) < 2; // Allow 1-2 months tolerance
-    });
-    
-    if (yearAgoIndex !== -1 && current.value !== '.' && cpiData[yearAgoIndex].value !== '.') {
-      const currentValue = parseFloat(current.value);
-      const yearAgoValue = parseFloat(cpiData[yearAgoIndex].value);
-      const inflationRate = ((currentValue - yearAgoValue) / yearAgoValue) * 100;
-      
-      return {
-        ...current,
-        value: inflationRate.toFixed(1)
-      };
-    }
-    
-    return current;
-  });
-}
-
-async function logIntegrationEvent(supabase: any, operation: string, status: string, details: any, userId?: string) {
-  await supabase.rpc('log_integration_event', {
-    p_integration_type: 'fred',
-    p_operation: operation,
-    p_status: status,
-    p_user_id: userId,
-    p_request_data: details.request || {},
-    p_response_data: details.response || {},
-    p_execution_time_ms: details.execution_time || null,
-    p_error_message: details.error || null
-  });
-}
-
 serve(async (req) => {
-  console.log('🚀 FRED API Integration function started');
-  
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const startTime = Date.now();
-  let operation = 'unknown';
-  
   try {
+    console.log('🚀 FRED API Integration function started');
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const fredApiKey = Deno.env.get('FRED_API_KEY');
-
+    
     if (!fredApiKey) {
       throw new Error('FRED API key not configured');
     }
-
+    
+    console.log('🔑 FRED API key configured, proceeding with data fetch');
+    
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    // For FRED data, we don't need user authentication - this is service-level data
-    console.log('🔑 FRED API key configured, proceeding with data fetch');
-
-    const body = await req.json();
-    operation = body.operation || 'fetch_data';
+    // Parse request body
+    let requestBody: any = {};
+    try {
+      if (req.body) {
+        requestBody = await req.json();
+      }
+    } catch (e) {
+      // Body might be empty or malformed, use defaults
+    }
     
-    console.log('📝 Request:', { operation, indicators: body.indicators });
-
-    let result = {};
-    const executionTime = Date.now() - startTime;
-
-    switch (operation) {
-      case 'fetch_indicators':
-        const indicators = body.indicators || Object.keys(ECONOMIC_INDICATORS);
-        const fredData = {};
+    console.log('📝 Request:', requestBody);
+    
+    // Define core economic indicators with proper series IDs
+    const coreIndicators = [
+      {
+        id: 'GDPC1',
+        series_id: 'GDPC1',
+        title: 'Real GDP',
+        description: 'Real Gross Domestic Product, Seasonally Adjusted Annual Rate',
+        units: 'Billions of Chained 2017 Dollars',
+        frequency: 'Quarterly',
+        indicator_type: 'gdp'
+      },
+      {
+        id: 'UNRATE',
+        series_id: 'UNRATE',
+        title: 'Unemployment Rate',
+        description: 'Civilian Unemployment Rate',
+        units: 'Percent',
+        frequency: 'Monthly',
+        indicator_type: 'unemployment'
+      },
+      {
+        id: 'CPIAUCSL',
+        series_id: 'CPIAUCSL',
+        title: 'Consumer Price Index',
+        description: 'Consumer Price Index for All Urban Consumers: All Items',
+        units: 'Index 1982-1984=100',
+        frequency: 'Monthly',
+        indicator_type: 'inflation'
+      },
+      {
+        id: 'FEDFUNDS',
+        series_id: 'FEDFUNDS',
+        title: 'Federal Funds Rate',
+        description: 'Effective Federal Funds Rate',
+        units: 'Percent',
+        frequency: 'Monthly',
+        indicator_type: 'interest_rate'
+      },
+      {
+        id: 'UMCSENT',
+        series_id: 'UMCSENT',
+        title: 'Consumer Sentiment',
+        description: 'University of Michigan Consumer Sentiment Index',
+        units: 'Index 1966:Q1=100',
+        frequency: 'Monthly',
+        indicator_type: 'consumer_confidence'
+      },
+      {
+        id: 'HOUST',
+        series_id: 'HOUST',
+        title: 'Housing Starts',
+        description: 'New Privately-Owned Housing Units Started',
+        units: 'Thousands of Units, Annual Rate',
+        frequency: 'Monthly',
+        indicator_type: 'housing'
+      },
+      {
+        id: 'RSXFS',
+        series_id: 'RSXFS',
+        title: 'Retail Sales',
+        description: 'Advance Real Retail and Food Services Sales',
+        units: 'Millions of Dollars',
+        frequency: 'Monthly',
+        indicator_type: 'retail'
+      },
+      {
+        id: 'INDPRO',
+        series_id: 'INDPRO',
+        title: 'Industrial Production',
+        description: 'Industrial Production Total Index',
+        units: 'Index 2017=100',
+        frequency: 'Monthly',
+        indicator_type: 'industrial'
+      }
+    ];
+    
+    // Filter indicators based on request
+    let indicatorsToFetch = coreIndicators;
+    if (requestBody.indicators && Array.isArray(requestBody.indicators)) {
+      const requestedTypes = requestBody.indicators;
+      indicatorsToFetch = coreIndicators.filter(indicator => 
+        requestedTypes.some(type => 
+          indicator.indicator_type.includes(type.toLowerCase()) ||
+          indicator.id.toLowerCase().includes(type.toLowerCase())
+        )
+      );
+    }
+    
+    const results: any[] = [];
+    
+    for (const indicator of indicatorsToFetch) {
+      try {
+        console.log(`📊 Fetching FRED data for series: ${indicator.series_id}`);
         
-        for (const indicator of indicators) {
-          const seriesId = ECONOMIC_INDICATORS[indicator];
-          if (seriesId) {
-            try {
-              let rawData = await fetchFredData(seriesId, fredApiKey, body.limit);
-              
-              // Special processing for inflation - calculate YoY change from CPI level data
-              if (indicator === 'inflation') {
-                rawData = calculateInflationRate(rawData);
-              }
-              
-              fredData[indicator] = rawData;
-            } catch (error) {
-              console.error(`❌ Failed to fetch ${indicator}:`, error);
-              fredData[indicator] = { error: error.message };
-            }
+        const fredUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${indicator.series_id}&api_key=${fredApiKey}&file_type=json&limit=24&sort_order=desc`;
+        
+        const fredResponse = await fetch(fredUrl);
+        
+        if (!fredResponse.ok) {
+          console.error(`❌ FRED API error for ${indicator.series_id}: ${fredResponse.status} ${fredResponse.statusText}`);
+          continue;
+        }
+        
+        const fredData = await fredResponse.json();
+        console.log(`✅ FRED API request completed successfully for ${indicator.series_id}`);
+        
+        if (!fredData.observations || fredData.observations.length === 0) {
+          console.warn(`⚠️ No observations found for ${indicator.series_id}`);
+          continue;
+        }
+        
+        const observations = fredData.observations.filter(obs => obs.value !== '.' && obs.value !== null);
+        
+        if (observations.length === 0) {
+          console.warn(`⚠️ No valid observations for ${indicator.series_id}`);
+          continue;
+        }
+        
+        const latestObs = observations[0];
+        const prevObs = observations[1];
+        
+        // Calculate percentage change
+        let changePercent = null;
+        if (prevObs && latestObs.value !== '.' && prevObs.value !== '.') {
+          const current = parseFloat(latestObs.value);
+          const previous = parseFloat(prevObs.value);
+          if (!isNaN(current) && !isNaN(previous) && previous !== 0) {
+            changePercent = ((current - previous) / previous) * 100;
           }
         }
         
-        result = { success: true, data: fredData };
-        
-        await logIntegrationEvent(supabase, operation, 'success', {
-          request: { indicators, limit: body.limit },
-          response: { indicators_count: Object.keys(fredData).length },
-          execution_time: executionTime
-        });
-        
-        break;
-
-      case 'fetch_series':
-        const seriesId = body.series_id;
-        if (!seriesId) {
-          throw new Error('Series ID required for fetch_series operation');
+        const latestValue = parseFloat(latestObs.value);
+        if (isNaN(latestValue)) {
+          console.warn(`⚠️ Invalid latest value for ${indicator.series_id}: ${latestObs.value}`);
+          continue;
         }
         
-        const seriesData = await fetchFredData(seriesId, fredApiKey, body.limit);
-        result = { success: true, data: seriesData };
-        
-        await logIntegrationEvent(supabase, operation, 'success', {
-          request: { series_id: seriesId, limit: body.limit },
-          response: { observations_data: seriesData.length },
-          execution_time: executionTime
-        });
-        
-        break;
-
-      case 'get_available_series':
-        result = { 
-          success: true, 
-          data: Object.entries(ECONOMIC_INDICATORS).map(([key, seriesId]) => ({
-            key,
-            series_id: seriesId,
-            name: key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+        const result = {
+          id: indicator.id,
+          title: indicator.title,
+          series_id: indicator.series_id,
+          latest_value: latestValue,
+          latest_date: latestObs.date,
+          change_percent: changePercent,
+          description: indicator.description,
+          units: indicator.units,
+          frequency: indicator.frequency,
+          indicator_type: indicator.indicator_type,
+          data_points: observations.slice(0, 12).map(obs => ({
+            date: obs.date,
+            value: parseFloat(obs.value) || 0
           }))
         };
-        break;
-
-      default:
-        throw new Error(`Unknown operation: ${operation}`);
+        
+        results.push(result);
+        
+        // Store in insights table
+        const { error: insertError } = await supabase
+          .from('insights')
+          .upsert({
+            title: indicator.title,
+            content: `Latest ${indicator.title}: ${latestValue.toLocaleString()} ${indicator.units}. ${indicator.description}`,
+            data_source: 'Federal Reserve Economic Data',
+            series_id: indicator.series_id,
+            indicator_type: indicator.indicator_type,
+            region: 'US',
+            data_points: observations.slice(0, 12).map(obs => ({
+              date: obs.date,
+              value: parseFloat(obs.value) || 0,
+              series_id: indicator.series_id
+            })),
+            chart_config: {
+              type: 'line',
+              title: indicator.title,
+              yAxisLabel: indicator.units,
+              latest_value: latestValue,
+              latest_date: latestObs.date,
+              change_percent: changePercent
+            },
+            is_published: true
+          }, {
+            onConflict: 'series_id'
+          });
+        
+        if (insertError) {
+          console.error(`❌ Error storing insight for ${indicator.series_id}:`, insertError);
+        } else {
+          console.log(`✅ Successfully stored insight for ${indicator.series_id}`);
+        }
+        
+        // Rate limiting to avoid hitting API limits
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        console.error(`❌ Error processing ${indicator.series_id}:`, error);
+      }
     }
-
-    console.log('✅ FRED API request completed successfully');
     
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
-  } catch (error: any) {
-    const executionTime = Date.now() - startTime;
-    console.error('💥 FRED API error:', error);
+    console.log(`🎉 FRED API Integration completed. Processed ${results.length} indicators.`);
     
-    // Log error to integration logs
-    try {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-      
-      await logIntegrationEvent(supabase, operation, 'error', {
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: results,
+        message: `Successfully fetched ${results.length} indicators`,
+        indicators_processed: results.length,
+        timestamp: new Date().toISOString()
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      }
+    );
+    
+  } catch (error) {
+    console.error('❌ FRED API Integration error:', error);
+    return new Response(
+      JSON.stringify({
+        success: false,
         error: error.message,
-        execution_time: executionTime
-      });
-    } catch (logError) {
-      console.error('Failed to log error:', logError);
-    }
-    
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      operation: operation
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+        data: [],
+        timestamp: new Date().toISOString()
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500
+      }
+    );
   }
 });
