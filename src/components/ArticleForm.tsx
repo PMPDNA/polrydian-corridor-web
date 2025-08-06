@@ -157,7 +157,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         // Update all fields in one go - using direct formData values
         const updatePayload = {
           title: validatedData.title,
-          content: sanitizeHtml(validatedData.content),
+          content: validatedData.content, // Already sanitized by sanitizeFormData
           meta_description: validatedData.excerpt,
           featured_image: formData.heroImage,
           reading_time_minutes: formData.readTime,
@@ -200,7 +200,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           .from('articles')
           .insert({
             title: validatedData.title,
-            content: sanitizeHtml(validatedData.content),
+            content: validatedData.content, // Already sanitized by sanitizeFormData
             meta_description: validatedData.excerpt,
             featured_image: formData.heroImage,
             reading_time_minutes: formData.readTime,
@@ -595,33 +595,6 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           </CardContent>
         </Card>
 
-        {/* Auto-Sync Settings */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Webhook className="h-5 w-5" />
-              Auto-Sync with LinkedIn
-            </CardTitle>
-            <CardDescription>
-              Configure Zapier webhook for automatic article synchronization
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="zapierWebhook">Zapier Webhook URL (Optional)</Label>
-              <Input
-                id="zapierWebhook"
-                type="url"
-                value={zapierWebhook}
-                onChange={(e) => setZapierWebhook(e.target.value)}
-                placeholder="https://hooks.zapier.com/hooks/catch/..."
-              />
-              <p className="text-sm text-muted-foreground">
-                Create a Zap with webhook trigger to auto-sync when you publish articles
-              </p>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Actions */}
         <div className="flex gap-3 justify-end">
