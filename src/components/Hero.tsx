@@ -45,7 +45,7 @@ export const Hero = () => {
         <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
           <div className="flex justify-center">
             <a 
-              href="/contact" 
+              href="/schedule" 
               className="inline-flex items-center justify-center bg-accent text-accent-foreground px-10 py-6 text-xl rounded-lg hover:bg-accent/90 shadow-elegant transition-colors font-semibold"
             >
               Schedule Strategic Consultation

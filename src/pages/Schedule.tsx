@@ -2,7 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CalendlyEmbed from "@/components/CalendlyEmbed";
-import { ConsultationBookingForm } from "@/components/ConsultationBookingForm";
+import { EnhancedConsultationBookingForm } from "@/components/EnhancedConsultationBookingForm";
 import { Calendar, Users, Clock, CheckCircle } from "lucide-react";
 import Footer from "@/components/Footer";
 
@@ -94,7 +94,7 @@ export default function Schedule() {
                 </p>
               </CardHeader>
               <CardContent>
-                <ConsultationBookingForm />
+                <EnhancedConsultationBookingForm />
               </CardContent>
             </Card>
           </div>

@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ThinkTankModal } from '@/components/ThinkTankModal';
+import { ThinkTankModal } from './ThinkTankModal';
+import { CorridorEconomicsModal } from './CorridorEconomicsModals';
 import { ExternalLink, Globe2, TrendingUp, FileText, Calendar, BarChart3, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
@@ -129,9 +130,19 @@ export const EnhancedCorridorEconomics = () => {
             Think of it as building bridges where others see barriers—transforming geopolitical friction into strategic advantage.
           </p>
           <div className="flex flex-wrap gap-2 mb-4">
-            <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Capital Flows</span>
-            <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Technology Transfer</span>
-            <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded">Strategic Pathways</span>
+            {['Capital Flows', 'Technology Transfer', 'Strategic Pathways'].map((tag, index) => (
+              <CorridorEconomicsModal 
+                key={index}
+                type={tag.toLowerCase().replace(/\s+/g, '-') as 'capital-flows' | 'technology-transfer' | 'strategic-pathways'}
+              >
+                <Badge 
+                  variant="secondary" 
+                  className="bg-accent/10 hover:bg-accent/20 text-accent-foreground cursor-pointer transition-colors px-4 py-2"
+                >
+                  {tag}
+                </Badge>
+              </CorridorEconomicsModal>
+            ))}
           </div>
           
           <ThinkTankModal />
