@@ -1,3 +1,7 @@
+User-agent: *
+Allow: /
+
+# Allow all well-behaved crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +14,42 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: LinkedInBot
 Allow: /
+
+# Block AI training crawlers
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+# Sitemap location
+Sitemap: https://polrydian.com/sitemap.xml
+
+# Key pages
+Allow: /articles
+Allow: /insights
+Allow: /about
+Allow: /services
+Allow: /schedule
+Allow: /partners
+
+# Admin and private areas
+Disallow: /admin
+Disallow: /api
+Disallow: /*.json$
+Disallow: /*?*
+Disallow: /reset-password
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1

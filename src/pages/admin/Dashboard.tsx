@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { AdminLayout } from "@/layouts/AdminLayout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -85,20 +88,168 @@ const systemCards = [
 ]
 
 export default function AdminDashboard() {
+  const { user, isAdmin } = useSupabaseAuth();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalArticles: 0,
+    totalInsights: 0,
+    totalBookings: 0,
+    activeIntegrations: 0
+  });
+
+  // Fetch admin data
+  useEffect(() => {
+    if (user && isAdmin) {
+      fetchAdminData();
+    }
+  }, [user, isAdmin]);
+
+  const fetchAdminData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch statistics
+      const [
+        { count: usersCount },
+        { count: articlesCount },
+        { count: insightsCount },
+        { count: bookingsCount }
+      ] = await Promise.all([
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('articles').select('*', { count: 'exact', head: true }),
+        supabase.from('insights').select('*', { count: 'exact', head: true }),
+        supabase.from('consultation_bookings').select('*', { count: 'exact', head: true })
+      ]);
+
+      setStats({
+        totalUsers: usersCount || 0,
+        totalArticles: articlesCount || 0,
+        totalInsights: insightsCount || 0,
+        totalBookings: bookingsCount || 0,
+        activeIntegrations: 5 // Static for now
+      });
+
+    } catch (error) {
+      console.error('Error fetching admin data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const testFredIntegration = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('fred-api-integration', {
+        body: {
+          operation: 'fetch_indicators',
+          indicators: ['gdp'],
+          limit: 5
+        }
+      });
+      
+      if (error) throw error;
+      
+      if (data?.success) {
+        alert('FRED API integration working correctly');
+      } else {
+        alert('FRED API integration test failed');
+      }
+    } catch (error: any) {
+      alert('FRED API test failed: ' + error.message);
+    }
+  };
+
   return (
     <AdminLayout title="Dashboard">
       <div className="space-y-6">
-        {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-3">
-            <LayoutDashboard className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">Admin Dashboard</h2>
-            <Badge variant="outline" className="text-primary">Live Site Control</Badge>
-          </div>
-          <p className="text-muted-foreground">
-            Welcome to the comprehensive admin panel. From here you can manage all aspects of the Polrydian Group website.
-          </p>
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Users</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalUsers}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Articles</CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalArticles}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Insights</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalInsights}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Bookings</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalBookings}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Integrations</CardTitle>
+              <Activity className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.activeIntegrations}</div>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Quick Actions with FRED Test */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Quick Actions & Integration Tests
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={testFredIntegration} variant="default">
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Test FRED API
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/admin/articles">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Manage Articles
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/admin/images">
+                  <Camera className="h-4 w-4 mr-2" />
+                  Manage Images
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/insights">
+                  <Globe className="h-4 w-4 mr-2" />
+                  View Insights
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Quick Actions */}
         <div>
