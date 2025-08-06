@@ -16,6 +16,7 @@ import { articleSchema, sanitizeHtml, sanitizeFormData, isValidUrl } from "@/lib
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useArticles, type Article as DBArticle } from "@/hooks/useArticles";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 interface Article {
   id: string;
@@ -427,15 +428,11 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="content">Content *</Label>
-              <Textarea
-                id="content"
+              <RichTextEditor
                 value={formData.content}
-                onChange={(e) => handleContentChange(e.target.value)}
+                onChange={handleContentChange}
                 placeholder="Write your full article content here..."
-                rows={12}
-                required
-                maxLength={50000}
-                className="resize-none min-h-[300px]"
+                className="min-h-[400px]"
               />
               {errors.content && <p className="text-sm text-destructive mt-1">{errors.content}</p>}
             </div>
