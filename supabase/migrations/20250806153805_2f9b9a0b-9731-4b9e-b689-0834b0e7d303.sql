@@ -1,0 +1,8 @@
+-- Initialize mock data for policy updates to test the system
+INSERT INTO policy_updates (headline, summary, url, source, tags, published_at)
+VALUES 
+  ('EU Finalizes Digital Services Act Implementation', 'The European Union has completed implementation guidelines for the Digital Services Act, affecting major tech platforms operating in Europe.', 'https://example.com/eu-dsa-implementation', 'Reuters', ARRAY['EU', 'digital policy', 'tech regulation'], now() - interval '2 hours'),
+  ('US-China Trade Talks Resume in Geneva', 'Senior trade officials from the United States and China have resumed bilateral discussions on trade normalization in Geneva.', 'https://example.com/us-china-geneva-talks', 'Financial Times', ARRAY['trade talks', 'US', 'China'], now() - interval '1 day'),
+  ('BRICS Summit Announces New Development Bank Initiatives', 'BRICS nations have announced expanded financing mechanisms through the New Development Bank for infrastructure projects.', 'https://example.com/brics-ndb-initiatives', 'Bloomberg', ARRAY['BRICS', 'development finance', 'infrastructure'], now() - interval '3 days'),
+  ('WTO Ruling on Semiconductor Export Controls', 'The World Trade Organization has issued preliminary findings on export control measures affecting semiconductor trade.', 'https://example.com/wto-semiconductor-ruling', 'Wall Street Journal', ARRAY['WTO', 'semiconductors', 'export controls'], now() - interval '1 week')
+ON CONFLICT (url) DO NOTHING;
