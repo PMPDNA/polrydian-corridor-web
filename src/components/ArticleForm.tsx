@@ -63,6 +63,8 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         return 'featured_image' in article ? article.featured_image : (article as any).heroImage || fallback;
       case 'category':
         return (article as any).category || "Strategy";
+      case 'linkedinUrl':
+        return 'linkedin_url' in article ? article.linkedin_url : (article as any).linkedinUrl || fallback;
       default:
         return (article as any)[field] || fallback;
     }
@@ -138,6 +140,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
             featured_image: formData.heroImage,
             reading_time_minutes: formData.readTime,
             keywords: [formData.category],
+            linkedin_url: formData.linkedinUrl,
             status: 'published',
             published_at: new Date().toISOString()
           })
@@ -165,6 +168,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
               featured_image: formData.heroImage,
               reading_time_minutes: formData.readTime,
               keywords: [formData.category],
+              linkedin_url: formData.linkedinUrl,
               status: 'published',
               published_at: new Date().toISOString()
             })

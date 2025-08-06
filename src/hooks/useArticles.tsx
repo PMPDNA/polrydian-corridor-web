@@ -39,6 +39,7 @@ export interface Article {
   auto_publish_linkedin?: boolean
   auto_publish_substack?: boolean
   auto_publish_medium?: boolean
+  linkedin_url?: string
   
   // Display properties for unified interface
   excerpt?: string

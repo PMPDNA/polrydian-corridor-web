@@ -106,6 +106,7 @@ export type Database = {
           id: string
           image_associations: Json | null
           keywords: string[] | null
+          linkedin_url: string | null
           meta_description: string | null
           published_at: string | null
           reading_time_minutes: number | null
@@ -134,6 +135,7 @@ export type Database = {
           id?: string
           image_associations?: Json | null
           keywords?: string[] | null
+          linkedin_url?: string | null
           meta_description?: string | null
           published_at?: string | null
           reading_time_minutes?: number | null
@@ -162,6 +164,7 @@ export type Database = {
           id?: string
           image_associations?: Json | null
           keywords?: string[] | null
+          linkedin_url?: string | null
           meta_description?: string | null
           published_at?: string | null
           reading_time_minutes?: number | null

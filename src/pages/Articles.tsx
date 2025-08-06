@@ -91,7 +91,7 @@ export default function Articles() {
     heroImage: dbArticle.featured_image || "/placeholder.svg",
     publishDate: dbArticle.published_at ? new Date(dbArticle.published_at).toISOString().split('T')[0] : new Date(dbArticle.created_at).toISOString().split('T')[0],
     readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
-    linkedinUrl: dbArticle.linkedinUrl || "",
+    linkedinUrl: dbArticle.linkedin_url || "",
     featured: true,
     slug: dbArticle.slug, // Add slug from database
   })) || [];
@@ -180,9 +180,18 @@ export default function Articles() {
                   className="border-white text-white hover:bg-white hover:text-primary"
                   asChild
                 >
-                  <a href={featuredArticles[currentHero]?.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                  <a 
+                    href={featuredArticles[currentHero]?.linkedinUrl || '#'} 
+                    target={featuredArticles[currentHero]?.linkedinUrl ? "_blank" : "_self"}
+                    rel="noopener noreferrer"
+                    onClick={(e) => {
+                      if (!featuredArticles[currentHero]?.linkedinUrl) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
                     <ExternalLink className="h-4 w-4 mr-2" />
-                    View on LinkedIn
+                    {featuredArticles[currentHero]?.linkedinUrl ? 'View on LinkedIn' : 'LinkedIn URL Not Set'}
                   </a>
                 </Button>
               </div>
@@ -379,7 +388,16 @@ export default function Articles() {
                         </DialogContent>
                      </Dialog>
                      <Button size="sm" variant="outline" asChild>
-                       <a href={article.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                       <a 
+                         href={article.linkedinUrl || '#'} 
+                         target={article.linkedinUrl ? "_blank" : "_self"}
+                         rel="noopener noreferrer"
+                         onClick={(e) => {
+                           if (!article.linkedinUrl) {
+                             e.preventDefault();
+                           }
+                         }}
+                       >
                          <ExternalLink className="h-4 w-4" />
                        </a>
                      </Button>
