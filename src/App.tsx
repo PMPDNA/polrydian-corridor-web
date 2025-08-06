@@ -25,7 +25,7 @@ import AdminPage from "./pages/AdminPage";
 
 
 import SocialMediaDashboard from "./pages/admin/SocialMediaDashboard";
-import HeroEditor from "./pages/admin/HeroEditor";
+import PartnersManager from "./pages/admin/PartnersManager";
 import ContentManager from "./pages/admin/ContentManager";
 import ArticleManager from "./pages/admin/ArticleManager";
 import FredDashboard from "./pages/admin/FredDashboard";
@@ -89,10 +89,10 @@ const App = () => {
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
-            <Route path="/admin/hero-editor" element={
+            <Route path="/admin/partners" element={
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
-                  <HeroEditor />
+                  <PartnersManager />
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />

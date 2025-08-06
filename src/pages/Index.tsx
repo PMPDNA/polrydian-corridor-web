@@ -33,7 +33,11 @@ const Index = () => {
         <section id="hero" aria-label="Hero section">
           <Hero />
         </section>
-        <UnifiedOrganizationManager />
+        <section id="partners" aria-label="Strategic partners" className="py-16 bg-muted/30">
+          <div className="container mx-auto px-6">
+            <UnifiedOrganizationManager />
+          </div>
+        </section>
         <section id="insights" aria-label="Economic insights" className="py-20 bg-gradient-to-br from-background via-background/50 to-primary/5">
           <div className="container mx-auto px-6 space-y-12">
             <FredDataDisplay />
