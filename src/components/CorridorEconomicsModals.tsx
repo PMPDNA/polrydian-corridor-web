@@ -25,22 +25,28 @@ const corridorData = {
     ],
     thinkTankResources: [
       {
-        title: 'Global Capital Flows and Financial Stability',
+        title: 'Global Financial Stability and Cross-Border Capital Flows',
         source: 'Brookings Institution',
-        url: 'https://www.brookings.edu/research/global-capital-flows/',
-        summary: 'Analysis of how international capital movements affect global financial stability.'
+        url: 'https://www.brookings.edu/articles/global-financial-stability-and-cross-border-capital-flows/',
+        summary: 'Analysis of how international capital movements affect global financial stability and policy responses.'
       },
       {
-        title: 'Capital Controls and Financial Stability',
+        title: 'Economics Program: Capital Markets and Financial Flows',
         source: 'Center for Strategic & International Studies',
-        url: 'https://www.csis.org/analysis/capital-controls',
-        summary: 'Examining the effectiveness of capital controls in managing financial flows.'
+        url: 'https://www.csis.org/programs/economics-program',
+        summary: 'CSIS analysis of capital market developments and their strategic implications for economic security.'
       },
       {
-        title: 'International Capital Flows Database',
+        title: 'International Direct Investment Statistics',
         source: 'OECD',
-        url: 'https://www.oecd.org/finance/international-capital-flows.htm',
-        summary: 'Comprehensive data on international capital movements and policy implications.'
+        url: 'https://www.oecd.org/investment/statistics.htm',
+        summary: 'Comprehensive OECD data and analysis on foreign direct investment flows and policies.'
+      },
+      {
+        title: 'Global Capital Flows and Exchange Rates',
+        source: 'Peterson Institute for International Economics',
+        url: 'https://www.piie.com/research/topics/international-finance-and-macroeconomics',
+        summary: 'PIIE research on international capital flows, exchange rate dynamics, and monetary policy coordination.'
       }
     ],
     fredSeries: ['GDP', 'FEDFUNDS', 'CPIAUCSL']
@@ -58,22 +64,28 @@ const corridorData = {
     ],
     thinkTankResources: [
       {
-        title: 'Technology Transfer and Innovation Policy',
+        title: 'Innovation and Technology Transfer in the Global Economy',
         source: 'Brookings Institution',
-        url: 'https://www.brookings.edu/research/technology-transfer/',
-        summary: 'Research on policies that facilitate effective technology transfer between institutions.'
+        url: 'https://www.brookings.edu/topic/technology-innovation/',
+        summary: 'Research on innovation ecosystems, technology transfer mechanisms, and digital transformation policies.'
       },
       {
-        title: 'Global Technology Competition',
+        title: 'Strategic Technologies Program',
         source: 'Center for Strategic & International Studies',
         url: 'https://www.csis.org/programs/strategic-technologies-program',
-        summary: 'Analysis of strategic technology competition and its geopolitical implications.'
+        summary: 'Analysis of emerging technologies, tech competition, and innovation policy in strategic sectors.'
       },
       {
-        title: 'Innovation and Technology Transfer',
+        title: 'OECD Science, Technology and Innovation Indicators',
         source: 'OECD',
-        url: 'https://www.oecd.org/innovation/',
-        summary: 'OECD insights on innovation systems and technology diffusion.'
+        url: 'https://www.oecd.org/sti/inno/',
+        summary: 'Comprehensive data on R&D investment, patent flows, and innovation performance across countries.'
+      },
+      {
+        title: 'Technology Transfer and Industrial Policy',
+        source: 'Peterson Institute for International Economics',
+        url: 'https://www.piie.com/research/topics/trade-and-globalization',
+        summary: 'PIIE analysis of technology transfer policies, industrial strategy, and global value chains.'
       }
     ],
     fredSeries: ['INDPRO', 'RSXFS', 'HOUST']
@@ -91,22 +103,28 @@ const corridorData = {
     ],
     thinkTankResources: [
       {
-        title: 'Strategic Infrastructure and Economic Security',
+        title: 'Economics Program: Infrastructure and Economic Security',
         source: 'Center for Strategic & International Studies',
         url: 'https://www.csis.org/programs/economics-program',
-        summary: 'Analysis of how infrastructure investments affect economic and national security.'
+        summary: 'CSIS analysis of strategic infrastructure development and its implications for economic and national security.'
       },
       {
-        title: 'Global Infrastructure and Economic Development',
+        title: 'Global Infrastructure Initiative',
         source: 'Brookings Institution',
-        url: 'https://www.brookings.edu/research/infrastructure/',
-        summary: 'Research on infrastructure investment and its impact on economic development.'
+        url: 'https://www.brookings.edu/topic/infrastructure/',
+        summary: 'Research on infrastructure investment, financing mechanisms, and development impact across regions.'
       },
       {
-        title: 'Strategic Trade and Economic Corridors',
+        title: 'Trade and Economic Corridors Development',
         source: 'OECD',
-        url: 'https://www.oecd.org/trade/',
-        summary: 'OECD analysis of trade routes and economic corridor development.'
+        url: 'https://www.oecd.org/trade/topics/trade-facilitation/',
+        summary: 'OECD insights on trade facilitation, corridor development, and regional economic integration.'
+      },
+      {
+        title: 'Strategic Economic Pathways and Supply Chain Resilience',
+        source: 'Peterson Institute for International Economics',
+        url: 'https://www.piie.com/research/topics/trade-and-globalization',
+        summary: 'PIIE research on supply chain resilience, economic corridors, and strategic trade relationships.'
       }
     ],
     fredSeries: ['UMCSENT', 'HOUST', 'GDP']

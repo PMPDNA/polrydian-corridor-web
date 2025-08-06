@@ -20,82 +20,132 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Search terms for policy updates
+    // Search terms for trade policy updates
     const searchTerms = [
-      'trade policy',
       'tariffs',
-      'corridor economics',
-      'semiconductor',
+      'trade war',
+      'semiconductors',
       'BRICS',
+      'trade policy',
+      'export controls',
       'supply chain',
-      'economic corridor'
+      'economic sanctions'
     ];
 
     const updates: any[] = [];
 
-    // For demo purposes, we'll create some mock policy updates
-    // In production, you would integrate with news APIs like GDELT, NewsAPI, etc.
-    const mockUpdates = [
-      {
-        headline: "New Trade Corridor Initiative Announced Between US and Indo-Pacific Partners",
-        summary: "Biden administration announces new economic corridor development program aimed at strengthening supply chain resilience and trade relationships in the Indo-Pacific region.",
-        source: "Reuters",
-        url: "https://www.reuters.com/business/trade-corridor-initiative-2024",
-        tags: ["trade policy", "corridor", "Indo-Pacific"],
-        published_at: new Date().toISOString()
-      },
-      {
-        headline: "BRICS Nations Explore New Payment Corridors for Trade",
-        summary: "BRICS economic forum discusses development of alternative payment systems and trade corridors to reduce dependency on traditional financial networks.",
-        source: "Financial Times",
-        url: "https://www.ft.com/content/brics-payment-corridors",
-        tags: ["BRICS", "trade policy", "corridor"],
-        published_at: new Date(Date.now() - 86400000).toISOString() // 1 day ago
-      },
-      {
-        headline: "Semiconductor Supply Chain Resilience Act Progress Update",
-        summary: "Latest developments in semiconductor supply chain legislation and its implications for technology corridors and manufacturing partnerships.",
-        source: "Wall Street Journal",
-        url: "https://www.wsj.com/semiconductor-supply-chain-update",
-        tags: ["semiconductor", "supply chain", "trade policy"],
-        published_at: new Date(Date.now() - 172800000).toISOString() // 2 days ago
-      },
-      {
-        headline: "EU-Asia Trade Corridor Development Fund Established",
-        summary: "European Union announces new funding mechanism for infrastructure projects that strengthen trade corridors between Europe and Asia.",
-        source: "Politico Europe",
-        url: "https://www.politico.eu/eu-asia-trade-corridor-fund",
-        tags: ["corridor economics", "trade policy"],
-        published_at: new Date(Date.now() - 259200000).toISOString() // 3 days ago
-      },
-      {
-        headline: "Tariff Adjustments Impact Global Trade Routes",
-        summary: "Recent tariff changes prompt reassessment of optimal trade corridors and supply chain configurations for multinational corporations.",
-        source: "Bloomberg",
-        url: "https://www.bloomberg.com/tariff-trade-routes-impact",
-        tags: ["tariffs", "trade policy", "supply chain"],
-        published_at: new Date(Date.now() - 345600000).toISOString() // 4 days ago
-      }
-    ];
+    // Use NewsAPI (free tier) for policy updates
+    // Note: In production, you would get a free API key from https://newsapi.org/
+    const newsApiKey = Deno.env.get('NEWS_API_KEY');
+    
+    if (!newsApiKey) {
+      console.log('⚠️ NEWS_API_KEY not found, using mock data');
+      
+      // Insert mock policy updates for demonstration
+      const mockUpdates = [
+        {
+          headline: 'New EU Tariffs on Chinese Electric Vehicles Take Effect',
+          summary: 'The European Union has implemented new tariffs on Chinese electric vehicle imports, marking a significant shift in trade policy.',
+          url: 'https://example.com/eu-tariffs-china-ev',
+          source: 'Reuters',
+          tags: ['tariffs', 'EU', 'China', 'electric vehicles']
+        },
+        {
+          headline: 'BRICS Nations Discuss Alternative Payment Systems',
+          summary: 'BRICS countries are advancing discussions on creating alternative payment mechanisms to reduce dependence on dollar-based systems.',
+          url: 'https://example.com/brics-payment-systems',
+          source: 'Financial Times',
+          tags: ['BRICS', 'payment systems', 'trade']
+        },
+        {
+          headline: 'US Expands Semiconductor Export Controls',
+          summary: 'The United States has announced expanded export controls on semiconductor technology to certain countries.',
+          url: 'https://example.com/us-semiconductor-controls',
+          source: 'Wall Street Journal',
+          tags: ['semiconductors', 'export controls', 'US', 'technology']
+        }
+      ];
 
-    for (const update of mockUpdates) {
-      // Check if we already have this update
-      const { data: existing } = await supabase
-        .from('policy_updates')
-        .select('id')
-        .eq('url', update.url)
-        .single();
-
-      if (!existing) {
-        const { error: insertError } = await supabase
+      for (const update of mockUpdates) {
+        // Check if we already have this update
+        const { data: existing } = await supabase
           .from('policy_updates')
-          .insert(update);
+          .select('id')
+          .eq('url', update.url)
+          .single();
 
-        if (insertError) {
-          console.error('❌ Error inserting policy update:', insertError);
-        } else {
-          console.log(`✅ Inserted policy update: ${update.headline}`);
-          updates.push(update);
+        if (!existing) {
+          const { error: insertError } = await supabase
+            .from('policy_updates')
+            .insert({
+              headline: update.headline,
+              summary: update.summary,
+              url: update.url,
+              source: update.source,
+              tags: update.tags,
+              published_at: new Date().toISOString()
+            });
+
+          if (insertError) {
+            console.error('❌ Error inserting policy update:', insertError);
+          } else {
+            console.log(`✅ Inserted policy update: ${update.headline}`);
+            updates.push(update);
+          }
+        }
+      }
+    } else {
+      // Real NewsAPI implementation
+      for (const term of searchTerms.slice(0, 3)) { // Limit to avoid rate limits
+        try {
+          const newsUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(term)}&language=en&sortBy=publishedAt&pageSize=5&apiKey=${newsApiKey}`;
+          
+          console.log(`📡 Fetching news for term: ${term}`);
+          
+          const response = await fetch(newsUrl);
+          if (!response.ok) {
+            console.error(`❌ Failed to fetch news for ${term}: ${response.status}`);
+            continue;
+          }
+
+          const data = await response.json();
+          
+          for (const article of data.articles || []) {
+            if (!article.title || !article.url) continue;
+
+            // Check if we already have this update
+            const { data: existing } = await supabase
+              .from('policy_updates')
+              .select('id')
+              .eq('url', article.url)
+              .single();
+
+            if (!existing) {
+              const { error: insertError } = await supabase
+                .from('policy_updates')
+                .insert({
+                  headline: article.title,
+                  summary: article.description || article.title,
+                  url: article.url,
+                  source: article.source?.name || 'Unknown',
+                  tags: [term],
+                  published_at: article.publishedAt || new Date().toISOString()
+                });
+
+              if (insertError) {
+                console.error('❌ Error inserting policy update:', insertError);
+              } else {
+                console.log(`✅ Inserted policy update: ${article.title}`);
+                updates.push(article);
+              }
+            }
+          }
+          
+          // Rate limiting - wait between requests
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+        } catch (error) {
+          console.error(`❌ Error fetching news for ${term}:`, error);
         }
       }
     }
