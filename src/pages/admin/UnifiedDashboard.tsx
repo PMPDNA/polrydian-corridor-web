@@ -204,10 +204,10 @@ export default function UnifiedAdminDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Articles</p>
+                  <p className="text-sm font-medium text-muted-foreground">Published Articles</p>
                   <p className="text-2xl font-bold">{stats.articles}</p>
                 </div>
-                <FileText className="h-8 w-8 text-blue-500" />
+                <FileText className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -219,7 +219,7 @@ export default function UnifiedAdminDashboard() {
                   <p className="text-sm font-medium text-muted-foreground">Economic Insights</p>
                   <p className="text-2xl font-bold">{stats.insights}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-500" />
+                <TrendingUp className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -231,7 +231,7 @@ export default function UnifiedAdminDashboard() {
                   <p className="text-sm font-medium text-muted-foreground">Partners</p>
                   <p className="text-2xl font-bold">{stats.partners}</p>
                 </div>
-                <Building2 className="h-8 w-8 text-purple-500" />
+                <Building2 className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -243,7 +243,7 @@ export default function UnifiedAdminDashboard() {
                   <p className="text-sm font-medium text-muted-foreground">Consultations</p>
                   <p className="text-2xl font-bold">{stats.bookings}</p>
                 </div>
-                <Calendar className="h-8 w-8 text-orange-500" />
+                <Calendar className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -292,15 +292,15 @@ export default function UnifiedAdminDashboard() {
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <div className="w-3 h-3 rounded-full bg-success"></div>
                 <span className="text-sm">Database Connected</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <div className="w-3 h-3 rounded-full bg-success"></div>
                 <span className="text-sm">Edge Functions Active</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <div className="w-3 h-3 rounded-full bg-success"></div>
                 <span className="text-sm">Authentication Working</span>
               </div>
             </div>
