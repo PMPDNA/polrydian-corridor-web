@@ -14,7 +14,7 @@ export const articleSchema = z.object({
   
   content: z.string()
     .min(1, 'Content is required')
-    .max(50000, 'Content must be less than 50,000 characters'),
+    .max(500000, 'Content must be less than 500,000 characters'),
   
   category: z.string()
     .min(1, 'Category is required'),
