@@ -39,20 +39,24 @@ export const About = () => {
 
   // Load existing profile photo on component mount
   useEffect(() => {
-    loadProfilePhoto();
-  }, []);
+    if (user) {
+      loadProfilePhoto();
+    }
+  }, [user]);
 
   const loadProfilePhoto = async () => {
+    if (!user?.id) return;
+    
     try {
       // Load profile photo for current admin user
       const { data: profiles, error } = await supabase
         .from('profiles')
         .select('avatar_url')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .not('avatar_url', 'is', null)
         .single();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
         console.error('Error loading profile:', error);
         return;
       }
