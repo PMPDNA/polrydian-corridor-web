@@ -39,6 +39,7 @@ import NotFound from "./pages/NotFound";
 import CookieConsent from "./components/CookieConsent";
 
 import { ScrollToTop } from "./components/ScrollToTop";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 
 const queryClient = new QueryClient();
 
@@ -149,6 +150,7 @@ const App = () => {
           
           <ScrollToTop />
           <CookieConsent />
+          <OfflineIndicator />
         </BrowserRouter>
       </TooltipProvider>
     </ErrorBoundary>

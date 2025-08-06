@@ -1,5 +1,5 @@
 import { Navigation } from "@/components/Navigation";
-import { SearchComponent } from "@/components/SearchComponent";
+import { AdvancedSearchComponent } from "@/components/AdvancedSearchComponent";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +51,7 @@ const SearchPage = () => {
         </div>
 
         <div className="space-y-8">
-          <SearchComponent />
+          <AdvancedSearchComponent />
 
           <div className="grid gap-8 md:grid-cols-2">
             {/* Popular Searches */}
