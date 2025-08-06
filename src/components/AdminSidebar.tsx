@@ -33,14 +33,13 @@ import {
 } from "@/components/ui/sidebar"
 
 const contentItems = [
-  { title: "Hero Section", url: "/admin/hero", icon: Home },
+  { title: "Content Manager", url: "/admin/content", icon: Edit },
+  { title: "Hero Section", url: "/admin/hero-editor", icon: Home },
   { title: "Manage Articles", url: "/admin/articles", icon: FileText },
-  // More content editors coming soon
 ]
 
 const mediaItems = [
-  { title: "Social Media", url: "/admin/social", icon: MessageSquare },
-  // More media tools coming soon
+  { title: "Social Media", url: "/admin/social-dashboard", icon: MessageSquare },
 ]
 
 const systemItems = [

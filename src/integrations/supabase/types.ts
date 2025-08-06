@@ -402,6 +402,41 @@ export type Database = {
         }
         Relationships: []
       }
+      content_history: {
+        Row: {
+          change_reason: string | null
+          changed_by: string | null
+          content_id: string
+          created_at: string
+          id: string
+          previous_value: string
+        }
+        Insert: {
+          change_reason?: string | null
+          changed_by?: string | null
+          content_id: string
+          created_at?: string
+          id?: string
+          previous_value: string
+        }
+        Update: {
+          change_reason?: string | null
+          changed_by?: string | null
+          content_id?: string
+          created_at?: string
+          id?: string
+          previous_value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_history_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "website_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_schedule: {
         Row: {
           config: Json | null
@@ -1372,6 +1407,42 @@ export type Database = {
           user_agent?: string | null
           visit_duration?: number | null
           visitor_id?: string
+        }
+        Relationships: []
+      }
+      website_content: {
+        Row: {
+          content_key: string
+          content_type: string
+          content_value: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          section_name: string
+          updated_at: string
+        }
+        Insert: {
+          content_key: string
+          content_type?: string
+          content_value: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          section_name: string
+          updated_at?: string
+        }
+        Update: {
+          content_key?: string
+          content_type?: string
+          content_value?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          section_name?: string
+          updated_at?: string
         }
         Relationships: []
       }

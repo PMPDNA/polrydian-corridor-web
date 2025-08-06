@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
-import { EnhancedInsightsDisplay } from "@/components/EnhancedInsightsDisplay";
+import { EnhancedEconomicInsights } from "@/components/EnhancedEconomicInsights";
 import { CorridorEconomicsIntelligence } from "@/components/CorridorEconomicsIntelligence";
 import { 
   Search, 
@@ -263,7 +263,7 @@ export default function Insights() {
 
         {/* Enhanced Economic Data Display */}
         <section className="mb-12">
-          <EnhancedInsightsDisplay />
+          <EnhancedEconomicInsights />
         </section>
 
         {/* Categories */}
