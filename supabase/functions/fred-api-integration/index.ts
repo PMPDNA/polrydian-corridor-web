@@ -67,19 +67,8 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
     
-    // Verify authentication
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader) {
-      throw new Error('Authentication required');
-    }
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
-
-    if (authError || !user) {
-      throw new Error('Authentication failed');
-    }
+    // For FRED data, we don't need user authentication - this is service-level data
+    console.log('🔑 FRED API key configured, proceeding with data fetch');
 
     const body = await req.json();
     operation = body.operation || 'fetch_data';
@@ -112,7 +101,7 @@ serve(async (req) => {
           request: { indicators, limit: body.limit },
           response: { indicators_count: Object.keys(fredData).length },
           execution_time: executionTime
-        }, user.id);
+        });
         
         break;
 
@@ -127,9 +116,9 @@ serve(async (req) => {
         
         await logIntegrationEvent(supabase, operation, 'success', {
           request: { series_id: seriesId, limit: body.limit },
-          response: { observations_count: seriesData.length },
+          response: { observations_data: seriesData.length },
           execution_time: executionTime
-        }, user.id);
+        });
         
         break;
 
