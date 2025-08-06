@@ -18,7 +18,8 @@ export default function ArticleDetailPage() {
 
   useEffect(() => {
     if (articles && slug) {
-      const foundArticle = articles.find(a => a.id === slug);
+      // First try to find by slug, then fall back to ID for backwards compatibility
+      const foundArticle = articles.find(a => a.slug === slug) || articles.find(a => a.id === slug);
       setArticle(foundArticle);
     }
   }, [articles, slug]);

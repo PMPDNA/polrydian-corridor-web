@@ -75,51 +75,54 @@ export function RichTextEditor({
         />
       </Suspense>
       
-      <style jsx global>{`
-        .ql-editor {
-          min-height: 300px;
-          font-family: inherit;
-          color: hsl(var(--foreground));
-          background-color: hsl(var(--background));
-        }
-        
-        .ql-toolbar {
-          border-color: hsl(var(--border));
-          background-color: hsl(var(--muted));
-        }
-        
-        .ql-container {
-          border-color: hsl(var(--border));
-        }
-        
-        .ql-snow .ql-tooltip {
-          background-color: hsl(var(--popover));
-          border-color: hsl(var(--border));
-          color: hsl(var(--popover-foreground));
-        }
-        
-        .ql-snow .ql-stroke {
-          stroke: hsl(var(--foreground));
-        }
-        
-        .ql-snow .ql-fill {
-          fill: hsl(var(--foreground));
-        }
-        
-        .ql-snow .ql-picker-label {
-          color: hsl(var(--foreground));
-        }
-        
-        .ql-snow .ql-picker-options {
-          background-color: hsl(var(--popover));
-          border-color: hsl(var(--border));
-        }
-        
-        .ql-snow .ql-picker-item:hover {
-          background-color: hsl(var(--accent));
-          color: hsl(var(--accent-foreground));
-        }
-      `}</style>
+      {/* Custom styles for dark/light theme compatibility */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .ql-editor {
+            min-height: 300px;
+            font-family: inherit;
+            color: hsl(var(--foreground));
+            background-color: hsl(var(--background));
+          }
+          
+          .ql-toolbar {
+            border-color: hsl(var(--border));
+            background-color: hsl(var(--muted));
+          }
+          
+          .ql-container {
+            border-color: hsl(var(--border));
+          }
+          
+          .ql-snow .ql-tooltip {
+            background-color: hsl(var(--popover));
+            border-color: hsl(var(--border));
+            color: hsl(var(--popover-foreground));
+          }
+          
+          .ql-snow .ql-stroke {
+            stroke: hsl(var(--foreground));
+          }
+          
+          .ql-snow .ql-fill {
+            fill: hsl(var(--foreground));
+          }
+          
+          .ql-snow .ql-picker-label {
+            color: hsl(var(--foreground));
+          }
+          
+          .ql-snow .ql-picker-options {
+            background-color: hsl(var(--popover));
+            border-color: hsl(var(--border));
+          }
+          
+          .ql-snow .ql-picker-item:hover {
+            background-color: hsl(var(--accent));
+            color: hsl(var(--accent-foreground));
+          }
+        `
+      }} />
     </div>
   );
 }

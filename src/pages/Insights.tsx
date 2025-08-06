@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { supabase } from "@/integrations/supabase/client";
-import { FredDataDisplay } from "@/components/FredDataDisplay";
+import { EnhancedInsightsDisplay } from "@/components/EnhancedInsightsDisplay";
 import { CorridorEconomicsIntelligence } from "@/components/CorridorEconomicsIntelligence";
 import { 
   Search, 
@@ -261,9 +261,9 @@ export default function Insights() {
           <CorridorEconomicsIntelligence />
         </section>
 
-        {/* FRED Economic Data */}
+        {/* Enhanced Economic Data Display */}
         <section className="mb-12">
-          <FredDataDisplay />
+          <EnhancedInsightsDisplay />
         </section>
 
         {/* Categories */}

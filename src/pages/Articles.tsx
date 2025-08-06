@@ -25,6 +25,7 @@ interface Article {
   readTime: number;
   linkedinUrl: string;
   featured: boolean;
+  slug?: string; // Add slug property
   vipPhotos?: string[];
   eventPhotos?: string[];
 }
@@ -92,6 +93,7 @@ export default function Articles() {
     readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
     linkedinUrl: "",
     featured: true,
+    slug: dbArticle.slug, // Add slug from database
   })) || [];
 
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
@@ -319,9 +321,9 @@ export default function Articles() {
                        className="flex-1"
                        asChild
                      >
-                       <Link to={`/articles/${article.id}`}>
-                         Read Full Article
-                       </Link>
+                       <Link to={`/articles/${article.slug || article.id}`}>
+                          Read Full Article
+                        </Link>
                      </Button>
                      <Dialog>
                        <DialogTrigger asChild>
