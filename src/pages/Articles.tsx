@@ -27,8 +27,6 @@ interface Article {
   linkedinUrl: string;
   featured: boolean;
   slug?: string; // Add slug property
-  vipPhotos?: string[];
-  eventPhotos?: string[];
 }
 
 const sampleArticles: Article[] = [
@@ -42,9 +40,7 @@ const sampleArticles: Article[] = [
     publishDate: "2024-01-15",
     readTime: 8,
     linkedinUrl: "https://linkedin.com/pulse/example",
-    featured: true,
-    vipPhotos: ["/api/placeholder/300/200", "/api/placeholder/300/200"],
-    eventPhotos: ["/api/placeholder/300/200", "/api/placeholder/300/200"]
+    featured: true
   },
   {
     id: "2", 
@@ -56,8 +52,7 @@ const sampleArticles: Article[] = [
     publishDate: "2024-01-10",
     readTime: 12,
     linkedinUrl: "https://linkedin.com/pulse/example2",
-    featured: true,
-    eventPhotos: ["/api/placeholder/300/200"]
+    featured: true
   },
   {
     id: "3",
@@ -421,20 +416,6 @@ export default function Articles() {
                    {/* Social Share Buttons */}
                    <SocialShareButtons article={article} compact={true} />
 
-                  {/* Photo Gallery Preview */}
-                  {(article.vipPhotos || article.eventPhotos) && (
-                    <div className="mt-4 pt-4 border-t">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                        <Camera className="h-4 w-4" />
-                        <span>Event Gallery</span>
-                      </div>
-                      <PhotoGallery 
-                        vipPhotos={article.vipPhotos} 
-                        eventPhotos={article.eventPhotos}
-                        compact={true}
-                      />
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             ))}
