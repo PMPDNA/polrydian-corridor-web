@@ -96,7 +96,7 @@ export default function ArticleDetailPage() {
             </div>
 
             {/* Featured Image */}
-            {article.featured_image && article.featured_image !== "/placeholder.svg" && (
+            {article.featured_image && (
               <div className="mb-8">
                 <img 
                   src={article.featured_image} 

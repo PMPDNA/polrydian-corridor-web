@@ -90,7 +90,7 @@ export default function Articles() {
     excerpt: dbArticle.meta_description || dbArticle.content.replace(/<[^>]*>/g, '').substring(0, 200) + "...",
     content: dbArticle.content,
     category: (dbArticle.keywords?.[0] as any) || "Strategy",
-    heroImage: dbArticle.featured_image || "/placeholder.svg",
+    heroImage: dbArticle.featured_image,
     publishDate: dbArticle.published_at ? new Date(dbArticle.published_at).toISOString().split('T')[0] : new Date(dbArticle.created_at).toISOString().split('T')[0],
     readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
     linkedinUrl: dbArticle.linkedin_url || "",
@@ -369,7 +369,7 @@ export default function Articles() {
                                 </div>
                               </div>
                               {/* Hero Image */}
-                              {article.heroImage && article.heroImage !== "/placeholder.svg" && (
+                              {article.heroImage && (
                                 <div className="mb-6">
                                   <img 
                                     src={article.heroImage} 

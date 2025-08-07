@@ -76,7 +76,7 @@ export default function ArticleDetail() {
       
       {/* Hero Section */}
       <section className="relative pt-24 pb-12">
-        {article.featured_image && article.featured_image !== "/placeholder.svg" && (
+        {article.featured_image && (
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-20"
             style={{ backgroundImage: `url(${article.featured_image})` }}
@@ -113,7 +113,7 @@ export default function ArticleDetail() {
             </div>
             
             {/* Featured Image */}
-            {article.featured_image && article.featured_image !== "/placeholder.svg" && (
+            {article.featured_image && (
               <div className="mb-8">
                 <img 
                   src={article.featured_image} 
