@@ -31,7 +31,7 @@ interface ImageRecord {
 const categories = [
   { value: 'article', label: 'Article Images' },
   { value: 'company_logo', label: 'Company Logos' },
-  { value: 'event', label: 'Event Photos' },
+  
   { value: 'profile', label: 'Profile Pictures' },
   { value: 'general', label: 'General' },
 ]

@@ -177,8 +177,6 @@ export function ImageGalleryPicker({
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
             <SelectItem value="hero">Hero Images</SelectItem>
-            <SelectItem value="vip">VIP Photos</SelectItem>
-            <SelectItem value="event">Event Photos</SelectItem>
             <SelectItem value="general">General</SelectItem>
             <SelectItem value="gallery">Gallery</SelectItem>
           </SelectContent>
