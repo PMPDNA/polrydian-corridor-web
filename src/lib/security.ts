@@ -35,11 +35,15 @@ export const emailSchema = z.string()
   .email('Invalid email address')
   .min(1, 'Email is required')
 
-// Content sanitization - Enhanced security
+// Content sanitization - Enhanced security with corruption prevention
 export const sanitizeHtml = (content: string): string => {
   if (!content) return '';
   
-  return DOMPurify.sanitize(content, {
+  // First pass: Fix any tripled characters that might exist (common corruption pattern)
+  let cleanContent = content.replace(/([a-z])\1{2,}/gi, '$1');
+  
+  // Second pass: DOMPurify sanitization
+  const sanitized = DOMPurify.sanitize(cleanContent, {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 
@@ -61,7 +65,14 @@ export const sanitizeHtml = (content: string): string => {
     // Preserve line breaks and spacing
     ADD_TAGS: ['#text'],
     ADD_ATTR: []
-  })
+  });
+  
+  // Final cleanup: remove empty elements and normalize whitespace
+  return sanitized
+    .replace(/<(p|h[1-6]|div)><\/\1>/g, '') // Remove empty elements
+    .replace(/<(p|h[1-6]|div)[^>]*><br><\/\1>/g, '') // Remove elements with just breaks
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .trim();
 }
 
 export const sanitizeText = (text: string): string => {
@@ -136,17 +147,31 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
       
       // Special handling for article content - preserve HTML structure and fix corruption
       if (key === 'content') {
+        const original = value;
+        
         // Fix common character tripling issues and clean up spacing
         const cleanedContent = value
-          // Fix tripled characters (ppp -> p, rrr -> r, sss -> s)
-          .replace(/([prs])\1{2,}/g, '$1')
+          // Fix any tripled characters (comprehensive pattern)
+          .replace(/([a-z])\1{2,}/gi, '$1')
           // Normalize spacing but preserve paragraph breaks
           .replace(/\s+/g, ' ')
           .replace(/>\s+</g, '><')
           .replace(/(<\/p>)\s*(<p[^>]*>)/g, '$1\n$2')
           .replace(/(<\/h[1-6]>)\s*(<p[^>]*>)/g, '$1\n$2')
           .trim();
+        
         sanitizedValue = sanitizeHtml(cleanedContent);
+        
+        // Log content processing for debugging corruption issues
+        if (original !== sanitizedValue) {
+          console.log('Content sanitization applied:', {
+            originalLength: original.length,
+            cleanedLength: sanitizedValue.length,
+            hasTrippledChars: /([a-z])\1{2,}/i.test(original),
+            preview: original.substring(0, 100) + '...'
+          });
+        }
+        
         // NO length truncation for article content - preserve full text
       } else {
         // Enhanced sanitization for other fields (but NOT for content)

@@ -5,7 +5,7 @@ export interface SecurityValidationResult {
   sanitizedData?: any;
 }
 
-// Input validation for edge functions
+// Input validation for edge functions with corruption prevention
 export function validateInput(data: any, requiredFields: string[]): SecurityValidationResult {
   const errors: string[] = [];
   const sanitizedData: any = {};
@@ -21,19 +21,42 @@ export function validateInput(data: any, requiredFields: string[]): SecurityVali
   for (const [key, value] of Object.entries(data)) {
     if (typeof value === 'string') {
       let sanitized: string;
+      const original = value as string;
       
-      // Special handling for article content - preserve HTML structure and content
+      // Special handling for article content - preserve HTML structure and prevent corruption
       if (key === 'content') {
-        // For article content, only remove the most dangerous patterns while preserving HTML
-        sanitized = (value as string)
+        // Fix common corruption patterns first
+        sanitized = original
+          // Fix tripled characters (comprehensive pattern for any letter)
+          .replace(/([a-z])\1{2,}/gi, '$1')
+          // Remove dangerous patterns
           .replace(/javascript:/gi, '') // Remove JS protocol
           .replace(/data:/gi, '') // Remove data protocol
           .replace(/on\w+\s*=/gi, '') // Remove event handlers
+          // Clean up malformed HTML
+          .replace(/<(p|h[1-6]|div)><\/\1>/g, '') // Remove empty elements
+          .replace(/<(p|h[1-6]|div)[^>]*><br><\/\1>/g, '') // Remove elements with just breaks
+          // Normalize whitespace but preserve structure
+          .replace(/\s+/g, ' ')
           .trim();
+        
+        // Log content processing for debugging corruption issues
+        if (original !== sanitized) {
+          console.log('Edge function content sanitization:', {
+            field: key,
+            originalLength: original.length,
+            sanitizedLength: sanitized.length,
+            hadTrippledChars: /([a-z])\1{2,}/i.test(original),
+            preview: original.substring(0, 100) + '...'
+          });
+        }
+        
         // No character limit for content - preserve full article text
       } else {
         // For other fields, use minimal sanitization to preserve readability
-        sanitized = (value as string)
+        sanitized = original
+          // Fix tripled characters in other fields too
+          .replace(/([a-z])\1{2,}/gi, '$1')
           .replace(/javascript:/gi, '') // Remove JS protocol
           .replace(/data:/gi, '') // Remove data protocol
           .replace(/on\w+\s*=/gi, '') // Remove event handlers
