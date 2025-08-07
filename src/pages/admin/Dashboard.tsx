@@ -141,33 +141,6 @@ export default function AdminDashboard() {
 
   const { toast } = useToast();
 
-  const testFredIntegration = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke('fred-api-integration', {
-        body: {
-          operation: 'fetch_indicators',
-          indicators: ['gdp', 'unemployment', 'inflation'],
-          limit: 10
-        }
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "FRED API Test Successful",
-        description: `Fetched ${data?.processed_count || 'multiple'} economic indicators`,
-        variant: "default"
-      });
-    } catch (error: any) {
-      console.error('FRED API test failed:', error);
-      toast({
-        title: "FRED API Test Failed",
-        description: error.message || "Failed to connect to FRED API",
-        variant: "destructive"
-      });
-    }
-  };
-
   return (
     <AdminLayout title="Dashboard">
       <div className="space-y-6">

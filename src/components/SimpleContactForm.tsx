@@ -12,6 +12,7 @@ import { Send } from "lucide-react";
 export const SimpleContactForm = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -70,6 +71,7 @@ export const SimpleContactForm = () => {
       });
 
       setFormData({ name: "", email: "", message: "" });
+      setIsSubmitted(true);
     } catch (error: any) {
       console.error('Contact form error:', error);
       toast({
@@ -141,6 +143,19 @@ export const SimpleContactForm = () => {
               </>
             )}
           </Button>
+          
+          {isSubmitted && (
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                <span className="font-medium text-green-800">Message Sent Successfully!</span>
+              </div>
+              <p className="text-sm text-green-700 mt-1">
+                Thank you for reaching out. We'll review your message and get back to you within 24 hours 
+                with insights tailored to your strategic challenges.
+              </p>
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>

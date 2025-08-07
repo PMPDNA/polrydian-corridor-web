@@ -455,22 +455,33 @@ export const SocialMediaManager = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="bg-muted/30 border border-muted rounded-lg p-4 mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-2 w-2 bg-yellow-500 rounded-full"></div>
+              <span className="font-medium text-foreground">Authorization Required</span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              LinkedIn and Instagram integrations require API credentials and authorization setup. 
+              Contact your administrator to enable these features.
+            </p>
+          </div>
+          
           <div className="grid md:grid-cols-2 gap-4">
             <Button
               disabled={true}
               variant="outline"
-              className="flex items-center gap-2 opacity-50"
+              className="flex items-center gap-2 opacity-50 cursor-not-allowed"
             >
               <Instagram className="h-4 w-4" />
-              Instagram Sync (Authorization Pending)
+              Instagram Sync (Not Available)
             </Button>
             <Button
               disabled={true}
               variant="outline"
-              className="flex items-center gap-2 opacity-50"
+              className="flex items-center gap-2 opacity-50 cursor-not-allowed"
             >
               <Linkedin className="h-4 w-4" />
-              LinkedIn Sync (Authorization Pending)
+              LinkedIn Sync (Not Available)
             </Button>
           </div>
           

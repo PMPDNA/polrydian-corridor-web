@@ -18,6 +18,7 @@ export const NewsletterSignup = ({ variant = 'full', className = '' }: Newslette
   const [name, setName] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const { toast } = useToast();
 
   const interestOptions = [
@@ -77,6 +78,7 @@ export const NewsletterSignup = ({ variant = 'full', className = '' }: Newslette
         setEmail('');
         setName('');
         setInterests([]);
+        setIsSubscribed(true);
       }
     } catch (error) {
       console.error('Newsletter signup error:', error);
@@ -111,6 +113,19 @@ export const NewsletterSignup = ({ variant = 'full', className = '' }: Newslette
           <Button type="submit" disabled={loading} size="sm" className="w-full">
             {loading ? 'Subscribing...' : 'Subscribe'}
           </Button>
+          
+          {isSubscribed && (
+            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                <span className="font-medium text-green-800 text-sm">Welcome to Strategic Insights!</span>
+              </div>
+              <p className="text-xs text-green-700 mt-1">
+                You'll receive curated corridor economics analysis and geopolitical insights every 3 days, 
+                plus breaking news alerts when global events impact strategic corridors.
+              </p>
+            </div>
+          )}
         </form>
       </div>
     );
@@ -182,6 +197,19 @@ export const NewsletterSignup = ({ variant = 'full', className = '' }: Newslette
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? 'Subscribing...' : 'Subscribe to Strategic Insights'}
           </Button>
+
+          {isSubscribed && (
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 bg-green-500 rounded-full"></div>
+                <span className="font-medium text-green-800">Welcome to Strategic Insights!</span>
+              </div>
+              <p className="text-sm text-green-700 mt-1">
+                Thank you for subscribing! You'll receive curated corridor economics analysis and geopolitical insights 
+                every 3 days, plus breaking news alerts when global events impact strategic corridors.
+              </p>
+            </div>
+          )}
 
           <p className="text-xs text-muted-foreground text-center">
             We respect your privacy. Unsubscribe at any time. No spam, just valuable strategic insights.
