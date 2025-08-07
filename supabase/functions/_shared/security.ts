@@ -22,23 +22,26 @@ export function validateInput(data: any, requiredFields: string[]): SecurityVali
     if (typeof value === 'string') {
       let sanitized: string;
       
-      // Special handling for article content - preserve more characters
+      // Special handling for article content - preserve HTML structure and content
       if (key === 'content') {
-        // For article content, only remove the most dangerous patterns
+        // For article content, only remove the most dangerous patterns while preserving HTML
         sanitized = (value as string)
           .replace(/javascript:/gi, '') // Remove JS protocol
           .replace(/data:/gi, '') // Remove data protocol
-          .replace(/on\w+=/gi, '') // Remove event handlers
-          .trim()
-          .slice(0, 50000); // Higher limit for articles
+          .replace(/on\w+\s*=/gi, '') // Remove event handlers
+          .trim();
+        // No character limit for content - preserve full article text
       } else {
-        // For other fields, use more targeted sanitization to preserve readability
+        // For other fields, use minimal sanitization to preserve readability
         sanitized = (value as string)
-          .replace(/[<>]/g, '') // Only remove angle brackets to prevent HTML injection
           .replace(/javascript:/gi, '') // Remove JS protocol
           .replace(/data:/gi, '') // Remove data protocol
-          .trim()
-          .slice(0, 10000); // Limit length
+          .replace(/on\w+\s*=/gi, '') // Remove event handlers
+          .trim();
+        // Apply reasonable length limits for non-content fields
+        if (sanitized.length > 10000) {
+          sanitized = sanitized.slice(0, 10000);
+        }
       }
       
       sanitizedData[key] = sanitized;
