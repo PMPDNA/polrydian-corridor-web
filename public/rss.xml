@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Polrydian Corridor Web - Articles</title>
+    <link>https://polrydian.com/articles</link>
+    <description>Strategic insights on corridor economics, geopolitics, and supply-chain flows.</description>
+    <language>en-us</language>
+    <ttl>180</ttl>
+    <!-- Note: For full automation, we can move to a Supabase Edge Function to generate RSS dynamically from published articles. -->
+  </channel>
+</rss>

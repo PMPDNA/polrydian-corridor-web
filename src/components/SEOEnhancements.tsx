@@ -92,6 +92,8 @@ export function SEOEnhancements({
       <meta name="author" content={author} />
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
       <link rel="canonical" href={currentUrl} />
+      <link rel="alternate" type="application/rss+xml" title="Polrydian Articles RSS" href="https://polrydian.com/rss.xml" />
+      <link rel="sitemap" type="application/xml" title="Sitemap" href="https://polrydian.com/sitemap.xml" />
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={article ? "article" : "website"} />

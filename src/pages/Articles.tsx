@@ -70,37 +70,43 @@ const sampleArticles: Article[] = [
 ];
 
 export default function Articles() {
-  // Use real articles from database instead of sample data
-  const { articles: dbArticles, loading } = useArticles();
   const { user, isAdmin } = useSupabaseAuth();
   const { toast } = useToast();
   const [currentHero, setCurrentHero] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [showForm, setShowForm] = useState(false);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 9;
+  const sort: "newest" | "oldest" = "newest";
+
+  const { data, isLoading } = useArticleArchive({
+    page,
+    pageSize,
+    category: selectedCategory === "All" ? undefined : selectedCategory,
+    search,
+    sort,
+  });
+
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
+  const dbArticles = data?.items || [];
+
   // Convert database articles to the expected format
-  const articles: Article[] = dbArticles?.map(dbArticle => ({
+  const articles: Article[] = dbArticles?.map((dbArticle: any) => ({
     id: dbArticle.id,
     title: dbArticle.title,
     excerpt: dbArticle.meta_description || dbArticle.content.replace(/<[^>]*>/g, '').substring(0, 200) + "...",
     content: dbArticle.content,
-    category: (dbArticle.keywords?.[0] as any) || "Strategy",
+    category: dbArticle.category || "Strategy",
     heroImage: dbArticle.featured_image,
     publishDate: dbArticle.published_at ? new Date(dbArticle.published_at).toISOString().split('T')[0] : new Date(dbArticle.created_at).toISOString().split('T')[0],
     readTime: dbArticle.reading_time_minutes || Math.ceil(dbArticle.content.replace(/<[^>]*>/g, '').length / 200),
     linkedinUrl: dbArticle.linkedin_url || "",
     featured: dbArticle.status === 'published',
-    slug: dbArticle.slug, // Add slug from database
+    slug: dbArticle.slug,
   })) || [];
   
-  console.log('Articles with categories:', articles.map(a => ({ 
-    id: a.id, 
-    title: a.title, 
-    category: a.category,
-    dbKeywords: dbArticles?.find(db => db.id === a.id)?.keywords 
-  })));
-
+  const total = data?.total || 0;
   const categories = ["All", "Strategy", "Geopolitics", "Philosophy", "Defense & Aerospace"];
   const featuredArticles = articles.filter(article => article.featured);
 
@@ -244,7 +250,7 @@ export default function Articles() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           {/* Header */}
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-12">
             <div>
               <h2 className="text-4xl font-bold text-foreground mb-4">Strategic Insights</h2>
               <p className="text-lg text-muted-foreground">
@@ -253,7 +259,7 @@ export default function Articles() {
             </div>
             
             {/* Newsletter signup for blog */}
-            <div className="mt-6 p-6 bg-secondary/20 rounded-lg border border-secondary/40">
+            <div className="mt-2 p-6 bg-secondary/20 rounded-lg border border-secondary/40 w-full md:w-[420px]">
               <div className="text-center">
                 <h3 className="text-xl font-semibold text-foreground mb-2">
                   Stay Informed
@@ -266,158 +272,169 @@ export default function Articles() {
             </div>
           </div>
 
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-3 mb-12">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
-                onClick={() => setSelectedCategory(category)}
-                className="rounded-full"
-              >
-                {category}
-              </Button>
-            ))}
+          {/* Search and Filters */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+            <div className="w-full md:max-w-sm">
+              <Input
+                placeholder="Search articles..."
+                value={search}
+                onChange={(e) => { setPage(1); setSearch(e.target.value); }}
+              />
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  onClick={() => { setPage(1); setSelectedCategory(category); }}
+                  className="rounded-full"
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
           </div>
 
           {/* Articles Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {filteredArticles.map((article, index) => (
-              <Card key={article.id} className="group hover:shadow-lg transition-all duration-300 hover-scale">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+            {(isLoading ? Array.from({ length: pageSize }) : filteredArticles).map((article: any, index: number) => (
+              <Card key={isLoading ? index : article.id} className="group hover:shadow-lg transition-all duration-300 hover-scale">
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img 
-                    src={article.heroImage} 
-                    alt={article.title}
+                    src={isLoading ? "/placeholder.svg" : article.heroImage} 
+                    alt={isLoading ? "Loading" : article.title}
                     className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute top-4 left-4">
-                    <Badge variant="secondary">
-                      {article.category}
-                    </Badge>
-                  </div>
-                  {article.featured && (
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-accent text-accent-foreground">
-                        Featured
-                      </Badge>
-                    </div>
+                  {!isLoading && (
+                    <>
+                      <div className="absolute top-4 left-4">
+                        <Badge variant="secondary">
+                          {article.category}
+                        </Badge>
+                      </div>
+                      {article.featured && (
+                        <div className="absolute top-4 right-4">
+                          <Badge className="bg-accent text-accent-foreground">
+                            Featured
+                          </Badge>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
                 
                 <CardHeader>
                   <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
-                    {article.title}
+                    {isLoading ? "\u00A0" : article.title}
                   </CardTitle>
                   <CardDescription className="line-clamp-3">
-                    {article.excerpt}
+                    {isLoading ? "\u00A0" : article.excerpt}
                   </CardDescription>
                 </CardHeader>
                 
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>{formatDate(article.publishDate)}</span>
+                {!isLoading && (
+                  <CardContent>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>{new Date(article.publishDate).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        <span>{article.readTime} min</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span>{article.readTime} min</span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-2 mb-4">
-                     <Button 
-                       size="sm" 
-                       className="flex-1"
-                       asChild
-                     >
-                       <Link to={`/articles/${article.slug || article.id}`}>
-                          Read Full Article
-                        </Link>
-                     </Button>
-                     <Dialog>
-                       <DialogTrigger asChild>
-                         <Button size="sm" variant="outline" onClick={() => setSelectedArticle(article)}>
-                           Quick Preview
-                         </Button>
-                       </DialogTrigger>
-                        <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
-                          <div className="space-y-6">
-                            <div>
-                              <Badge variant="secondary" className="mb-2">
-                                {article.category}
-                              </Badge>
-                              <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
-                              <div className="flex items-center gap-4 text-muted-foreground mb-6">
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="h-4 w-4" />
-                                  <span>{formatDate(article.publishDate)}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Clock className="h-4 w-4" />
-                                  <span>{article.readTime} min read</span>
-                                </div>
-                              </div>
-                              {/* Hero Image */}
-                              {article.heroImage && (
-                                <div className="mb-6">
-                                  <img 
-                                    src={article.heroImage} 
-                                    alt={article.title}
-                                    className="w-full h-64 object-cover rounded-lg"
-                                  />
-                                </div>
-                              )}
-                             </div>
-                             {/* Main content - no truncation */}
-                             <div 
-                               className="prose prose-lg max-w-none whitespace-pre-wrap"
-                               style={{ maxHeight: 'none', overflow: 'visible' }}
-                               dangerouslySetInnerHTML={{ 
-                                 __html: sanitizeHtml(article.content)
-                               }}
-                             />
-                             {article.excerpt && article.excerpt !== article.content.substring(0, 200) + "..." && (
-                               <div className="mt-6 p-4 bg-muted rounded-lg">
-                                 <h3 className="text-lg font-semibold mb-2">Summary</h3>
-                                 <p className="text-muted-foreground">{article.excerpt}</p>
-                               </div>
-                             )}
-                          </div>
-                        </DialogContent>
-                     </Dialog>
-                     <Button size="sm" variant="outline" asChild>
-                       <a 
-                         href={article.linkedinUrl || '#'} 
-                         target={article.linkedinUrl ? "_blank" : "_self"}
-                         rel="noopener noreferrer"
-                         onClick={(e) => {
-                           if (!article.linkedinUrl) {
-                             e.preventDefault();
-                             toast({
-                               title: "LinkedIn URL not available",
-                               description: "This article doesn't have a LinkedIn URL set.",
-                               variant: "default"
-                             });
-                           }
-                         }}
+                    
+                    <div className="flex gap-2 mb-4">
+                       <Button 
+                         size="sm" 
+                         className="flex-1"
+                         asChild
                        >
-                         <ExternalLink className="h-4 w-4 mr-2" />
-                         View on LinkedIn
-                       </a>
-                     </Button>
-                   </div>
-                     
-                   {/* Social Share Buttons */}
-                   <SocialShareButtons article={article} compact={true} />
-
-                </CardContent>
+                         <Link to={`/articles/${article.slug || article.id}`}>
+                            Read Full Article
+                          </Link>
+                       </Button>
+                       <Dialog>
+                         <DialogTrigger asChild>
+                           <Button size="sm" variant="outline" onClick={() => setSelectedArticle(article)}>
+                             Quick Preview
+                           </Button>
+                         </DialogTrigger>
+                          <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
+                            <div className="space-y-6">
+                              <div>
+                                <Badge variant="secondary" className="mb-2">
+                                  {article.category}
+                                </Badge>
+                                <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
+                                <div className="flex items-center gap-4 text-muted-foreground mb-6">
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4" />
+                                    <span>{new Date(article.publishDate).toLocaleDateString()}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span>{article.readTime} min read</span>
+                                  </div>
+                                </div>
+                                {/* Hero Image */}
+                                {article.heroImage && (
+                                  <div className="mb-6">
+                                    <img 
+                                      src={article.heroImage} 
+                                      alt={article.title}
+                                      className="w-full h-64 object-cover rounded-lg"
+                                    />
+                                  </div>
+                                )}
+                               </div>
+                               {/* Main content - no truncation */}
+                               <div 
+                                 className="prose prose-lg max-w-none whitespace-pre-wrap"
+                                 style={{ maxHeight: 'none', overflow: 'visible' }}
+                                 dangerouslySetInnerHTML={{ 
+                                   __html: sanitizeHtml(article.content)
+                                 }}
+                               />
+                               {article.excerpt && article.excerpt !== article.content.substring(0, 200) + "..." && (
+                                 <div className="mt-6 p-4 bg-muted rounded-lg">
+                                   <h3 className="text-lg font-semibold mb-2">Summary</h3>
+                                   <p className="text-muted-foreground">{article.excerpt}</p>
+                                 </div>
+                               )}
+                            </div>
+                          </DialogContent>
+                       </Dialog>
+                       <Button size="sm" variant="outline" asChild>
+                         <a 
+                           href={article.linkedinUrl || '#'} 
+                           target={article.linkedinUrl ? "_blank" : "_self"}
+                           rel="noopener noreferrer"
+                           onClick={(e) => {
+                             if (!article.linkedinUrl) {
+                               e.preventDefault();
+                               toast({
+                                 title: "LinkedIn URL not available",
+                                 description: "This article doesn't have a LinkedIn URL set.",
+                                 variant: "default"
+                               });
+                             }
+                           }}
+                         >
+                           <ExternalLink className="h-4 w-4 mr-2" />
+                           View on LinkedIn
+                         </a>
+                       </Button>
+                    </div>
+                    
+                    {/* Social Share Buttons */}
+                    <SocialShareButtons article={article} compact={true} />
+                  </CardContent>
+                )}
               </Card>
             ))}
           </div>
 
-        </div>
-      </section>
-    </div>
-  );
-}
+          {/* Pagination */}
+          <ArticlePagination total={total} page={page} pageSize={pageSize} onPageChange={setPage} />

@@ -3,6 +3,7 @@ import { SupabaseAuthProvider } from '@/hooks/useSupabaseAuth'
 import App from './App.tsx'
 import './index.css'
 import { initializeSecurity } from './hooks/useSecurityHeaders'
+import { HelmetProvider } from 'react-helmet-async'
 
 // Initialize security features safely
 try {
@@ -12,7 +13,9 @@ try {
 }
 
 createRoot(document.getElementById("root")!).render(
-  <SupabaseAuthProvider>
-    <App />
-  </SupabaseAuthProvider>
+  <HelmetProvider>
+    <SupabaseAuthProvider>
+      <App />
+    </SupabaseAuthProvider>
+  </HelmetProvider>
 )
