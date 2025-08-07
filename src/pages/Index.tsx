@@ -47,6 +47,13 @@ const Index = () => {
         <section id="contact" aria-label="Contact section">
           <Contact />
         </section>
+        <section id="newsletter" aria-label="Newsletter subscription" className="py-16 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
+          <div className="container mx-auto px-6">
+            <div className="max-w-2xl mx-auto">
+              <NewsletterSignup />
+            </div>
+          </div>
+        </section>
       </main>
       
       
