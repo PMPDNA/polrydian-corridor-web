@@ -92,18 +92,21 @@ export default function LinkedInSyncManager() {
           </AlertDescription>
         </Alert>
 
+        <Alert>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            LinkedIn authorization is pending. Please contact the administrator to configure API access.
+          </AlertDescription>
+        </Alert>
+
         <div className="flex gap-3">
           <Button 
-            onClick={performLinkedInSync} 
-            disabled={syncLoading} 
-            className="gap-2"
+            disabled={true}
+            variant="outline"
+            className="gap-2 opacity-50"
           >
-            {syncLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4" />
-            )}
-            Sync LinkedIn Posts
+            <Download className="h-4 w-4" />
+            Sync LinkedIn Posts (Authorization Pending)
           </Button>
           
           <Button 

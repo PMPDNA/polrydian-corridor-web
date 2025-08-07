@@ -457,21 +457,20 @@ export const SocialMediaManager = () => {
         <CardContent className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
             <Button
-              onClick={syncInstagramPosts}
-              disabled={isSyncing}
-              className="flex items-center gap-2"
+              disabled={true}
+              variant="outline"
+              className="flex items-center gap-2 opacity-50"
             >
               <Instagram className="h-4 w-4" />
-              {isSyncing ? 'Syncing...' : 'Sync Instagram (@miamistoic)'}
+              Instagram Sync (Authorization Pending)
             </Button>
             <Button
-              onClick={syncLinkedInFeed}
-              disabled={isSyncing}
+              disabled={true}
               variant="outline"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 opacity-50"
             >
               <Linkedin className="h-4 w-4" />
-              {isSyncing ? 'Syncing...' : 'Sync LinkedIn Feed'}
+              LinkedIn Sync (Authorization Pending)
             </Button>
           </div>
           

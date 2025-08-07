@@ -29,10 +29,10 @@ import { AutomatedContentScheduler } from "@/components/AutomatedContentSchedule
 
 const quickActions = [
   {
-    title: "Edit Hero Section",
-    description: "Update main banner and hero content",
+    title: "Manage Content",
+    description: "Edit hero, pages, and site content",
     icon: Edit,
-    href: "/admin/hero",
+    href: "/admin/content",
     color: "text-blue-600",
   },
   {
@@ -46,7 +46,7 @@ const quickActions = [
     title: "Social Media",
     description: "Sync and manage social posts",
     icon: MessageSquare,
-    href: "/admin/social",
+    href: "/admin/social-dashboard",
     color: "text-purple-600",
   },
   {
@@ -71,7 +71,7 @@ const systemCards = [
     description: "Manage all website content",
     items: ["Hero Section", "About Page", "Services", "Contact"],
     icon: Globe,
-    href: "/admin/hero",
+    href: "/admin/content",
   },
   {
     title: "Media Management",
@@ -234,9 +234,11 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-3">
-              <Button onClick={testFredIntegration} variant="default">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Test FRED API
+              <Button variant="outline" asChild>
+                <Link to="/admin/fred">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  FRED Dashboard
+                </Link>
               </Button>
               <Button variant="outline" asChild>
                 <Link to="/admin/articles">

@@ -179,21 +179,12 @@ export function InstagramIntegration() {
 
               <div className="flex gap-2">
                 <Button
-                  onClick={syncInstagramData}
-                  disabled={isSyncing}
+                  disabled={true}
                   variant="outline"
+                  className="opacity-50"
                 >
-                  {isSyncing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Syncing...
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Sync Posts
-                    </>
-                  )}
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Sync Posts (Authorization Pending)
                 </Button>
                 <Button onClick={checkInstagramConnection} variant="ghost" size="sm">
                   <RefreshCw className="h-4 w-4 mr-2" />
@@ -204,12 +195,12 @@ export function InstagramIntegration() {
           ) : (
             <div className="text-center py-8">
               <Instagram className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Instagram Account Connected</h3>
+              <h3 className="text-lg font-medium mb-2">Instagram Authorization Pending</h3>
               <p className="text-muted-foreground mb-4">
-                Connect your Instagram Business account to sync posts and publish content
+                Instagram Business API authorization is pending. Please contact the administrator to configure access.
               </p>
-              <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-                Not Connected
+              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                Authorization Pending
               </Badge>
             </div>
           )}
@@ -253,21 +244,11 @@ export function InstagramIntegration() {
             </div>
 
             <Button
-              onClick={publishToInstagram}
-              disabled={isPublishing || !caption.trim() || !imageUrl.trim()}
-              className="w-full"
+              disabled={true}
+              className="w-full opacity-50"
             >
-              {isPublishing ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Publishing...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Publish to Instagram
-                </>
-              )}
+              <Upload className="h-4 w-4 mr-2" />
+              Publish to Instagram (Authorization Pending)
             </Button>
           </CardContent>
         </Card>
