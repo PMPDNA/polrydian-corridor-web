@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArticleForm } from "@/components/ArticleForm";
-import { PhotoGallery } from "@/components/PhotoGallery";
+
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SocialShareButtons } from "@/components/SocialShareButtons";
 import { useArticles } from "@/hooks/useArticles";
@@ -416,8 +416,6 @@ export default function Articles() {
             ))}
           </div>
 
-          {/* VIP & Events Gallery Section */}
-          <PhotoGallery />
         </div>
       </section>
     </div>

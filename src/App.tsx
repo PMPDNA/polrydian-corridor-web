@@ -13,7 +13,7 @@ import Services from "./pages/Services";
 import Insights from "./pages/Insights";
 
 import Privacy from "./pages/Privacy";
-import CookieSettings from "./pages/CookieSettings";
+
 import Articles from "./pages/Articles";
 import ArticleDetail from "./pages/ArticleDetail";
 import ContributeArticle from "./pages/ContributeArticle";
@@ -37,7 +37,7 @@ import Search from "./pages/Search";
 import PerformanceDashboard from "./pages/admin/PerformanceDashboard";
 
 import NotFound from "./pages/NotFound";
-import CookieConsent from "./components/CookieConsent";
+
 
 import { ScrollToTop } from "./components/ScrollToTop";
 import { OfflineIndicator } from "./components/OfflineIndicator";
@@ -62,7 +62,7 @@ const App = () => {
             <Route path="/insights" element={<Insights />} />
             
             <Route path="/privacy" element={<Privacy />} />
-            <Route path="/cookie-settings" element={<CookieSettings />} />
+            
             <Route path="/articles" element={<Articles />} />
             <Route path="/articles/:slug" element={<ArticleDetail />} />
             <Route path="/contribute" element={<ContributeArticle />} />
@@ -173,7 +173,6 @@ const App = () => {
           </Routes>
           
           <ScrollToTop />
-          <CookieConsent />
           <OfflineIndicator />
         </BrowserRouter>
       </TooltipProvider>

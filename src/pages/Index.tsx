@@ -7,14 +7,9 @@ import { Contact } from "@/components/Contact";
 
 
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
-import { SocialMediaFeed } from "@/components/SocialMediaFeed";
-import { LinkedInFeed } from "@/components/LinkedInFeed";
 import { UnifiedOrganizationManager } from "@/components/UnifiedOrganizationManager";
-import { PromotionalPopup } from "@/components/PromotionalPopup";
 import Footer from "@/components/Footer";
-import { GDPRConsentManager } from "@/components/GDPRConsentManager";
 import { useAnalytics } from "@/hooks/useAnalytics";
-import { FredDataDisplay } from "@/components/FredDataDisplay";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 const Index = () => {
@@ -59,8 +54,6 @@ const Index = () => {
       
       <Footer />
       <PerformanceMonitor />
-      <PromotionalPopup />
-      <GDPRConsentManager />
     </div>
   );
 };

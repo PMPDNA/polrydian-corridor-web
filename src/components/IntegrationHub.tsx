@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { SecretSetupCards } from "./SecretSetupCards"
-import { LinkedInConnectionWizard } from "./LinkedInConnectionWizard"
+
 
 interface IntegrationStatus {
   id: string
@@ -617,10 +617,10 @@ export function IntegrationHub() {
           <SecretSetupCards />
           
           <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">Connection Wizards</h3>
-            <div className="space-y-4">
-              <LinkedInConnectionWizard />
-            </div>
+            <h3 className="text-lg font-semibold mb-4">Integration Configuration</h3>
+            <p className="text-muted-foreground">
+              Configure your integrations using the setup cards above and test connections in the monitor tab.
+            </p>
           </div>
         </TabsContent>
 
