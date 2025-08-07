@@ -23,7 +23,7 @@ export const Breadcrumbs = () => {
       'about': 'About',
       'services': 'Services', 
       'insights': 'Insights',
-      'faq': 'FAQ',
+      
       'articles': 'Articles',
       'search': 'Search',
       'luxury-client': 'VIP Client Experience',

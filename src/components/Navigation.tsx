@@ -14,7 +14,7 @@ export const Navigation = () => {
     { label: "Services", href: "/services" },
     { label: "Articles", href: "/articles" },
     { label: "Insights", href: "/insights" },
-    { label: "FAQ", href: "/faq" },
+    { label: "Contact", href: "#contact" },
   ];
 
   // Close mobile menu when route changes

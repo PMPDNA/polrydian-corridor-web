@@ -14,6 +14,7 @@ import { sanitizeHtml } from "@/lib/security";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 interface Article {
   id: string;
@@ -251,22 +252,16 @@ export default function Articles() {
               </p>
             </div>
             
-            {/* Contribution section for users */}
+            {/* Newsletter signup for blog */}
             <div className="mt-6 p-6 bg-secondary/20 rounded-lg border border-secondary/40">
-              <h3 className="text-xl font-semibold text-foreground mb-2">
-                Want to Contribute Your View?
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Share your insights and perspectives on current economic and market realities. 
-                Submit your draft for review and potential publication.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="outline" asChild>
-                  <a href="/contribute">Submit Your Draft</a>
-                </Button>
-                <Button variant="ghost" asChild>
-                  <a href="#contact">Contact Us</a>
-                </Button>
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  Stay Informed
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Get our latest strategic insights and corridor economics analysis delivered to your inbox.
+                </p>
+                <NewsletterSignup variant="compact" />
               </div>
             </div>
           </div>

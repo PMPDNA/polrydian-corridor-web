@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-import { ConsultationBookingForm } from "@/components/ConsultationBookingForm";
+import { SimpleContactForm } from "@/components/SimpleContactForm";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Mail, 
@@ -239,9 +239,9 @@ export const Contact = () => {
             </Card>
           </div>
 
-          {/* Consultation Booking Form */}
+          {/* Simple Contact Form */}
           <div>
-            <ConsultationBookingForm />
+            <SimpleContactForm />
           </div>
         </div>
 

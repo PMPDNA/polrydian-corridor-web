@@ -11,7 +11,7 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
 import Insights from "./pages/Insights";
-import FAQ from "./pages/FAQ";
+
 import Privacy from "./pages/Privacy";
 import CookieSettings from "./pages/CookieSettings";
 import Articles from "./pages/Articles";
@@ -60,7 +60,7 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Services />} />
             <Route path="/insights" element={<Insights />} />
-            <Route path="/faq" element={<FAQ />} />
+            
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/cookie-settings" element={<CookieSettings />} />
             <Route path="/articles" element={<Articles />} />
