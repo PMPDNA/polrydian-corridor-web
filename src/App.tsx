@@ -142,22 +142,6 @@ const App = () => {
                 </SupabaseProtectedRoute>
               </ErrorBoundary>
             } />
-            <Route path="/profile" element={
-              <ErrorBoundary>
-                <SupabaseProtectedRoute>
-                  <ProfileManager />
-                </SupabaseProtectedRoute>
-              </ErrorBoundary>
-            } />
-            
-            <Route path="/search" element={<Search />} />
-            <Route path="/security" element={
-              <ErrorBoundary>
-                <SupabaseProtectedRoute requireAdmin={true}>
-                  <SecurityDashboard />
-                </SupabaseProtectedRoute>
-              </ErrorBoundary>
-            } />
             <Route path="/analytics" element={
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
