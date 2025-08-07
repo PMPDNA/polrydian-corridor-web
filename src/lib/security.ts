@@ -124,10 +124,7 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
       // Special handling for article content - preserve HTML but sanitize it
       if (key === 'content') {
         sanitizedValue = sanitizeHtml(value)
-        // Length validation for article content
-        if (sanitizedValue.length > 500000) {
-          sanitizedValue = sanitizedValue.substring(0, 500000)
-        }
+        // NO length truncation for article content - preserve full text
       } else {
         // Enhanced sanitization for other fields
         sanitizedValue = value
@@ -137,14 +134,13 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
           .replace(/on\w+=/gi, '') // Remove event handlers
           .trim()
         
-        // Length validation for other fields
+        // Length validation for specific non-content fields only
         if (key === 'email' && sanitizedValue.length > 255) {
           sanitizedValue = sanitizedValue.substring(0, 255)
         } else if (key === 'message' && sanitizedValue.length > 2000) {
           sanitizedValue = sanitizedValue.substring(0, 2000)
-        } else if (sanitizedValue.length > 500) {
-          sanitizedValue = sanitizedValue.substring(0, 500)
         }
+        // Removed general 500 character limit to allow longer text fields
       }
       
       sanitized[key as keyof T] = sanitizedValue as T[keyof T]
