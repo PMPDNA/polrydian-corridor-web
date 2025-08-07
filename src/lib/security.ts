@@ -41,13 +41,18 @@ export const sanitizeHtml = (content: string): string => {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 
-      'a', 'code', 'pre'
+      'a', 'code', 'pre', 'div', 'span', 'sub', 'sup'
     ],
-    ALLOWED_ATTR: ['href', 'target', 'rel'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
     ALLOW_DATA_ATTR: false,
     FORBID_TAGS: ['script', 'object', 'embed', 'iframe', 'form', 'input'],
     FORBID_ATTR: ['style', 'on*'],
-    USE_PROFILES: { html: true }
+    USE_PROFILES: { html: true },
+    // Preserve text content and prevent malformed HTML
+    KEEP_CONTENT: true,
+    // Don't add extra wrapper tags
+    FORCE_BODY: false,
+    WHOLE_DOCUMENT: false
   })
 }
 

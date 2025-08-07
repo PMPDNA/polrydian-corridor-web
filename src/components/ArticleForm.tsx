@@ -29,8 +29,6 @@ interface Article {
   readTime: number;
   linkedinUrl: string;
   featured: boolean;
-  vipPhotos?: string[];
-  eventPhotos?: string[];
 }
 
 interface ArticleFormProps {
@@ -82,9 +80,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
     publishDate: getArticleField('publishDate', new Date().toISOString().split('T')[0]),
     readTime: getArticleField('readTime', 5),
     linkedinUrl: getArticleField('linkedinUrl'),
-    featured: getArticleField('featured', false),
-    vipPhotos: getArticleField('vipPhotos', []),
-    eventPhotos: getArticleField('eventPhotos', [])
+    featured: getArticleField('featured', false)
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -226,27 +222,18 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         }
       }
 
-      // Handle image associations if images were uploaded
-      if (formData.heroImage || formData.vipPhotos.length > 0 || formData.eventPhotos.length > 0) {
-        const allImages = [
-          ...(formData.heroImage ? [{ url: formData.heroImage, category: 'hero' }] : []),
-          ...formData.vipPhotos.map(url => ({ url, category: 'vip' })),
-          ...formData.eventPhotos.map(url => ({ url, category: 'event' }))
-        ];
-
-        // Store image associations
-        for (const image of allImages) {
-          await supabase
-            .from('images')
-            .upsert({
-              file_path: image.url,
-              name: `${formData.title} - ${image.category}`,
-              category: image.category,
-              uploaded_by: user.id,
-              file_type: 'image/jpeg',
-              is_public: true
-            }, { onConflict: 'file_path' });
-        }
+      // Handle hero image association if uploaded
+      if (formData.heroImage) {
+        await supabase
+          .from('images')
+          .upsert({
+            file_path: formData.heroImage,
+            name: `${formData.title} - hero`,
+            category: 'hero',
+            uploaded_by: user.id,
+            file_type: 'image/jpeg',
+            is_public: true
+          }, { onConflict: 'file_path' });
       }
 
       toast({
@@ -458,103 +445,6 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
               {errors.content && <p className="text-sm text-destructive mt-1">{errors.content}</p>}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <Label>VIP Meeting Photos</Label>
-                
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" type="button" className="w-full">
-                      <ImageIcon className="h-4 w-4 mr-2" />
-                      Choose VIP Photos ({formData.vipPhotos.length} selected)
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
-                    <DialogHeader>
-                      <DialogTitle>Choose VIP Photos</DialogTitle>
-                    </DialogHeader>
-                    <ImageGalleryPicker
-                      onImageSelect={(url) => setFormData(prev => ({ 
-                        ...prev, 
-                        vipPhotos: [...prev.vipPhotos, url] 
-                      }))}
-                      category="vip"
-                      multiple={true}
-                      maxImages={10}
-                    />
-                  </DialogContent>
-                </Dialog>
-                
-                <FileUpload
-                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, vipPhotos: [...prev.vipPhotos, ...urls] }))}
-                  currentFiles={[]}
-                  multiple={true}
-                  label="Or Upload New VIP Photos"
-                />
-                
-                <div className="space-y-2">
-                  <Label htmlFor="vipPhotosText">Or enter URLs (comma-separated)</Label>
-                  <Textarea
-                    id="vipPhotosText"
-                    value={formData.vipPhotos.join(", ")}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      vipPhotos: e.target.value.split(",").map(url => url.trim()).filter(Boolean)
-                    }))}
-                    placeholder="URL1, URL2, URL3..."
-                    rows={3}
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <Label>Event Photos</Label>
-                
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" type="button" className="w-full">
-                      <ImageIcon className="h-4 w-4 mr-2" />
-                      Choose Event Photos ({formData.eventPhotos.length} selected)
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
-                    <DialogHeader>
-                      <DialogTitle>Choose Event Photos</DialogTitle>
-                    </DialogHeader>
-                    <ImageGalleryPicker
-                      onImageSelect={(url) => setFormData(prev => ({ 
-                        ...prev, 
-                        eventPhotos: [...prev.eventPhotos, url] 
-                      }))}
-                      category="event"
-                      multiple={true}
-                      maxImages={10}
-                    />
-                  </DialogContent>
-                </Dialog>
-                
-                <FileUpload
-                  onFilesChange={(urls) => setFormData(prev => ({ ...prev, eventPhotos: [...prev.eventPhotos, ...urls] }))}
-                  currentFiles={[]}
-                  multiple={true}
-                  label="Or Upload New Event Photos"
-                />
-                
-                <div className="space-y-2">
-                  <Label htmlFor="eventPhotosText">Or enter URLs (comma-separated)</Label>
-                  <Textarea
-                    id="eventPhotosText"
-                    value={formData.eventPhotos.join(", ")}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      eventPhotos: e.target.value.split(",").map(url => url.trim()).filter(Boolean)
-                    }))}
-                    placeholder="URL1, URL2, URL3..."
-                    rows={3}
-                  />
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
