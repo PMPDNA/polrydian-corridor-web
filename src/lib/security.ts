@@ -37,13 +37,15 @@ export const emailSchema = z.string()
 
 // Content sanitization - Enhanced security
 export const sanitizeHtml = (content: string): string => {
+  if (!content) return '';
+  
   return DOMPurify.sanitize(content, {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 
-      'a', 'code', 'pre', 'div', 'span', 'sub', 'sup'
+      'a', 'code', 'pre', 'div', 'span', 'sub', 'sup', 'img'
     ],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'src', 'alt', 'width', 'height'],
     ALLOW_DATA_ATTR: false,
     FORBID_TAGS: ['script', 'object', 'embed', 'iframe', 'form', 'input'],
     FORBID_ATTR: ['style', 'on*'],
@@ -52,7 +54,10 @@ export const sanitizeHtml = (content: string): string => {
     KEEP_CONTENT: true,
     // Don't add extra wrapper tags
     FORCE_BODY: false,
-    WHOLE_DOCUMENT: false
+    WHOLE_DOCUMENT: false,
+    // Allow proper HTML structure
+    RETURN_DOM: false,
+    RETURN_DOM_FRAGMENT: false
   })
 }
 
@@ -131,10 +136,8 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
         sanitizedValue = sanitizeHtml(value)
         // NO length truncation for article content - preserve full text
       } else {
-        // Enhanced sanitization for other fields
+        // Enhanced sanitization for other fields (but NOT for content)
         sanitizedValue = value
-          .replace(/[<>]/g, '') // Remove HTML tags
-          .replace(/['"]/g, '') // Remove quotes to prevent injection
           .replace(/javascript:/gi, '') // Remove javascript protocol
           .replace(/on\w+=/gi, '') // Remove event handlers
           .trim()
