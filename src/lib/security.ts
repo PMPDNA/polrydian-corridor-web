@@ -136,7 +136,14 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
       
       // Special handling for article content - preserve HTML but sanitize it
       if (key === 'content') {
-        sanitizedValue = sanitizeHtml(value)
+        // Clean up any malformed spacing and preserve paragraph structure
+        const cleanedContent = value
+          .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
+          .replace(/>\s+</g, '><') // Remove spaces between tags
+          .replace(/(<\/p>)\s*(<p[^>]*>)/g, '$1\n$2') // Ensure line breaks between paragraphs
+          .replace(/(<\/h[1-6]>)\s*(<p[^>]*>)/g, '$1\n$2') // Ensure line breaks after headings
+          .trim();
+        sanitizedValue = sanitizeHtml(cleanedContent);
         // NO length truncation for article content - preserve full text
       } else {
         // Enhanced sanitization for other fields (but NOT for content)

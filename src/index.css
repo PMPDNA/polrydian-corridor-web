@@ -175,6 +175,33 @@ All colors MUST be HSL.
   top: 6px;
 }
 
+/* Article content styling to prevent word breaks */
+.prose {
+  word-break: normal;
+  white-space: normal;
+  overflow-wrap: break-word;
+  hyphens: none;
+}
+
+.prose p {
+  word-break: normal;
+  white-space: normal;
+  line-height: 1.7;
+  margin-bottom: 1.25em;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  word-break: normal;
+  white-space: normal;
+  line-height: 1.2;
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+}
+
+.prose h1:first-child, .prose h2:first-child, .prose h3:first-child {
+  margin-top: 0;
+}
+
 @keyframes scroll {
   0% {
     transform: translateX(0);
