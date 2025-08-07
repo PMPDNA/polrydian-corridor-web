@@ -147,7 +147,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         // Update all fields in one go - using direct formData values
         const updatePayload = {
           title: validatedData.title,
-          content: validatedData.content, // Already sanitized by sanitizeFormData
+          content: validatedData.content, // Already sanitized and cleaned by sanitizeFormData
           meta_description: validatedData.excerpt,
           featured_image: formData.heroImage,
           reading_time_minutes: formData.readTime,
@@ -158,6 +158,12 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
           published_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         };
+        
+        console.log('ArticleForm: About to save content:', {
+          originalLength: formData.content.length,
+          sanitizedLength: validatedData.content.length,
+          hasCorruption: /([a-z])\1{3,}/.test(formData.content)
+        });
         
         console.log('ArticleForm: Update payload keywords:', updatePayload.keywords);
         

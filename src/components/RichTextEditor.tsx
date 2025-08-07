@@ -1,5 +1,6 @@
 import { useEffect, useRef, lazy, Suspense } from 'react';
 import { cn } from '@/lib/utils';
+import { ArticleImageUpload } from '@/components/ArticleImageUpload';
 
 interface RichTextEditorProps {
   value: string;
@@ -72,6 +73,21 @@ export function RichTextEditor({
           }}
         />
       </Suspense>
+      
+      {/* Image Upload Section - Moved to end of editor */}
+      <div className="mt-4">
+        <ArticleImageUpload 
+          onImageInsert={(url) => {
+            // Insert image at cursor position in the editor
+            if (quillRef.current) {
+              const quill = quillRef.current.getEditor();
+              const range = quill.getSelection();
+              const index = range ? range.index : quill.getLength();
+              quill.insertEmbed(index, 'image', url);
+            }
+          }}
+        />
+      </div>
       
       {/* Custom styles for dark/light theme compatibility */}
       <style dangerouslySetInnerHTML={{

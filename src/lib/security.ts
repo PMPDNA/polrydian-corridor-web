@@ -149,10 +149,16 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
       if (key === 'content') {
         const original = value;
         
-        // Fix common character tripling issues and clean up spacing
+        // Fix common character tripling issues and specific corruption patterns
         const cleanedContent = value
+          // Fix specific corruption patterns first
+          .replace(/prpprpprotests/gi, 'protests')
+          .replace(/prpprppresident/gi, 'president') 
+          .replace(/vmmassal/gi, 'vassal')
           // Fix any tripled characters (comprehensive pattern)
           .replace(/([a-z])\1{2,}/gi, '$1')
+          // Fix doubled characters that shouldn't be doubled (consonants not followed by vowels)
+          .replace(/([bcdfghjklmnpqrstvwxz])\1(?![aeiou])/gi, '$1')
           // Normalize spacing but preserve paragraph breaks
           .replace(/\s+/g, ' ')
           .replace(/>\s+</g, '><')

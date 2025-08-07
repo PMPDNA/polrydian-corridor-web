@@ -363,21 +363,21 @@ export default function ArticleManagerEnhanced() {
                           View
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle className="line-clamp-2">{selectedArticle?.title}</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          {selectedArticle?.featured_image && (
-                            <img 
-                              src={selectedArticle.featured_image} 
-                              alt={selectedArticle.title}
-                              className="w-full h-64 object-cover rounded-lg"
-                            />
-                          )}
-                          <div 
-                            className="prose prose-lg max-w-none"
-                            dangerouslySetInnerHTML={{ 
+                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                         <DialogHeader className="flex-shrink-0">
+                           <DialogTitle className="line-clamp-2">{selectedArticle?.title}</DialogTitle>
+                         </DialogHeader>
+                         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                           {selectedArticle?.featured_image && (
+                             <img 
+                               src={selectedArticle.featured_image} 
+                               alt={selectedArticle.title}
+                               className="w-full h-64 object-cover rounded-lg"
+                             />
+                           )}
+                           <div 
+                             className="prose prose-lg max-w-none"
+                             dangerouslySetInnerHTML={{
                               __html: sanitizeHtml(selectedArticle?.content || "") 
                             }}
                           />
