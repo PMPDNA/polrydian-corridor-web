@@ -9,12 +9,14 @@ import { ArticleForm } from "@/components/ArticleForm";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SocialShareButtons } from "@/components/SocialShareButtons";
-import { useArticles } from "@/hooks/useArticles";
 import { sanitizeHtml } from "@/lib/security";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { Input } from "@/components/ui/input";
+import { useArticleArchive } from "@/hooks/useArticleArchive";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink, PaginationEllipsis } from "@/components/ui/pagination";
 
 interface Article {
   id: string;
@@ -438,3 +440,51 @@ export default function Articles() {
 
           {/* Pagination */}
           <ArticlePagination total={total} page={page} pageSize={pageSize} onPageChange={setPage} />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ArticlePagination({ total, page, pageSize, onPageChange }: { total: number; page: number; pageSize: number; onPageChange: (p: number) => void; }) {
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  if (totalPages <= 1) return null;
+
+  const goTo = (p: number) => {
+    if (p < 1 || p > totalPages || p === page) return;
+    onPageChange(p);
+  };
+
+  const pages: (number | 'ellipsis')[] = [];
+  pages.push(1);
+  if (page > 3) pages.push('ellipsis');
+  if (page > 2) pages.push(page - 1);
+  if (page !== 1 && page !== totalPages) pages.push(page);
+  if (page < totalPages - 1) pages.push(page + 1);
+  if (page < totalPages - 2) pages.push('ellipsis');
+  if (totalPages > 1) pages.push(totalPages);
+
+  return (
+    <Pagination className="mt-8">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); goTo(page - 1); }} />
+        </PaginationItem>
+        {pages.map((p, idx) => (
+          <PaginationItem key={idx}>
+            {p === 'ellipsis' ? (
+              <PaginationEllipsis />
+            ) : (
+              <PaginationLink href="#" isActive={p === page} onClick={(e) => { e.preventDefault(); goTo(p as number); }}>
+                {p}
+              </PaginationLink>
+            )}
+          </PaginationItem>
+        ))}
+        <PaginationItem>
+          <PaginationNext href="#" onClick={(e) => { e.preventDefault(); goTo(page + 1); }} />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+}

@@ -34,7 +34,7 @@ export function useArticleArchive({ page, pageSize, category, search, sort = "ne
 
       return { items: data || [], total: count || 0 };
     },
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
     staleTime: 1000 * 60 * 5,
   });
 }
