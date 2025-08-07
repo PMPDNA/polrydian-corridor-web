@@ -1550,6 +1550,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      clean_article_content: {
+        Args: { content_text: string }
+        Returns: string
+      }
       decrypt_token_secure: {
         Args: { encrypted_token: string }
         Returns: string
