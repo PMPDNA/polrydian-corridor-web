@@ -20,13 +20,26 @@ export function validateInput(data: any, requiredFields: string[]): SecurityVali
   // Sanitize and validate each field
   for (const [key, value] of Object.entries(data)) {
     if (typeof value === 'string') {
-      // Remove potentially harmful characters
-      const sanitized = (value as string)
-        .replace(/[<>'"]/g, '') // Remove HTML/JS injection chars
-        .replace(/javascript:/gi, '') // Remove JS protocol
-        .replace(/data:/gi, '') // Remove data protocol
-        .trim()
-        .slice(0, 10000); // Limit length
+      let sanitized: string;
+      
+      // Special handling for article content - preserve more characters
+      if (key === 'content') {
+        // For article content, only remove the most dangerous patterns
+        sanitized = (value as string)
+          .replace(/javascript:/gi, '') // Remove JS protocol
+          .replace(/data:/gi, '') // Remove data protocol
+          .replace(/on\w+=/gi, '') // Remove event handlers
+          .trim()
+          .slice(0, 50000); // Higher limit for articles
+      } else {
+        // For other fields, use stricter sanitization
+        sanitized = (value as string)
+          .replace(/[<>'"]/g, '') // Remove HTML/JS injection chars
+          .replace(/javascript:/gi, '') // Remove JS protocol
+          .replace(/data:/gi, '') // Remove data protocol
+          .trim()
+          .slice(0, 10000); // Limit length
+      }
       
       sanitizedData[key] = sanitized;
       
