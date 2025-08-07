@@ -57,7 +57,10 @@ export const sanitizeHtml = (content: string): string => {
     WHOLE_DOCUMENT: false,
     // Allow proper HTML structure
     RETURN_DOM: false,
-    RETURN_DOM_FRAGMENT: false
+    RETURN_DOM_FRAGMENT: false,
+    // Preserve line breaks and spacing
+    ADD_TAGS: ['#text'],
+    ADD_ATTR: []
   })
 }
 
