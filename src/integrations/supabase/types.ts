@@ -193,6 +193,99 @@ export type Database = {
           },
         ]
       }
+      articles_backup_20250807: {
+        Row: {
+          auto_publish_linkedin: boolean | null
+          auto_publish_medium: boolean | null
+          auto_publish_substack: boolean | null
+          category: string | null
+          chapter_id: string | null
+          content: string | null
+          content_images: string[] | null
+          content_type: string | null
+          created_at: string | null
+          featured_image: string | null
+          id: string | null
+          image_associations: Json | null
+          keywords: string[] | null
+          linkedin_url: string | null
+          meta_description: string | null
+          published_at: string | null
+          reading_time_minutes: number | null
+          reference_sources: Json | null
+          related_articles: string[] | null
+          slug: string | null
+          status: string | null
+          title: string | null
+          transcript: string | null
+          updated_at: string | null
+          user_id: string | null
+          video_duration: number | null
+          video_thumbnail: string | null
+          video_url: string | null
+        }
+        Insert: {
+          auto_publish_linkedin?: boolean | null
+          auto_publish_medium?: boolean | null
+          auto_publish_substack?: boolean | null
+          category?: string | null
+          chapter_id?: string | null
+          content?: string | null
+          content_images?: string[] | null
+          content_type?: string | null
+          created_at?: string | null
+          featured_image?: string | null
+          id?: string | null
+          image_associations?: Json | null
+          keywords?: string[] | null
+          linkedin_url?: string | null
+          meta_description?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          reference_sources?: Json | null
+          related_articles?: string[] | null
+          slug?: string | null
+          status?: string | null
+          title?: string | null
+          transcript?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          video_duration?: number | null
+          video_thumbnail?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          auto_publish_linkedin?: boolean | null
+          auto_publish_medium?: boolean | null
+          auto_publish_substack?: boolean | null
+          category?: string | null
+          chapter_id?: string | null
+          content?: string | null
+          content_images?: string[] | null
+          content_type?: string | null
+          created_at?: string | null
+          featured_image?: string | null
+          id?: string | null
+          image_associations?: Json | null
+          keywords?: string[] | null
+          linkedin_url?: string | null
+          meta_description?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          reference_sources?: Json | null
+          related_articles?: string[] | null
+          slug?: string | null
+          status?: string | null
+          title?: string | null
+          transcript?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          video_duration?: number | null
+          video_thumbnail?: string | null
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       auth_rate_limits: {
         Row: {
           attempt_count: number
@@ -1584,6 +1677,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
+      }
+      html_entity_decode: {
+        Args: { input: string }
+        Returns: string
       }
       log_integration_event: {
         Args: {
