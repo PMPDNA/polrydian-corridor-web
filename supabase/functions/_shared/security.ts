@@ -32,9 +32,9 @@ export function validateInput(data: any, requiredFields: string[]): SecurityVali
           .trim()
           .slice(0, 50000); // Higher limit for articles
       } else {
-        // For other fields, use stricter sanitization
+        // For other fields, use more targeted sanitization to preserve readability
         sanitized = (value as string)
-          .replace(/[<>'"]/g, '') // Remove HTML/JS injection chars
+          .replace(/[<>]/g, '') // Only remove angle brackets to prevent HTML injection
           .replace(/javascript:/gi, '') // Remove JS protocol
           .replace(/data:/gi, '') // Remove data protocol
           .trim()
