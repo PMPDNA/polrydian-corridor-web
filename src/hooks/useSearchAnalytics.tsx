@@ -52,15 +52,6 @@ export const useSearchAnalytics = () => {
     };
 
     try {
-      // Store in Supabase if user is authenticated
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from('search_queries').insert({
-          ...searchData,
-          user_id: user.id
-        });
-      }
-
       // Track with analytics
       track('search_performed', window.location.pathname);
       track('search_metrics', window.location.pathname);

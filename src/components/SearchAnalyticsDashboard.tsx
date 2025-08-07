@@ -123,7 +123,7 @@ export const SearchAnalyticsDashboard: React.FC = () => {
                         value={(query.count / analytics.popularQueries[0]?.count || 1) * 100} 
                         className="w-16 h-2" 
                       />
-                      <Badge variant="secondary" size="sm">{query.count}</Badge>
+                      <Badge variant="secondary">{query.count}</Badge>
                     </div>
                   </div>
                 ))
@@ -152,7 +152,7 @@ export const SearchAnalyticsDashboard: React.FC = () => {
                       value={(result.clicks / analytics.topClickedResults[0]?.clicks || 1) * 100} 
                       className="w-16 h-2" 
                     />
-                    <Badge variant="secondary" size="sm">{result.clicks}</Badge>
+                    <Badge variant="secondary">{result.clicks}</Badge>
                   </div>
                 </div>
               ))}

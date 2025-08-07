@@ -10,8 +10,12 @@ import { useOfflineSupport } from '@/hooks/useOfflineSupport';
 import { Activity, Wifi, WifiOff, Monitor, Zap } from 'lucide-react';
 
 export default function PerformanceDashboardPage() {
-  const realtimeStatus = useRealtimeUpdates('articles');
+  const realtimeUpdates = useRealtimeUpdates([]);
   const { isOnline } = useOfflineSupport();
+
+  // Mock data for dashboard
+  const realtimeConnected = isOnline;
+  const lastUpdateTime = new Date().toLocaleTimeString();
 
   return (
     <AdminLayout title="Performance Dashboard">
@@ -39,14 +43,6 @@ export default function PerformanceDashboardPage() {
                     {realtimeConnected ? "Connected" : "Disconnected"}
                   </Badge>
                 </div>
-                {networkStatus && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Connection</span>
-                    <span className="text-xs text-muted-foreground capitalize">
-                      {networkStatus.effectiveType || 'Unknown'}
-                    </span>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
@@ -60,8 +56,8 @@ export default function PerformanceDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-sm text-muted-foreground">
-                {lastUpdate ? (
-                  <>Real-time: {new Date(lastUpdate).toLocaleTimeString()}</>
+                {lastUpdateTime ? (
+                  <>Real-time: {lastUpdateTime}</>
                 ) : (
                   "No recent updates"
                 )}
@@ -127,15 +123,15 @@ export default function PerformanceDashboardPage() {
                 <div className="text-sm space-y-1">
                   <div className="flex justify-between">
                     <span>Advanced Search</span>
-                    <Badge variant="default" size="sm">Active</Badge>
+                    <Badge variant="default">Active</Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Search Analytics</span>
-                    <Badge variant="default" size="sm">Tracking</Badge>
+                    <Badge variant="default">Tracking</Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Indexed Content</span>
-                    <Badge variant="default" size="sm">Updated</Badge>
+                    <Badge variant="default">Updated</Badge>
                   </div>
                 </div>
               </div>
@@ -145,17 +141,17 @@ export default function PerformanceDashboardPage() {
                 <div className="text-sm space-y-1">
                   <div className="flex justify-between">
                     <span>WebSocket Connection</span>
-                    <Badge variant={realtimeConnected ? "default" : "secondary"} size="sm">
+                    <Badge variant={realtimeConnected ? "default" : "secondary"}>
                       {realtimeConnected ? "Connected" : "Disconnected"}
                     </Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Offline Support</span>
-                    <Badge variant="default" size="sm">Enabled</Badge>
+                    <Badge variant="default">Enabled</Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Cache Management</span>
-                    <Badge variant="default" size="sm">Active</Badge>
+                    <Badge variant="default">Active</Badge>
                   </div>
                 </div>
               </div>

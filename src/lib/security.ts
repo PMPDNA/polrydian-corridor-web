@@ -119,23 +119,32 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
   
   for (const [key, value] of Object.entries(data)) {
     if (typeof value === 'string') {
-      // Enhanced sanitization with additional security measures
-      let sanitizedValue = value
-        .replace(/[<>]/g, '') // Remove HTML tags
-        .replace(/['"]/g, '') // Remove quotes to prevent injection
-        .replace(/javascript:/gi, '') // Remove javascript protocol
-        .replace(/on\w+=/gi, '') // Remove event handlers
-        .trim()
+      let sanitizedValue: string
       
-      // Additional length validation - avoid truncating article content
-      if (key === 'email' && sanitizedValue.length > 255) {
-        sanitizedValue = sanitizedValue.substring(0, 255)
-      } else if (key === 'message' && sanitizedValue.length > 2000) {
-        sanitizedValue = sanitizedValue.substring(0, 2000)
-      } else if (key === 'content' && sanitizedValue.length > 500000) {
-        sanitizedValue = sanitizedValue.substring(0, 500000)
-      } else if (key !== 'content' && sanitizedValue.length > 500) {
-        sanitizedValue = sanitizedValue.substring(0, 500)
+      // Special handling for article content - preserve HTML but sanitize it
+      if (key === 'content') {
+        sanitizedValue = sanitizeHtml(value)
+        // Length validation for article content
+        if (sanitizedValue.length > 500000) {
+          sanitizedValue = sanitizedValue.substring(0, 500000)
+        }
+      } else {
+        // Enhanced sanitization for other fields
+        sanitizedValue = value
+          .replace(/[<>]/g, '') // Remove HTML tags
+          .replace(/['"]/g, '') // Remove quotes to prevent injection
+          .replace(/javascript:/gi, '') // Remove javascript protocol
+          .replace(/on\w+=/gi, '') // Remove event handlers
+          .trim()
+        
+        // Length validation for other fields
+        if (key === 'email' && sanitizedValue.length > 255) {
+          sanitizedValue = sanitizedValue.substring(0, 255)
+        } else if (key === 'message' && sanitizedValue.length > 2000) {
+          sanitizedValue = sanitizedValue.substring(0, 2000)
+        } else if (sanitizedValue.length > 500) {
+          sanitizedValue = sanitizedValue.substring(0, 500)
+        }
       }
       
       sanitized[key as keyof T] = sanitizedValue as T[keyof T]
