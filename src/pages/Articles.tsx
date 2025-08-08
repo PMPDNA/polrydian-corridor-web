@@ -18,6 +18,7 @@ import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { Input } from "@/components/ui/input";
 import { useArticleArchive } from "@/hooks/useArticleArchive";
 import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationLink, PaginationEllipsis } from "@/components/ui/pagination";
+import heroImage from "@/assets/polrydian-hero-bg.jpg";
 
 interface Article {
   id: string;
@@ -145,7 +146,7 @@ export default function Articles() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO title="Strategic Insights & Articles | Corridor Economics" description="Browse published articles on corridor economics, geopolitics, supply chains, and strategy." keywords={["strategic insights","corridor economics","geopolitics","supply chain","market entry","Patrick Misiewicz","Polrydian Group"]} url={`${window.location.origin}/articles`} />
+      <SEO title="Strategic Insights & Articles | Corridor Economics" description="Browse published articles on corridor economics, geopolitics, supply chains, and strategy." keywords={["strategic insights","corridor economics","geopolitics","supply chain","market entry","Patrick Misiewicz","Polrydian Group"]} url={`${window.location.origin}/articles`} image={(featuredArticles[0]?.heroImage) || heroImage} />
       <Navigation />
       <div className="container mx-auto px-4 pt-24 pb-8">
         <Breadcrumbs />

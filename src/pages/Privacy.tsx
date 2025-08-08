@@ -10,12 +10,22 @@ import {
   Calendar
 } from "lucide-react";
 
+import { SEO } from "@/components/SEO";
+import heroImage from "@/assets/polrydian-hero-bg.jpg";
+
 export default function Privacy() {
   const lastUpdated = "December 16, 2024";
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      <SEO 
+        title="Privacy Policy & Terms | Polrydian Group"
+        description="Privacy policy, terms of service, and cookie policy for Polrydian Group."
+        keywords={["privacy policy","terms of service","cookies","data protection","Polrydian Group"]}
+        image={heroImage}
+        url={`${window.location.origin}/privacy`}
+      />
       <div className="container mx-auto px-4 pt-24 pb-12 space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4">

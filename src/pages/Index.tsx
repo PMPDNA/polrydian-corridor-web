@@ -11,6 +11,8 @@ import { UnifiedOrganizationManager } from "@/components/UnifiedOrganizationMana
 import Footer from "@/components/Footer";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { SEO } from "@/components/SEO";
+import heroImage from "@/assets/polrydian-hero-bg.jpg";
 
 const Index = () => {
   const { track } = useAnalytics();
@@ -18,6 +20,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Strategic Consulting & Corridor Economics"
+        description="Transforming complexity into strategic clarity. Corridor economics, geopolitics, supply chains, and market entry."
+        keywords={["strategic consulting","corridor economics","geopolitics","supply chain","market entry","Polrydian Group","Patrick Misiewicz"]}
+        image={heroImage}
+        url={`${window.location.origin}/`}
+      />
       <a href="#hero" className="skip-link" onClick={() => track('skip_to_content')}>
         Skip to main content
       </a>

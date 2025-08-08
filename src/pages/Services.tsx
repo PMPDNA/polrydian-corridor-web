@@ -18,6 +18,9 @@ import {
   ArrowRight
 } from "lucide-react";
 
+import { SEO } from "@/components/SEO";
+import heroImage from "@/assets/polrydian-hero-bg.jpg";
+
 export default function Services() {
   const coreServices = [
     {
@@ -154,6 +157,13 @@ export default function Services() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Strategic Services | Corridor Economics Consulting"
+        description="Corridor economics advisory, M&A, geopolitical risk, supply chain optimization, and market entry."
+        keywords={["services","corridor economics","M&A","geopolitical risk","supply chain","market entry","Polrydian Group"]}
+        image={heroImage}
+        url={`${window.location.origin}/services`}
+      />
       <Navigation />
       <div className="container mx-auto px-4 pt-24 pb-12 space-y-16">
         <Breadcrumbs />

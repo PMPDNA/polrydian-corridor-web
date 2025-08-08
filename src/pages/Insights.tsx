@@ -34,6 +34,9 @@ interface InsightItem {
   category: string;
 }
 
+import { SEO } from "@/components/SEO";
+import heroImage from "@/assets/polrydian-hero-bg.jpg";
+
 export default function Insights() {
   const [insights, setInsights] = useState<InsightItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -167,6 +170,14 @@ export default function Insights() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      
+      <SEO 
+        title="Economic Insights | FRED, CSIS, Trade Policy"
+        description="Real-time economic indicators, CSIS analysis, Trade Guys podcast, and policy updates for corridor economics."
+        keywords={["economic insights","FRED","CSIS","Trade Guys","policy updates","corridor economics","Polrydian"]}
+        image={heroImage}
+        url={`${window.location.origin}/insights`}
+      />
       
       <main className="container mx-auto px-4 pt-24 pb-8">
         <Breadcrumbs />

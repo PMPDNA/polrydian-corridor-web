@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, ExternalLink, Award, Users, MapPin } from "lucide-react";
+import { SEO } from "@/components/SEO";
+
 import profileImage from "@/assets/patrick-profile.jpg";
 
 export default function About() {
@@ -79,6 +81,13 @@ Let's talk about your challenges clearly, and create the corridor that moves you
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="About Patrick Misiewicz | Polrydian Group"
+        description={shortBio}
+        keywords={["About","Patrick Misiewicz","Polrydian Group","strategic consulting","corridor economics"]}
+        image={profileImage}
+        url={`${window.location.origin}/about`}
+      />
       <Navigation />
       
       {/* Hero Section */}
@@ -117,7 +126,8 @@ Let's talk about your challenges clearly, and create the corridor that moves you
               <div className="relative">
                 <img
                   src={profileImage}
-                  alt="Patrick Misiewicz"
+                  alt="Patrick Misiewicz, strategic consulting and corridor economics expert"
+                  loading="lazy"
                   className="w-80 h-80 rounded-2xl object-cover shadow-elegant"
                 />
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-primary/20 to-transparent"></div>

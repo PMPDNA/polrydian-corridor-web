@@ -5,6 +5,7 @@ import { useSupabaseAuth } from "@/hooks/useSupabaseAuth"
 import { Navigate } from "react-router-dom"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Helmet } from "react-helmet-async"
 import { User, LogOut } from "lucide-react"
 
 interface AdminLayoutProps {
@@ -40,6 +41,9 @@ export function AdminLayout({ children, title = "Admin Panel" }: AdminLayoutProp
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
+        <Helmet>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
         <AdminSidebar />
         
         <div className="flex-1 flex flex-col">
