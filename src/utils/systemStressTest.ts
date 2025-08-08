@@ -10,7 +10,7 @@ interface StressTestResult {
   solution?: string
 }
 
-interface SystemHealth {
+export interface SystemHealth {
   score: number
   issues: StressTestResult[]
   recommendations: string[]
@@ -237,7 +237,7 @@ export class SystemStressTest {
     console.log('📱 Testing offline capabilities...')
     
     // Test cache availability
-    const cacheSize = globalDataCache.size()
+    const cacheSize = Object.keys(globalDataCache).length || 0
     if (cacheSize === 0) {
       this.addResult('Offline', 'Cache', 'WARNING',
         'No cached data available for offline use', 'MEDIUM',
@@ -361,8 +361,12 @@ export class SystemStressTest {
     console.log('🚨 Testing error handling...')
     
     try {
-      // Test intentional error
-      await supabase.from('nonexistent_table').select('*')
+      // Test intentional error with valid table
+      const { error } = await supabase.from('articles').select('invalid_column').limit(1)
+      if (error) {
+        this.addResult('Error Handling', 'Database Errors', 'PASS',
+          'Database errors properly caught', 'LOW')
+      }
     } catch (error: any) {
       if (error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
         this.addResult('Error Handling', 'Database Errors', 'PASS',

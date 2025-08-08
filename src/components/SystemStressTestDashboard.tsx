@@ -16,18 +16,7 @@ import {
   Brain,
   Monitor
 } from 'lucide-react'
-import { stressTest } from '@/utils/systemStressTest'
-import type { SystemHealth } from '@/utils/systemStressTest'
-
-interface StressTestResult {
-  category: string
-  test: string
-  status: 'PASS' | 'FAIL' | 'WARNING'
-  message: string
-  severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
-  solution?: string
-}
-
+import { stressTest, SystemHealth, StressTestResult } from '@/utils/systemStressTest'
 export function SystemStressTestDashboard() {
   const [isRunning, setIsRunning] = useState(false)
   const [results, setResults] = useState<SystemHealth | null>(null)
@@ -146,19 +135,19 @@ export function SystemStressTestDashboard() {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-green-600">
-                      {results.issues.filter(i => i.status === 'PASS').length}
+                      {(results.issues || []).filter(i => i.status === 'PASS').length}
                     </div>
                     <div className="text-sm text-muted-foreground">Passed</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-yellow-600">
-                      {results.issues.filter(i => i.status === 'WARNING').length}
+                      {(results.issues || []).filter(i => i.status === 'WARNING').length}
                     </div>
                     <div className="text-sm text-muted-foreground">Warnings</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-red-600">
-                      {results.issues.filter(i => i.status === 'FAIL').length}
+                      {(results.issues || []).filter(i => i.status === 'FAIL').length}
                     </div>
                     <div className="text-sm text-muted-foreground">Failed</div>
                   </div>
@@ -196,12 +185,12 @@ export function SystemStressTestDashboard() {
             <CardTitle className="flex items-center gap-2">
               {getCategoryIcon(category)}
               {category} Issues
-              <Badge variant="outline">{issues.length}</Badge>
+              <Badge variant="outline">{(issues as StressTestResult[]).length}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {issues.map((issue, index) => (
+              {(issues as StressTestResult[]).map((issue, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
                   {getStatusIcon(issue.status)}
                   <div className="flex-1 space-y-1">
