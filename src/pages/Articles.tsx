@@ -9,6 +9,7 @@ import { ArticleForm } from "@/components/ArticleForm";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { SocialShareButtons } from "@/components/SocialShareButtons";
+import { SEO } from "@/components/SEO";
 import { sanitizeHtml } from "@/lib/security";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Link } from "react-router-dom";
@@ -144,6 +145,7 @@ export default function Articles() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Strategic Insights & Articles | Corridor Economics" description="Browse published articles on corridor economics, geopolitics, supply chains, and strategy." keywords={["strategic insights","corridor economics","geopolitics","supply chain","market entry","Patrick Misiewicz","Polrydian Group"]} url={`${window.location.origin}/articles`} />
       <Navigation />
       <div className="container mx-auto px-4 pt-24 pb-8">
         <Breadcrumbs />
@@ -305,6 +307,7 @@ export default function Articles() {
                   <img 
                     src={isLoading ? "/placeholder.svg" : article.heroImage} 
                     alt={isLoading ? "Loading" : article.title}
+                    loading="lazy"
                     className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   {!isLoading && (
@@ -386,6 +389,7 @@ export default function Articles() {
                                     <img 
                                       src={article.heroImage} 
                                       alt={article.title}
+                                      loading="lazy"
                                       className="w-full h-64 object-cover rounded-lg"
                                     />
                                   </div>
