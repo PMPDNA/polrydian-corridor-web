@@ -35,14 +35,41 @@ export const emailSchema = z.string()
   .email('Invalid email address')
   .min(1, 'Email is required')
 
-// Content sanitization - Enhanced security with corruption prevention
+// Content sanitization - Enhanced security with corruption prevention and HTML entity decoding
 export const sanitizeHtml = (content: string): string => {
   if (!content) return '';
   
-  // First pass: Fix any tripled characters that might exist (common corruption pattern)
-  let cleanContent = content.replace(/([a-z])\1{2,}/gi, '$1');
+  // Step 1: Decode HTML entities first
+  let cleanContent = content
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#34;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ');
   
-  // Second pass: DOMPurify sanitization
+  // Step 2: Fix common word corruption patterns
+  cleanContent = cleanContent
+    // Fix specific corruption patterns
+    .replace(/\bacros\b/gi, 'across')
+    .replace(/\bSuply\b/gi, 'Supply')
+    .replace(/\bbusines\b/gi, 'business')
+    .replace(/\bprogres\b/gi, 'progress')
+    .replace(/\badres\b/gi, 'address')
+    .replace(/\baproach\b/gi, 'approach')
+    .replace(/\baproval\b/gi, 'approval')
+    .replace(/\btechno\b/gi, 'technology')
+    .replace(/\bsel\b/gi, 'sell')
+    .replace(/\bTP\b/gi, 'TPP')
+    .replace(/\bsmal\b/gi, 'small')
+    // Fix tripled characters
+    .replace(/([a-z])\1{2,}/gi, '$1')
+    // Fix doubled consonants that shouldn't be doubled
+    .replace(/([bcdfghjklmnpqrstvwxz])\1(?![aeiou])/gi, '$1');
+  
+  // Step 3: DOMPurify sanitization
   const sanitized = DOMPurify.sanitize(cleanContent, {
     ALLOWED_TAGS: [
       'p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 
@@ -54,20 +81,16 @@ export const sanitizeHtml = (content: string): string => {
     FORBID_TAGS: ['script', 'object', 'embed', 'iframe', 'form', 'input'],
     FORBID_ATTR: ['style', 'on*'],
     USE_PROFILES: { html: true },
-    // Preserve text content and prevent malformed HTML
     KEEP_CONTENT: true,
-    // Don't add extra wrapper tags
     FORCE_BODY: false,
     WHOLE_DOCUMENT: false,
-    // Allow proper HTML structure
     RETURN_DOM: false,
     RETURN_DOM_FRAGMENT: false,
-    // Preserve line breaks and spacing
     ADD_TAGS: ['#text'],
     ADD_ATTR: []
   });
   
-  // Final cleanup: remove empty elements and normalize whitespace
+  // Step 4: Final cleanup
   return sanitized
     .replace(/<(p|h[1-6]|div)><\/\1>/g, '') // Remove empty elements
     .replace(/<(p|h[1-6]|div)[^>]*><br><\/\1>/g, '') // Remove elements with just breaks
@@ -149,9 +172,30 @@ export const sanitizeFormData = <T extends Record<string, any>>(data: T): T => {
       if (key === 'content') {
         const original = value;
         
-        // Fix common character tripling issues and specific corruption patterns
+        // Fix common corruption patterns and HTML entities
         const cleanedContent = value
-          // Fix specific corruption patterns first
+          // Decode HTML entities first
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&#34;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&apos;/g, "'")
+          .replace(/&nbsp;/g, ' ')
+          // Fix word corruption patterns
+          .replace(/\bacros\b/gi, 'across')
+          .replace(/\bSuply\b/gi, 'Supply')
+          .replace(/\bbusines\b/gi, 'business')
+          .replace(/\bprogres\b/gi, 'progress')
+          .replace(/\badres\b/gi, 'address')
+          .replace(/\baproach\b/gi, 'approach')
+          .replace(/\baproval\b/gi, 'approval')
+          .replace(/\btechno\b/gi, 'technology')
+          .replace(/\bsel\b/gi, 'sell')
+          .replace(/\bTP\b/gi, 'TPP')
+          .replace(/\bsmal\b/gi, 'small')
+          // Fix specific corruption patterns
           .replace(/prpprpprotests/gi, 'protests')
           .replace(/prpprppresident/gi, 'president') 
           .replace(/vmmassal/gi, 'vassal')
