@@ -18,7 +18,7 @@ import {
   ArrowRight
 } from "lucide-react";
 
-import { SEO } from "@/components/SEO";
+import { EnhancedSEO } from "@/components/EnhancedSEO";
 import heroImage from "@/assets/polrydian-hero-bg.jpg";
 
 export default function Services() {
@@ -157,7 +157,7 @@ export default function Services() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
+      <EnhancedSEO 
         title="Strategic Services | Corridor Economics Consulting"
         description="Corridor economics advisory, M&A, geopolitical risk, supply chain optimization, and market entry."
         keywords={["services","corridor economics","M&A","geopolitical risk","supply chain","market entry","Polrydian Group"]}

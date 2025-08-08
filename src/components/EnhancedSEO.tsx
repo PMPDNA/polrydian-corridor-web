@@ -205,7 +205,7 @@ export function EnhancedSEO({
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       
       {/* RSS Feed */}
-      <link rel="alternate" type="application/rss+xml" title="Polrydian Corridor Web RSS Feed" href="/rss.xml" />
+      <link rel="alternate" type="application/rss+xml" title="Polrydian Corridor Web RSS Feed" href="https://qemtvnwemcpzhvbwjbsk.supabase.co/functions/v1/generate-rss" />
       
       {/* Structured Data - Main Schema */}
       <script type="application/ld+json">

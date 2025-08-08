@@ -34,7 +34,7 @@ interface InsightItem {
   category: string;
 }
 
-import { SEO } from "@/components/SEO";
+import { EnhancedSEO } from "@/components/EnhancedSEO";
 import heroImage from "@/assets/polrydian-hero-bg.jpg";
 
 export default function Insights() {
@@ -171,7 +171,7 @@ export default function Insights() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <SEO 
+      <EnhancedSEO 
         title="Economic Insights | FRED, CSIS, Trade Policy"
         description="Real-time economic indicators, CSIS analysis, Trade Guys podcast, and policy updates for corridor economics."
         keywords={["economic insights","FRED","CSIS","Trade Guys","policy updates","corridor economics","Polrydian"]}

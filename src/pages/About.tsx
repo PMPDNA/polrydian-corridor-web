@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, ExternalLink, Award, Users, MapPin } from "lucide-react";
-import { SEO } from "@/components/SEO";
+import { EnhancedSEO } from "@/components/EnhancedSEO";
 
 import profileImage from "@/assets/patrick-profile.jpg";
 
@@ -81,7 +81,7 @@ Let's talk about your challenges clearly, and create the corridor that moves you
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
+      <EnhancedSEO 
         title="About Patrick Misiewicz | Polrydian Group"
         description={shortBio}
         keywords={["About","Patrick Misiewicz","Polrydian Group","strategic consulting","corridor economics"]}

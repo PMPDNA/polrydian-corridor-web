@@ -35,6 +35,8 @@ import SecurityDashboard from "./pages/SecurityDashboard";
 import Analytics from "./pages/Analytics";
 import Search from "./pages/Search";
 import PerformanceDashboard from "./pages/admin/PerformanceDashboard";
+import Sitemap from "./pages/Sitemap";
+import RSS from "./pages/RSS";
 
 import NotFound from "./pages/NotFound";
 
@@ -130,6 +132,8 @@ const App = () => {
             } />
             
             <Route path="/search" element={<Search />} />
+            <Route path="/sitemap.xml" element={<Sitemap />} />
+            <Route path="/rss.xml" element={<RSS />} />
             <Route path="/security" element={
               <ErrorBoundary>
                 <SupabaseProtectedRoute requireAdmin={true}>
