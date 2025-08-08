@@ -17,6 +17,7 @@ import {
   Monitor
 } from 'lucide-react'
 import { stressTest, SystemHealth, StressTestResult } from '@/utils/systemStressTest'
+
 export function SystemStressTestDashboard() {
   const [isRunning, setIsRunning] = useState(false)
   const [results, setResults] = useState<SystemHealth | null>(null)
@@ -185,12 +186,12 @@ export function SystemStressTestDashboard() {
             <CardTitle className="flex items-center gap-2">
               {getCategoryIcon(category)}
               {category} Issues
-              <Badge variant="outline">{(issues as StressTestResult[]).length}</Badge>
+              <Badge variant="outline">{issues.length}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {(issues as StressTestResult[]).map((issue, index) => (
+              {issues.map((issue, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 border rounded-lg">
                   {getStatusIcon(issue.status)}
                   <div className="flex-1 space-y-1">
