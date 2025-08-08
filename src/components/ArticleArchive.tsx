@@ -9,7 +9,7 @@ import { Calendar, Clock, User, Search, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUnifiedArticles, ArticleArchiveParams } from "@/hooks/useUnifiedData";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { SEO } from "@/components/SEO";
+import { EnhancedSEO } from "@/components/EnhancedSEO";
 
 interface ArticleArchiveProps {
   showFilters?: boolean;
@@ -138,11 +138,12 @@ export function ArticleArchive({
 
   return (
     <div className="space-y-8">
-      <SEO 
+      <EnhancedSEO 
         title="Strategic Insights & Articles | Corridor Economics"
         description="Browse published articles on corridor economics, geopolitics, supply chains, and strategy."
         keywords={["strategic insights", "corridor economics", "geopolitics", "supply chain", "articles"]}
         url={`${window.location.origin}/articles`}
+        type="website"
       />
       
       {/* Structured Data */}
@@ -222,13 +223,33 @@ export function ArticleArchive({
                 </Select>
               </div>
 
-              {/* Date Range */}
+              {/* Date From */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Date From</label>
                 <Input
                   type="date"
                   value={filters.dateFrom || ""}
                   onChange={(e) => handleFilterChange('dateFrom', e.target.value || undefined)}
+                />
+              </div>
+
+              {/* Date To */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Date To</label>
+                <Input
+                  type="date"
+                  value={filters.dateTo || ""}
+                  onChange={(e) => handleFilterChange('dateTo', e.target.value || undefined)}
+                />
+              </div>
+
+              {/* Author */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Author (User ID)</label>
+                <Input
+                  placeholder="Filter by author ID"
+                  value={filters.author || ""}
+                  onChange={(e) => handleFilterChange('author', e.target.value || undefined)}
                 />
               </div>
             </div>

@@ -1,30 +1,23 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react";
-import { useArticles } from "@/hooks/useArticles";
+import { useUnifiedArticles } from "@/hooks/useUnifiedData";
 import { SocialShareButtons } from "@/components/SocialShareButtons";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import Footer from "@/components/Footer";
 import { sanitizeHtml } from "@/lib/security";
-import { SEO } from "@/components/SEO";
+import { EnhancedSEO } from "@/components/EnhancedSEO";
 
 export default function ArticleDetail() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { articles, loading } = useArticles();
-  const [article, setArticle] = useState<any>(null);
+  const { useArticleBySlug } = useUnifiedArticles();
+  const { data: article, isLoading: loading } = useArticleBySlug(slug!);
 
-  useEffect(() => {
-    if (articles && slug) {
-      // Find article by slug first, then ID for backwards compatibility
-      const foundArticle = articles.find(a => a.slug === slug) || articles.find(a => a.id === slug);
-      setArticle(foundArticle);
-    }
-  }, [articles, slug]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -53,7 +46,7 @@ export default function ArticleDetail() {
   if (!article) {
     return (
       <div className="min-h-screen bg-background">
-        <SEO title="Article Not Found" description="The requested article could not be found." />
+        <EnhancedSEO title="Article Not Found" description="The requested article could not be found." />
         <Navigation />
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="text-center py-16">
@@ -75,7 +68,7 @@ export default function ArticleDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEO 
+      <EnhancedSEO 
         title={article.title}
         description={article.meta_description || article.content.substring(0, 160)}
         keywords={article.keywords}
@@ -84,6 +77,8 @@ export default function ArticleDetail() {
         type="article"
         publishedTime={article.published_at || article.created_at}
         modifiedTime={article.updated_at}
+        section={article.category}
+        tags={article.keywords}
       />
       <Navigation />
       

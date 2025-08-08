@@ -40,3 +40,9 @@ verify_jwt = false
 
 [functions.research-link-generator]
 verify_jwt = false
+
+[functions.generate-sitemap]
+verify_jwt = false
+
+[functions.generate-rss]
+verify_jwt = false
