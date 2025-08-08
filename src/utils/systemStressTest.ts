@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client'
 import { globalDataCache } from '@/utils/performanceOptimization'
 
-interface StressTestResult {
+export interface StressTestResult {
   category: string
   test: string
   status: 'PASS' | 'FAIL' | 'WARNING'

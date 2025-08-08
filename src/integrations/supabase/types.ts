@@ -1200,6 +1200,39 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_metrics: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_type: string
+          page_url: string | null
+          session_id: string | null
+          user_agent: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          page_url?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          page_url?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       policy_updates: {
         Row: {
           created_at: string
@@ -1449,6 +1482,36 @@ export type Database = {
         }
         Relationships: []
       }
+      system_health_checks: {
+        Row: {
+          check_type: string
+          created_at: string
+          id: string
+          message: string
+          metadata: Json | null
+          severity: string
+          status: string
+        }
+        Insert: {
+          check_type: string
+          created_at?: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          severity: string
+          status: string
+        }
+        Update: {
+          check_type?: string
+          created_at?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          severity?: string
+          status?: string
+        }
+        Relationships: []
+      }
       user_consent: {
         Row: {
           consent_date: string
@@ -1646,6 +1709,10 @@ export type Database = {
       clean_article_content: {
         Args: { content_text: string }
         Returns: string
+      }
+      cleanup_old_performance_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       decrypt_token_secure: {
         Args: { encrypted_token: string }
