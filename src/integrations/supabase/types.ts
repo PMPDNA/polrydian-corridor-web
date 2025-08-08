@@ -1706,6 +1706,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      clean_all_article_content: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       clean_article_content: {
         Args: { content_text: string }
         Returns: string
