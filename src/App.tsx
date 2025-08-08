@@ -41,7 +41,7 @@ import NotFound from "./pages/NotFound";
 
 import { ScrollToTop } from "./components/ScrollToTop";
 import { OfflineIndicator } from "./components/OfflineIndicator";
-import { SEOEnhancements } from "./components/SEOEnhancements";
+import { EnhancedSEO } from "./components/EnhancedSEO";
 
 const queryClient = new QueryClient();
 
@@ -56,7 +56,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <SEOEnhancements />
+          <EnhancedSEO />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
