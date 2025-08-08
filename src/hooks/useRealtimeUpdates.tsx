@@ -60,9 +60,6 @@ export function useRealtimeUpdates(configs: RealtimeConfig[]) {
       channels.push(channel)
     })
 
-    // Set connected status when all channels are ready
-    setConnected(connectionCount === configs.length)
-
     return () => {
       channels.forEach(channel => {
         supabase.removeChannel(channel)
@@ -70,7 +67,12 @@ export function useRealtimeUpdates(configs: RealtimeConfig[]) {
       setConnectionCount(0)
       setConnected(false)
     }
-  }, [configs, connectionCount, handleError])
+  }, [configs, handleError]) // Fixed: Removed connectionCount dependency to prevent infinite loop
+
+  // Update connected status separately to avoid dependency loop
+  useEffect(() => {
+    setConnected(connectionCount === configs.length)
+  }, [connectionCount, configs.length])
 
   return {
     connected,
