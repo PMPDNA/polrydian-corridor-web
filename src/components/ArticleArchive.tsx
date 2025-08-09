@@ -138,14 +138,6 @@ export function ArticleArchive({
 
   return (
     <div className="space-y-8">
-      <EnhancedSEO 
-        title="Strategic Insights & Articles | Corridor Economics"
-        description="Browse published articles on corridor economics, geopolitics, supply chains, and strategy."
-        keywords={["strategic insights", "corridor economics", "geopolitics", "supply chain", "articles"]}
-        url={`${window.location.origin}/articles`}
-        type="website"
-      />
-      
       {/* Structured Data */}
       <script
         type="application/ld+json"

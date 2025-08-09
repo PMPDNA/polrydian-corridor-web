@@ -40,9 +40,9 @@ const SearchPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <EnhancedSEO 
-        title="Search | Polrydian Group"
-        description="Search our strategic consulting services, insights, and thought leadership content. Find information about corridor economics, geopolitical strategy, and infrastructure advisory."
-        keywords={["search", "strategic consulting", "corridor economics", "insights", "services", "Polrydian Group"]}
+        title="Search | Strategic Consulting & Corridor Economics"
+        description="Search our strategic consulting services, corridor economics insights, and geopolitical analysis. Find expert guidance on infrastructure advisory and market intelligence."
+        keywords={["search", "strategic consulting", "corridor economics", "geopolitical analysis", "infrastructure advisory", "market intelligence", "Polrydian Group"]}
         url={`${window.location.origin}/search`}
         type="website"
       />
