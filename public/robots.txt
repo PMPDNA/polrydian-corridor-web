@@ -35,7 +35,7 @@ Disallow: /
 
 # Sitemap and RSS location
 Sitemap: https://polrydian.com/sitemap.xml
-Sitemap: https://polrydian.com/rss.xml
+RSS: https://polrydian.com/rss.xml
 
 # Key pages
 Allow: /articles
