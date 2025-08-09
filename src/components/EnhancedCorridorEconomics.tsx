@@ -152,6 +152,8 @@ export const EnhancedCorridorEconomics = () => {
           <img 
             src={corridorDiagram} 
             alt="Corridor Economics Network Diagram showing strategic flows between global regions"
+            loading="lazy"
+            decoding="async"
             className="w-full max-w-sm rounded-lg shadow-md"
           />
         </div>

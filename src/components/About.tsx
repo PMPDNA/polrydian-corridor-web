@@ -157,6 +157,8 @@ export const About = () => {
                     <img 
                       src={profilePhoto} 
                       alt="Patrick Misiewicz" 
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover rounded-xl"
                     />
                   ) : (

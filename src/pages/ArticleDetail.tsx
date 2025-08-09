@@ -120,6 +120,7 @@ export default function ArticleDetail() {
                   src={article.featured_image} 
                   alt={article.title}
                   loading="lazy"
+                  decoding="async"
                   className="w-full h-[400px] object-cover rounded-lg shadow-elegant"
                 />
               </div>

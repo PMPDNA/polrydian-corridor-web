@@ -96,6 +96,8 @@ export function PartnerLogosDisplay() {
                             <img
                               src={partner.logo_url}
                               alt={partner.name}
+                              loading="lazy"
+                              decoding="async"
                               className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-200"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;

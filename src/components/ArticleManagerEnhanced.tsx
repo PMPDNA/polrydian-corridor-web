@@ -309,9 +309,9 @@ export default function ArticleManagerEnhanced() {
                         {article.title}
                       </CardTitle>
                       
-                      <CardDescription className="line-clamp-3">
-                        {article.meta_description || article.content.substring(0, 200) + "..."}
-                      </CardDescription>
+                       <CardDescription className="line-clamp-3">
+                        {article.meta_description || article.content.replace(/<[^>]*>/g, '').substring(0, 200) + "..."}
+                       </CardDescription>
                     </div>
                     
                     {article.featured_image && (

@@ -82,7 +82,7 @@ export function useUnifiedArticles() {
 
         let query = supabase
           .from("articles")
-          .select("*, profiles(display_name)", { count: "exact" })
+          .select("*", { count: "exact" })
           .eq("status", "published");
 
         // Apply filters
@@ -132,7 +132,7 @@ export function useUnifiedArticles() {
       queryFn: async () => {
         const { data, error } = await supabase
           .from("articles")
-          .select("*, profiles(display_name)")
+          .select("*")
           .eq("id", id)
           .maybeSingle();
 
@@ -157,7 +157,7 @@ export function useUnifiedArticles() {
       queryFn: async () => {
         const { data, error } = await supabase
           .from("articles")
-          .select("*, profiles(display_name)")
+          .select("*")
           .eq("slug", slug)
           .maybeSingle();
 

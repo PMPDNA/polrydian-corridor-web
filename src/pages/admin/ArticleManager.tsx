@@ -163,7 +163,7 @@ export default function ArticleManager() {
                       </div>
                       
                       <p className="text-muted-foreground mb-3 line-clamp-2">
-                        {article.content.substring(0, 150)}...
+                        {article.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
                       </p>
                       
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
