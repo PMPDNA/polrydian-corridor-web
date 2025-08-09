@@ -4,6 +4,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, TrendingUp, Users, FileText } from "lucide-react";
+import { EnhancedSEO } from "@/components/EnhancedSEO";
 
 const SearchPage = () => {
   const popularSearches = [
@@ -38,6 +39,13 @@ const SearchPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <EnhancedSEO 
+        title="Search | Polrydian Group"
+        description="Search our strategic consulting services, insights, and thought leadership content. Find information about corridor economics, geopolitical strategy, and infrastructure advisory."
+        keywords={["search", "strategic consulting", "corridor economics", "insights", "services", "Polrydian Group"]}
+        url={`${window.location.origin}/search`}
+        type="website"
+      />
       <Navigation />
       
       <main className="container mx-auto px-4 pt-24 pb-8">

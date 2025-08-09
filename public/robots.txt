@@ -33,8 +33,9 @@ Disallow: /
 User-agent: Claude-Web
 Disallow: /
 
-# Sitemap location
+# Sitemap and RSS location
 Sitemap: https://polrydian.com/sitemap.xml
+Sitemap: https://polrydian.com/rss.xml
 
 # Key pages
 Allow: /articles
