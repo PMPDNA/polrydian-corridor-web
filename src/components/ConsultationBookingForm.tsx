@@ -93,6 +93,7 @@ export const ConsultationBookingForm = () => {
           urgency_level: formData.urgencyLevel
         }]);
 
+
       if (error) throw error;
 
       toast({
