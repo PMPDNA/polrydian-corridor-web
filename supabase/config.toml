@@ -30,13 +30,13 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.multi-source-economic-data]
-verify_jwt = false
+verify_jwt = true
 
 [functions.fred-api-integration]
-verify_jwt = false
+verify_jwt = true
 
 [functions.enhanced-data-collection]
-verify_jwt = false
+verify_jwt = true
 
 [functions.research-link-generator]
 verify_jwt = false

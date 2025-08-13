@@ -6,7 +6,7 @@ import { extractClientIP, validateInput, checkRateLimit, logSecurityEvent, getCo
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://polrydian.com, https://d85f6385-6c6d-437f-978b-9196bd33e526.lovableproject.com",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-csrf-token",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
