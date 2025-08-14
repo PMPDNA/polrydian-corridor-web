@@ -25,6 +25,7 @@ export default function InsightsDashboard() {
         const { data, error } = await supabase
           .from('insights_latest')
           .select('*')
+          .order('created_at', { ascending: false })
           .limit(6);
 
         if (error) {

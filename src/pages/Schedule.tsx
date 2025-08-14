@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import CalendlyEmbed from '@/components/CalendlyEmbed';
 import { Navigation } from '@/components/Navigation';
 import { EnhancedSEO } from '@/components/EnhancedSEO';
 
 export default function Schedule() {
-  // Track Calendly conversions in GA4 with origin security
+  const firedRef = useRef(false);
+  
+  // Track Calendly conversions in GA4 with origin security and double-fire protection
   useEffect(() => {
     const onCalendlyEvent = (e: MessageEvent<any>) => {
       // Only accept messages from Calendly
@@ -14,13 +16,16 @@ export default function Schedule() {
       if (!okOrigin || typeof e.data !== "object" || !e.data?.event) return;
 
       if (e.data.event === "calendly.event_scheduled") {
+        if (firedRef.current) return; // prevent duplicate
+        firedRef.current = true;
+
         const meta = {
           method: "calendly",
           event_uri: e.data?.payload?.event?.uri || "",
           invitee_uri: e.data?.payload?.invitee?.uri || ""
         };
 
-        // GA4 (recommended event: generate_lead)
+        // GA4 as authoritative source
         // @ts-ignore
         window.gtag?.("event", "generate_lead", {
           ...meta,
@@ -28,7 +33,7 @@ export default function Schedule() {
           currency: "USD"
         });
 
-        // GTM (optional)
+        // GTM backup (optional)
         (window as any).dataLayer = (window as any).dataLayer || [];
         (window as any).dataLayer.push({
           event: "generate_lead",
