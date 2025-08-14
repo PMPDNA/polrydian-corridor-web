@@ -129,7 +129,7 @@ export const Services = () => {
             Ready to transform your strategic challenges into competitive advantages? 
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="inline-flex items-center justify-center px-6 py-3 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors font-medium">
+            <a href="/schedule" className="inline-flex items-center justify-center px-6 py-3 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors font-medium">
               Schedule Strategic Consultation
             </a>
             <a href="/about" className="inline-flex items-center justify-center px-6 py-3 border border-accent text-accent rounded-lg hover:bg-accent/10 transition-colors font-medium">

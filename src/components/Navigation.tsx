@@ -54,7 +54,7 @@ export const Navigation = () => {
               </Link>
             ))}
             <Button variant="default" size="sm" asChild>
-              <Link to="/#contact">
+              <Link to="/schedule">
                 Schedule Consultation
               </Link>
             </Button>
@@ -93,7 +93,7 @@ export const Navigation = () => {
                   </Link>
                 ))}
                 <Button variant="default" size="sm" className="mt-2 w-full" asChild>
-                  <Link to="/#contact">
+                  <Link to="/schedule">
                     Schedule Consultation
                   </Link>
                 </Button>

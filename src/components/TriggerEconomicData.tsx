@@ -7,7 +7,9 @@ export function TriggerEconomicData() {
 
   const handleTrigger = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('economic-data-scheduler');
+      const { data, error } = await supabase.functions.invoke('fred-api-integration', {
+        body: { operation: 'fetch_indicators', indicators: ['gdp', 'unemployment', 'inflation'] }
+      });
       
       if (error) throw error;
       

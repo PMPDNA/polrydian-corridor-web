@@ -258,8 +258,7 @@ export const Contact = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a 
-                  href="#consultation-form"
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  href="/schedule"
                   className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white rounded-lg font-medium transition-colors"
                 >
                   Schedule Strategic Consultation
