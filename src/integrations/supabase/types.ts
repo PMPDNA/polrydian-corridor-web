@@ -1679,7 +1679,22 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      insights_latest: {
+        Row: {
+          chart_config: Json | null
+          content: string | null
+          created_at: string | null
+          data_points: Json | null
+          data_source: string | null
+          id: string | null
+          indicator_type: string | null
+          is_published: boolean | null
+          series_id: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assign_admin_role: {
