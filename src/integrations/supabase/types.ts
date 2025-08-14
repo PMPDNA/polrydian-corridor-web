@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -1707,8 +1707,8 @@ export type Database = {
       }
       check_admin_rate_limit: {
         Args: {
-          operation_type: string
           max_attempts?: number
+          operation_type: string
           window_minutes?: number
         }
         Returns: boolean
@@ -1767,8 +1767,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -1778,30 +1778,30 @@ export type Database = {
       }
       log_integration_event: {
         Args: {
+          p_error_code?: string
+          p_error_message?: string
+          p_execution_time_ms?: number
           p_integration_type: string
           p_operation: string
-          p_status?: string
-          p_user_id?: string
-          p_error_message?: string
-          p_error_code?: string
           p_request_data?: Json
           p_response_data?: Json
-          p_execution_time_ms?: number
           p_retry_count?: number
+          p_status?: string
+          p_user_id?: string
         }
         Returns: string
       }
       log_security_event_enhanced: {
         Args: {
+          client_ip?: string
           event_action: string
           event_details?: Json
           event_severity?: string
-          client_ip?: string
         }
         Returns: undefined
       }
       log_security_violation: {
-        Args: { violation_type: string; details?: Json; severity?: string }
+        Args: { details?: Json; severity?: string; violation_type: string }
         Returns: undefined
       }
       migrate_existing_tokens: {
@@ -1810,9 +1810,9 @@ export type Database = {
       }
       prevent_role_self_elevation: {
         Args: {
-          target_user_id: string
-          old_role: Database["public"]["Enums"]["app_role"]
           new_role: Database["public"]["Enums"]["app_role"]
+          old_role: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
         }
         Returns: boolean
       }
