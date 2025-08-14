@@ -11,14 +11,14 @@ export default function Footer() {
         { name: "About", href: "/about" },
         { name: "Services", href: "/services" },
         { name: "Insights", href: "/insights" },
-        { name: "Contact", href: "#contact" }
+        { name: "Contact", href: "/schedule" }
       ]
     },
     {
       title: "Resources",
       links: [
         { name: "Articles", href: "/articles" },
-        { name: "Schedule Call", href: "/calendly-demo" },
+        { name: "Schedule Call", href: "/schedule" },
         { name: "Privacy Policy", href: "/privacy" },
         { name: "Cookie Settings", href: "/cookie-settings" }
       ]
