@@ -30,6 +30,41 @@ const Index = () => {
         url={`${window.location.origin}/`}
         type="website"
       />
+      
+      {/* JSON-LD Structured Data for SEO */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Polrydian Group",
+          "url": "https://www.polrydian.com",
+          "logo": "https://www.polrydian.com/static/brand/logo.png",
+          "sameAs": [
+            "https://www.linkedin.com/company/polrydian",
+            "https://x.com/polrydian"
+          ],
+          "contactPoint": [{
+            "@type": "ContactPoint",
+            "contactType": "sales",
+            "email": "info@polrydian.com"
+          }]
+        })
+      }} />
+      
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "url": "https://www.polrydian.com",
+          "name": "Polrydian Group",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.polrydian.com/search?q={query}",
+            "query-input": "required name=query"
+          }
+        })
+      }} />
+      
       <a href="#hero" className="skip-link" onClick={() => track('skip_to_content')}>
         Skip to main content
       </a>

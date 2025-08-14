@@ -23,10 +23,8 @@ export default function InsightsDashboard() {
     const fetchInsights = async () => {
       try {
         const { data, error } = await supabase
-          .from('insights')
+          .from('insights_latest')
           .select('*')
-          .eq('is_published', true)
-          .order('created_at', { ascending: false })
           .limit(6);
 
         if (error) {
@@ -34,16 +32,8 @@ export default function InsightsDashboard() {
           return;
         }
 
-        // Deduplicate by series_id, keeping the latest
-        const uniqueInsights = data?.reduce((acc: any[], current: any) => {
-          const existing = acc.find(item => item.series_id === current.series_id);
-          if (!existing) {
-            acc.push(current);
-          }
-          return acc;
-        }, []) || [];
-
-        setInsights(uniqueInsights as Insight[]);
+        // Data is already deduplicated by the view
+        setInsights(data || []);
       } catch (error) {
         console.error('Error:', error);
       } finally {

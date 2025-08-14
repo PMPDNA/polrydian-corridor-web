@@ -1,8 +1,32 @@
+import { useEffect } from 'react';
 import CalendlyEmbed from '@/components/CalendlyEmbed';
 import { Navigation } from '@/components/Navigation';
 import { EnhancedSEO } from '@/components/EnhancedSEO';
 
 export default function Schedule() {
+  // Track Calendly conversions in GA4
+  useEffect(() => {
+    function onCalendlyEvent(e: MessageEvent) {
+      const fromCalendly = typeof e.data === "object" && e.data?.event?.startsWith?.("calendly.");
+      if (!fromCalendly) return;
+      if (e.data.event === "calendly.event_scheduled") {
+        const meta = {
+          method: "calendly",
+          event_uri: e.data?.payload?.event?.uri || "",
+          invitee_uri: e.data?.payload?.invitee?.uri || ""
+        };
+        // GA4 via gtag
+        // @ts-ignore
+        window.gtag?.("event", "generate_lead", meta);
+        // Or GTM
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).dataLayer.push({ event: "generate_lead", ...meta });
+      }
+    }
+    window.addEventListener("message", onCalendlyEvent);
+    return () => window.removeEventListener("message", onCalendlyEvent);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <EnhancedSEO 
