@@ -1679,22 +1679,7 @@ export type Database = {
       }
     }
     Views: {
-      insights_latest: {
-        Row: {
-          chart_config: Json | null
-          content: string | null
-          created_at: string | null
-          data_points: Json | null
-          data_source: string | null
-          id: string | null
-          indicator_type: string | null
-          is_published: boolean | null
-          series_id: string | null
-          title: string | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       assign_admin_role: {
@@ -1764,6 +1749,23 @@ export type Database = {
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      get_latest_insights: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          chart_config: Json
+          content: string
+          created_at: string
+          data_points: Json
+          data_source: string
+          id: string
+          indicator_type: string
+          is_published: boolean
+          region: string
+          series_id: string
+          title: string
+          updated_at: string
+        }[]
       }
       has_role: {
         Args: {
