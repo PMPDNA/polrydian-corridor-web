@@ -46,7 +46,8 @@ const Index = () => {
           "contactPoint": [{
             "@type": "ContactPoint",
             "contactType": "sales",
-            "email": "info@polrydian.com"
+            "email": "info@polrydian.com",
+            "availableLanguage": ["en"]
           }]
         })
       }} />

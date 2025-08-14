@@ -236,7 +236,7 @@ serve(async (req) => {
         
         results.push(result);
         
-        // Enhanced data storage with validation metadata
+        // Enhanced data storage with upsert to prevent conflicts
         const { error: insertError } = await supabase
           .from('insights')
           .upsert({

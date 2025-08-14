@@ -4,25 +4,40 @@ import { Navigation } from '@/components/Navigation';
 import { EnhancedSEO } from '@/components/EnhancedSEO';
 
 export default function Schedule() {
-  // Track Calendly conversions in GA4
+  // Track Calendly conversions in GA4 with origin security
   useEffect(() => {
-    function onCalendlyEvent(e: MessageEvent) {
-      const fromCalendly = typeof e.data === "object" && e.data?.event?.startsWith?.("calendly.");
-      if (!fromCalendly) return;
+    const onCalendlyEvent = (e: MessageEvent<any>) => {
+      // Only accept messages from Calendly
+      const okOrigin =
+        e.origin === "https://calendly.com" ||
+        e.origin === "https://www.calendly.com";
+      if (!okOrigin || typeof e.data !== "object" || !e.data?.event) return;
+
       if (e.data.event === "calendly.event_scheduled") {
         const meta = {
           method: "calendly",
           event_uri: e.data?.payload?.event?.uri || "",
           invitee_uri: e.data?.payload?.invitee?.uri || ""
         };
-        // GA4 via gtag
+
+        // GA4 (recommended event: generate_lead)
         // @ts-ignore
-        window.gtag?.("event", "generate_lead", meta);
-        // Or GTM
+        window.gtag?.("event", "generate_lead", {
+          ...meta,
+          value: 1,
+          currency: "USD"
+        });
+
+        // GTM (optional)
         (window as any).dataLayer = (window as any).dataLayer || [];
-        (window as any).dataLayer.push({ event: "generate_lead", ...meta });
+        (window as any).dataLayer.push({
+          event: "generate_lead",
+          lead_source: "calendly",
+          ...meta
+        });
       }
-    }
+    };
+
     window.addEventListener("message", onCalendlyEvent);
     return () => window.removeEventListener("message", onCalendlyEvent);
   }, []);
