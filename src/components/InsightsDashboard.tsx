@@ -22,10 +22,9 @@ export default function InsightsDashboard() {
   useEffect(() => {
     const fetchInsights = async () => {
       try {
+        // Use the new secure function instead of the view
         const { data, error } = await supabase
-          .from('insights_latest')
-          .select('*')
-          .order('created_at', { ascending: false })
+          .rpc('get_latest_insights')
           .limit(6);
 
         if (error) {
@@ -33,7 +32,7 @@ export default function InsightsDashboard() {
           return;
         }
 
-        // Data is already deduplicated by the view
+        // Data is already deduplicated by the function
         setInsights(data || []);
       } catch (error) {
         console.error('Error:', error);
