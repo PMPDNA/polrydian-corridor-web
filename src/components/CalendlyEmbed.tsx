@@ -27,10 +27,11 @@ export default function CalendlyEmbed({
       calendlyRef.current.innerHTML = '';
     }
 
-    // Load Calendly script
+    // Load Calendly script with proper error handling
     const script = document.createElement('script');
     script.src = 'https://assets.calendly.com/assets/external/widget.js';
     script.async = true;
+    script.crossOrigin = 'anonymous';
 
     script.onload = () => {
       if (window.Calendly && calendlyRef.current) {

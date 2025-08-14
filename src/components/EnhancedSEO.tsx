@@ -17,9 +17,9 @@ interface EnhancedSEOProps {
 }
 
 export function EnhancedSEO({
-  title = "Polrydian Corridor Web - Strategic Economic Intelligence",
-  description = "Transform strategic challenges into competitive advantages through corridor economics. Expert analysis of global trade flows, geopolitical risk, and economic pathways.",
-  keywords = ["corridor economics", "strategic consulting", "geopolitical analysis", "trade flows", "economic intelligence"],
+  title,
+  description,
+  keywords,
   image = "/images/polrydian-hero-bg.jpg",
   url,
   type = "website",
@@ -31,11 +31,77 @@ export function EnhancedSEO({
   canonicalUrl
 }: EnhancedSEOProps) {
   const location = useLocation();
+  
+  // Generate route-specific defaults
+  const getRouteDefaults = () => {
+    const path = location.pathname;
+    
+    if (path === '/') {
+      return {
+        title: "Strategic Economic Intelligence | Polrydian Corridor Web",
+        description: "Transform strategic challenges into competitive advantages through corridor economics. Expert analysis of global trade flows, geopolitical risk, and economic pathways.",
+        keywords: ["corridor economics", "strategic consulting", "geopolitical analysis", "trade flows", "economic intelligence"]
+      };
+    }
+    
+    if (path === '/about') {
+      return {
+        title: "About Patrick Misiewicz | Corridor Economics Expert | Polrydian",
+        description: "Meet Patrick Misiewicz, founder of Polrydian Group. Expert in corridor economics, geopolitical strategy, and transforming complex global challenges into strategic opportunities.",
+        keywords: ["Patrick Misiewicz", "corridor economics expert", "strategic consultant", "geopolitical analyst", "Polrydian founder"]
+      };
+    }
+    
+    if (path === '/services') {
+      return {
+        title: "Strategic Consulting Services | Corridor Economics & Geopolitical Analysis",
+        description: "Expert consulting in corridor economics, M&A strategy, geopolitical risk assessment, supply chain optimization, and market entry. Transform complexity into strategic clarity.",
+        keywords: ["strategic consulting", "M&A advisory", "geopolitical risk", "supply chain optimization", "market entry strategy"]
+      };
+    }
+    
+    if (path === '/articles') {
+      return {
+        title: "Strategic Insights & Articles | Corridor Economics Analysis",
+        description: "Browse expert analysis on corridor economics, geopolitical strategy, supply chain optimization, and market intelligence. Strategic insights for complex global challenges.",
+        keywords: ["strategic insights", "corridor economics", "geopolitical analysis", "supply chain", "market intelligence"]
+      };
+    }
+    
+    if (path === '/insights') {
+      return {
+        title: "Economic Intelligence Dashboard | Real-Time Data & Analysis",
+        description: "Access real-time economic indicators, FRED data analysis, policy updates, and strategic intelligence. Data-driven insights for informed decision-making.",
+        keywords: ["economic indicators", "FRED data", "policy analysis", "economic intelligence", "data dashboard"]
+      };
+    }
+    
+    if (path === '/schedule') {
+      return {
+        title: "Schedule Strategic Consultation | Expert Corridor Economics Advice",
+        description: "Book a consultation with corridor economics expert Patrick Misiewicz. Get strategic guidance on complex global challenges and business opportunities.",
+        keywords: ["strategic consultation", "corridor economics consultation", "business advisory", "geopolitical strategy", "expert advice"]
+      };
+    }
+    
+    // Default fallback
+    return {
+      title: "Polrydian Corridor Web - Strategic Economic Intelligence",
+      description: "Transform strategic challenges into competitive advantages through corridor economics. Expert analysis of global trade flows, geopolitical risk, and economic pathways.",
+      keywords: ["corridor economics", "strategic consulting", "geopolitical analysis", "trade flows", "economic intelligence"]
+    };
+  };
+  
+  const defaults = getRouteDefaults();
+  const finalTitle = title || defaults.title;
+  const finalDescription = description || defaults.description;
+  const finalKeywords = keywords || defaults.keywords;
+  
   const currentUrl = url || `${window.location.origin}${location.pathname}`;
   const canonical = canonicalUrl || currentUrl;
-  const fullTitle = title.includes("Polrydian") ? title : `${title} | Polrydian Corridor Web`;
-  const keywordsString = keywords.join(", ");
-  const fullImageUrl = image.startsWith('http') ? image : `${window.location.origin}${image}`;
+  const fullTitle = finalTitle.includes("Polrydian") ? finalTitle : `${finalTitle} | Polrydian Corridor Web`;
+  const keywordsString = finalKeywords.join(", ");
+  const fullImageUrl = image ? (image.startsWith('http') ? image : `${window.location.origin}${image}`) : `${window.location.origin}/images/polrydian-hero-bg.jpg`;
 
   // Generate comprehensive structured data
   const generateStructuredData = () => {
@@ -44,7 +110,7 @@ export function EnhancedSEO({
       "@type": type === 'article' ? "Article" : "Organization",
       "url": currentUrl,
       "name": type === 'article' ? fullTitle : "Polrydian Corridor Web",
-      "description": description,
+      "description": finalDescription,
       "image": fullImageUrl,
     };
 
@@ -73,8 +139,8 @@ export function EnhancedSEO({
           "@id": currentUrl
         },
         "articleSection": section,
-        "keywords": tags || keywords,
-        "wordCount": description.length,
+        "keywords": tags || finalKeywords,
+        "wordCount": finalDescription.length,
         "inLanguage": "en-US"
       };
     } else {
@@ -146,7 +212,7 @@ export function EnhancedSEO({
     <Helmet>
       {/* Primary Meta Tags */}
       <title>{fullTitle}</title>
-      <meta name="description" content={description} />
+      <meta name="description" content={finalDescription} />
       <meta name="keywords" content={keywordsString} />
       <meta name="author" content={author} />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -158,7 +224,7 @@ export function EnhancedSEO({
       <meta property="og:type" content={type} />
       <meta property="og:url" content={currentUrl} />
       <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={description} />
+      <meta property="og:description" content={finalDescription} />
       <meta property="og:image" content={fullImageUrl} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
@@ -169,7 +235,7 @@ export function EnhancedSEO({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:url" content={currentUrl} />
       <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:description" content={finalDescription} />
       <meta name="twitter:image" content={fullImageUrl} />
       <meta name="twitter:creator" content="@polrydian" />
       <meta name="twitter:site" content="@polrydian" />
@@ -227,7 +293,7 @@ export function EnhancedSEO({
             "@type": "WebSite",
             "name": "Polrydian Corridor Web",
             "url": window.location.origin,
-            "description": description,
+            "description": finalDescription,
             "publisher": {
               "@type": "Organization",
               "name": "Polrydian Corridor Web"
