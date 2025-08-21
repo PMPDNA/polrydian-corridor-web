@@ -24,10 +24,10 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.integration-health-monitor]
-verify_jwt = false
+verify_jwt = true
 
 [functions.test-function]
-verify_jwt = false
+verify_jwt = true
 
 [functions.multi-source-economic-data]
 verify_jwt = true
