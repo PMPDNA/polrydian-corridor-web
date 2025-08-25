@@ -28,15 +28,18 @@ export const getClientIP = (): string | null => {
 // Log security events with enhanced tracking
 export const logSecurityEvent = async (event: SecurityEvent) => {
   try {
-    const { data, error } = await supabase
-      .from('security_audit_log')
-      .insert({
+    // Use the secure security-audit edge function instead of direct table access
+    const { data, error } = await supabase.functions.invoke('security-audit', {
+      body: {
         action: event.action,
-        user_id: event.user_id,
-        ip_address: event.ip_address || getClientIP(),
-        user_agent: navigator.userAgent,
-        details: event.details || {}
-      })
+        details: {
+          ...event.details,
+          ip_address: event.ip_address || getClientIP(),
+          user_agent: navigator.userAgent
+        },
+        severity: event.details?.severity || 'medium'
+      }
+    });
 
     if (error) {
       console.error('Failed to log security event:', error)

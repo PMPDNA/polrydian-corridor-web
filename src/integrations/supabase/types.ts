@@ -1690,6 +1690,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      check_admin_access: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       check_admin_rate_limit: {
         Args: {
           max_attempts?: number
@@ -1790,6 +1794,15 @@ export type Database = {
           p_retry_count?: number
           p_status?: string
           p_user_id?: string
+        }
+        Returns: string
+      }
+      log_security_audit_event: {
+        Args: {
+          p_action: string
+          p_details?: Json
+          p_ip_address?: unknown
+          p_severity?: string
         }
         Returns: string
       }

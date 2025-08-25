@@ -12,6 +12,34 @@ serve(async (req) => {
   }
 
   try {
+    // Check admin access for authenticated users
+    const authHeader = req.headers.get('Authorization')
+    if (authHeader) {
+      const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+        {
+          global: {
+            headers: { Authorization: authHeader }
+          }
+        }
+      )
+      
+      // Verify admin access
+      const { data: isAdmin, error } = await supabaseClient
+        .rpc('check_admin_access')
+      
+      if (error || !isAdmin) {
+        return new Response(
+          JSON.stringify({ error: 'Admin access required' }),
+          { 
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        )
+      }
+    }
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseKey)

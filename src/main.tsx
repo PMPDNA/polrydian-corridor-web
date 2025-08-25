@@ -5,6 +5,9 @@ import './index.css'
 import { initializeSecurity } from './hooks/useSecurityHeaders'
 import { HelmetProvider } from 'react-helmet-async'
 
+// Initialize CSP nonce management
+import './utils/cspNonce'
+
 // Initialize security features safely
 try {
   initializeSecurity()
