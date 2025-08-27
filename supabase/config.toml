@@ -46,3 +46,9 @@ verify_jwt = false
 
 [functions.generate-rss]
 verify_jwt = false
+
+[functions.secure-contact-form]
+verify_jwt = false
+
+[functions.security-audit]
+verify_jwt = false

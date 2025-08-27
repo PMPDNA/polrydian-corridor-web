@@ -78,23 +78,29 @@ export const ConsultationBookingForm = () => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase
-        .from('consultation_bookings')
-        .insert([{
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          email: formData.email,
-          company: formData.company,
-          phone: formData.phone,
-          service_area: formData.serviceArea,
-          preferred_date: formData.preferredDate ? new Date(formData.preferredDate).toISOString() : null,
-          preferred_time: formData.preferredTime,
-          message: formData.message,
+      // Use secure contact form endpoint with validation
+      const response = await supabase.functions.invoke('secure-contact-form', {
+        body: {
+          first_name: formData.firstName.trim(),
+          last_name: formData.lastName.trim(),
+          email: formData.email.trim().toLowerCase(),
+          company: formData.company?.trim() || null,
+          phone: formData.phone?.trim() || null,
+          service_area: formData.serviceArea || null,
+          message: formData.message.trim(),
           urgency_level: formData.urgencyLevel
-        }]);
+        }
+      });
 
+      if (response.error) {
+        console.error('Submission error:', response.error);
+        throw new Error('Network error occurred');
+      }
 
-      if (error) throw error;
+      const result = response.data;
+      if (!result?.success) {
+        throw new Error(result?.message || 'Submission failed');
+      }
 
       toast({
         title: "Consultation Request Submitted!",
@@ -116,10 +122,12 @@ export const ConsultationBookingForm = () => {
       });
 
     } catch (error: any) {
-      console.error('Booking form error:', error);
+      console.error('Secure booking form error:', error);
       toast({
         title: "Error Submitting Request",
-        description: "There was an issue submitting your consultation request. Please try again or contact us directly.",
+        description: error.message?.includes('Rate limit') 
+          ? "Too many requests. Please try again later."
+          : "There was an issue submitting your consultation request. Please try again or contact us directly.",
         variant: "destructive",
       });
     } finally {
