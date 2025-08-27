@@ -357,35 +357,71 @@ export function EnhancedPartnerLogosManager() {
           <CardTitle>Expected Partner Organizations</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { name: 'Maven Investment Partners', category: 'Investment' },
-              { name: 'KCC Capital', category: 'Investment' },
-              { name: 'Lee & Associates', category: 'Real Estate' },
-              { name: 'GMF Marshall Memorial Fellowship', category: 'Fellowship' },
-              { name: 'World Affairs Council of Miami', category: 'Think Tank' }
-            ].map((expectedPartner, index) => {
-              const exists = partners.find(p => 
-                p.name.toLowerCase().includes(expectedPartner.name.toLowerCase()) ||
-                expectedPartner.name.toLowerCase().includes(p.name.toLowerCase())
-              );
-              
-              return (
-                <div key={index} className={`p-3 rounded-lg border ${exists ? 'bg-green-50 border-green-200' : 'bg-muted/30 border-border'}`}>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-medium">{expectedPartner.name}</div>
-                      <div className="text-xs text-muted-foreground">{expectedPartner.category}</div>
+          <div className="space-y-6">
+            {/* Strategic Partners */}
+            <div>
+              <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Strategic Partners</h4>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { name: 'Maven Investment Partners', category: 'Strategic' },
+                  { name: 'KCC Capital', category: 'Strategic' },
+                  { name: 'Lee & Associates', category: 'Strategic' }
+                ].map((expectedPartner, index) => {
+                  const exists = partners.find(p => 
+                    p.name.toLowerCase().includes(expectedPartner.name.toLowerCase()) ||
+                    expectedPartner.name.toLowerCase().includes(p.name.toLowerCase())
+                  );
+                  
+                  return (
+                    <div key={`strategic-${index}`} className={`p-3 rounded-lg border ${exists ? 'bg-green-50 border-green-200' : 'bg-muted/30 border-border'}`}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-sm font-medium">{expectedPartner.name}</div>
+                          <div className="text-xs text-muted-foreground">{expectedPartner.category}</div>
+                        </div>
+                        {exists ? (
+                          <Badge variant="default" className="text-xs">Added</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">Pending</Badge>
+                        )}
+                      </div>
                     </div>
-                    {exists ? (
-                      <Badge variant="default" className="text-xs">Added</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs">Pending</Badge>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Institutional Partners */}
+            <div>
+              <h4 className="text-sm font-semibold mb-3 text-muted-foreground">Institutional Partners</h4>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[
+                  { name: 'GMF Marshall Memorial Fellowship', category: 'Fellowship' },
+                  { name: 'World Affairs Council of Miami', category: 'Think Tank' }
+                ].map((expectedPartner, index) => {
+                  const exists = partners.find(p => 
+                    p.name.toLowerCase().includes(expectedPartner.name.toLowerCase()) ||
+                    expectedPartner.name.toLowerCase().includes(p.name.toLowerCase())
+                  );
+                  
+                  return (
+                    <div key={`institutional-${index}`} className={`p-3 rounded-lg border ${exists ? 'bg-green-50 border-green-200' : 'bg-muted/30 border-border'}`}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-sm font-medium">{expectedPartner.name}</div>
+                          <div className="text-xs text-muted-foreground">{expectedPartner.category}</div>
+                        </div>
+                        {exists ? (
+                          <Badge variant="default" className="text-xs">Added</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">Pending</Badge>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

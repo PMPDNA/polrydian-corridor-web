@@ -62,16 +62,19 @@ export function EnhancedPartnerDisplay() {
     );
   }
 
-  // Separate strategic partners from affiliations
+  // Separate strategic partners from institutional partners
   const strategicPartners = partners.filter(p => 
-    p.category === 'investment' || p.category === 'real_estate' || 
+    p.category === 'strategic' || p.category === 'investment' || p.category === 'real_estate' || 
     ['Maven Investment Partners', 'KCC Capital', 'Lee & Associates'].some(name => 
       p.name.toLowerCase().includes(name.toLowerCase())
     )
   );
 
-  const affiliations = partners.filter(p => 
-    !strategicPartners.some(sp => sp.id === p.id)
+  const institutionalPartners = partners.filter(p => 
+    p.category === 'institutional' || p.category === 'fellowship' || p.category === 'think_tank' ||
+    ['GMF Marshall Memorial Fellowship', 'World Affairs Council of Miami'].some(name => 
+      p.name.toLowerCase().includes(name.toLowerCase())
+    )
   );
 
   return (
@@ -79,23 +82,17 @@ export function EnhancedPartnerDisplay() {
       {/* Header */}
       <div className="text-center">
         <h2 className="text-3xl font-bold text-foreground mb-4">
-          Strategic Partners & Organizations
+          Strategic Partners
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Building strategic partnerships across global institutions to advance corridor economics research and implementation.
+          Trusted organizations collaborating to create strategic corridors
         </p>
       </div>
 
       {/* Strategic Partners Section */}
       {strategicPartners.length > 0 && (
-        <div className="space-y-6">
-          <div className="text-center">
-            <Badge variant="outline" className="text-sm px-4 py-2">
-              Strategic Partners
-            </Badge>
-          </div>
-          
-          <div className="flex justify-center items-center gap-8 md:gap-12">
+        <div className="space-y-8">          
+          <div className="flex justify-center items-center gap-8 md:gap-16 flex-wrap">
             {strategicPartners.map(partner => (
               <div key={partner.id} className="group cursor-pointer">
                 {partner.website_url ? (
@@ -105,7 +102,7 @@ export function EnhancedPartnerDisplay() {
                     rel="noopener noreferrer"
                     className="block"
                   >
-                    <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-lg p-4 shadow-sm border hover:shadow-md transition-all duration-200 flex items-center justify-center group-hover:scale-105">
+                    <div className="w-32 h-32 md:w-40 md:h-40 bg-white rounded-lg p-6 shadow-sm border hover:shadow-md transition-all duration-200 flex items-center justify-center group-hover:scale-105">
                       {partner.logo_url ? (
                         <img
                           src={partner.logo_url}
@@ -124,7 +121,7 @@ export function EnhancedPartnerDisplay() {
                     </div>
                   </a>
                 ) : (
-                  <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-lg p-4 shadow-sm border flex items-center justify-center">
+                  <div className="w-32 h-32 md:w-40 md:h-40 bg-white rounded-lg p-6 shadow-sm border flex items-center justify-center">
                     {partner.logo_url ? (
                       <img
                         src={partner.logo_url}
@@ -148,25 +145,53 @@ export function EnhancedPartnerDisplay() {
         </div>
       )}
 
-      {/* Affiliations Carousel Section */}
-      {affiliations.length > 0 && (
-        <div className="space-y-6">
+      {/* Institutional Partners Section */}
+      {institutionalPartners.length > 0 && (
+        <div className="space-y-8">
           <div className="text-center">
-            <Badge variant="outline" className="text-sm px-4 py-2">
-              Affiliations
-            </Badge>
+            <h3 className="text-2xl font-bold text-foreground mb-4">
+              Institutional Partners
+            </h3>
+            <p className="text-muted-foreground">
+              Academic and research institutions advancing corridor economics
+            </p>
           </div>
           
-          <div className="relative overflow-hidden">
-            <div className="flex animate-scroll space-x-8">
-              {[...affiliations, ...affiliations].map((partner, index) => (
-                <div key={`${partner.id}-${index}`} className="flex-shrink-0 group">
-                  <div className="w-20 h-20 md:w-24 md:h-24 bg-white rounded-lg p-3 shadow-sm border hover:shadow-md transition-all duration-200 flex items-center justify-center group-hover:scale-105">
+          <div className="flex justify-center items-center gap-8 md:gap-16 flex-wrap">
+            {institutionalPartners.map(partner => (
+              <div key={partner.id} className="group cursor-pointer">
+                {partner.website_url ? (
+                  <a
+                    href={partner.website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <div className="w-32 h-32 md:w-40 md:h-40 bg-white rounded-lg p-6 shadow-sm border hover:shadow-md transition-all duration-200 flex items-center justify-center group-hover:scale-105">
+                      {partner.logo_url ? (
+                        <img
+                          src={partner.logo_url}
+                          alt={partner.name}
+                          className="max-w-full max-h-full object-contain"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      ) : null}
+                      <div className={`text-center text-muted-foreground text-xs ${partner.logo_url ? 'hidden' : ''}`}>
+                        {partner.name}
+                      </div>
+                    </div>
+                  </a>
+                ) : (
+                  <div className="w-32 h-32 md:w-40 md:h-40 bg-white rounded-lg p-6 shadow-sm border flex items-center justify-center">
                     {partner.logo_url ? (
                       <img
                         src={partner.logo_url}
                         alt={partner.name}
-                        className="max-w-full max-h-full object-contain opacity-70 group-hover:opacity-100 transition-opacity"
+                        className="max-w-full max-h-full object-contain"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.style.display = 'none';
@@ -178,29 +203,9 @@ export function EnhancedPartnerDisplay() {
                       {partner.name}
                     </div>
                   </div>
-                  {partner.website_url && (
-                    <div className="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 px-2 text-xs"
-                        asChild
-                      >
-                        <a
-                          href={partner.website_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                          Visit
-                        </a>
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}
