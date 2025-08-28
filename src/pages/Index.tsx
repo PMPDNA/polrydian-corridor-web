@@ -5,10 +5,8 @@ import { Services } from "@/components/Services";
 import { Experience } from "@/components/Experience";
 import { Contact } from "@/components/Contact";
 
-
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { UnifiedOrganizationManager } from "@/components/UnifiedOrganizationManager";
-import PartnerLogos from "@/components/PartnerLogos";
 import InsightsDashboard from "@/components/InsightsDashboard";
 import Footer from "@/components/Footer";
 import { useAnalytics } from "@/hooks/useAnalytics";
@@ -78,13 +76,7 @@ const Index = () => {
         </section>
         <section id="partners" aria-label="Strategic partners" className="py-16 bg-muted/30">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Strategic Partners</h2>
-              <p className="text-lg text-muted-foreground">
-                Trusted organizations collaborating to create strategic corridors
-              </p>
-            </div>
-            <PartnerLogos />
+            <UnifiedOrganizationManager />
           </div>
         </section>
         <section id="insights" aria-label="Economic insights" className="py-16">

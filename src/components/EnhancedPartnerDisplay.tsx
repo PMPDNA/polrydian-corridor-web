@@ -67,14 +67,22 @@ export function EnhancedPartnerDisplay() {
     p.category === 'strategic' || p.category === 'investment' || p.category === 'real_estate' || 
     ['Maven Investment Partners', 'KCC Capital', 'Lee & Associates'].some(name => 
       p.name.toLowerCase().includes(name.toLowerCase())
-    )
+    ) ||
+    // Include all current partners as strategic for now since they're all category "partner"
+    (p.category === 'partner' && ['Maven', 'KCC', 'Lee'].some(keyword => 
+      p.name.toLowerCase().includes(keyword.toLowerCase())
+    ))
   );
 
   const institutionalPartners = partners.filter(p => 
     p.category === 'institutional' || p.category === 'fellowship' || p.category === 'think_tank' ||
     ['GMF Marshall Memorial Fellowship', 'World Affairs Council of Miami'].some(name => 
       p.name.toLowerCase().includes(name.toLowerCase())
-    )
+    ) ||
+    // Add any partners that aren't strategic as institutional
+    (p.category === 'partner' && !['Maven', 'KCC', 'Lee'].some(keyword => 
+      p.name.toLowerCase().includes(keyword.toLowerCase())
+    ))
   );
 
   return (
