@@ -1702,6 +1702,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_contact_form_rate_limit: {
+        Args: { client_ip: string }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           identifier_value: string
@@ -1717,6 +1721,10 @@ export type Database = {
       clean_article_content: {
         Args: { content_text: string }
         Returns: string
+      }
+      cleanup_old_consultation_bookings: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       cleanup_old_performance_data: {
         Args: Record<PropertyKey, never>
