@@ -8,11 +8,45 @@ import { StoicQuoteRotator } from "@/components/StoicQuoteRotator";
 import { EnhancedCorridorEconomics } from "@/components/EnhancedCorridorEconomics";
 import CalendlyPopup from "./CalendlyPopup";
 import { LearnMoreModal } from "./LearnMoreModal";
+import { trackEvent, trackPerformance } from "@/utils/analytics";
+import { useEffect } from "react";
 
 export const Hero = () => {
+  useEffect(() => {
+    // Track hero section view and performance
+    const startTime = performance.now();
+    
+    trackEvent({
+      action: 'hero_view',
+      category: 'engagement',
+      label: 'homepage_hero'
+    });
+
+    // Track time to interactive for hero section
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const loadTime = performance.now() - startTime;
+          trackPerformance('hero_load_time', Math.round(loadTime));
+          observer.disconnect();
+        }
+      });
+    });
+
+    const heroElement = document.querySelector('#hero-section');
+    if (heroElement) {
+      observer.observe(heroElement);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section 
+      id="hero-section"
       className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background pt-20"
+      role="banner"
+      aria-label="Hero section with company introduction"
     >
       {/* Clean background without blue overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/30 to-background"></div>

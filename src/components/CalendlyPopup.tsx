@@ -41,21 +41,42 @@ export default function CalendlyPopup({
   }, [])
 
   const openCalendly = () => {
-    if ((window as any).Calendly && (window as any).Calendly.initPopupWidget) {
-      (window as any).Calendly.initPopupWidget({
-        url: calendlyUrl,
-        prefill: prefill,
-        utm: {
-          utmCampaign: 'Website CTA',
-          utmSource: window.location.hostname,
-          utmMedium: 'popup'
-        }
-      })
-    } else {
-      // Fallback to opening in new tab
-      window.open(calendlyUrl, '_blank')
+    try {
+      if ((window as any).Calendly && (window as any).Calendly.initPopupWidget) {
+        (window as any).Calendly.initPopupWidget({
+          url: calendlyUrl,
+          prefill: prefill,
+          utm: {
+            utmCampaign: 'Website CTA',
+            utmSource: window.location.hostname,
+            utmMedium: 'popup'
+          }
+        });
+        
+        // Track successful popup open
+        (window as any).gtag?.('event', 'calendly_popup_open', {
+          event_category: 'engagement',
+          event_label: 'calendly_widget',
+          value: 1
+        });
+      } else {
+        // Fallback to opening in new tab
+        console.warn('Calendly widget not loaded, opening in new tab');
+        window.open(calendlyUrl, '_blank');
+        
+        // Track fallback usage
+        (window as any).gtag?.('event', 'calendly_fallback', {
+          event_category: 'engagement',
+          event_label: 'external_link',
+          value: 1
+        });
+      }
+    } catch (error) {
+      console.error('Error opening Calendly widget:', error);
+      // Always fallback to external link if there's an error
+      window.open(calendlyUrl, '_blank');
     }
-  }
+  };
 
   return (
     <>

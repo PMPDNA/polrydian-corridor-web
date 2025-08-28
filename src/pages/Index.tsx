@@ -12,11 +12,34 @@ import Footer from "@/components/Footer";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { EnhancedSEO } from "@/components/EnhancedSEO";
+import { ErrorFallback } from "@/components/ErrorFallback";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { trackPageView } from "@/utils/analytics";
 import heroImage from "@/assets/polrydian-hero-bg.jpg";
+import { useEffect } from "react";
 
 const Index = () => {
   const { track } = useAnalytics();
 
+  useEffect(() => {
+    // Track page view with enhanced analytics
+    trackPageView('Homepage | Polrydian Group', window.location.href);
+    
+    // Track homepage specific metrics
+    const startTime = performance.now();
+    
+    const handleLoad = () => {
+      const loadTime = performance.now() - startTime;
+      track('page_load_complete');
+    };
+
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, [track]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -139,39 +162,65 @@ const Index = () => {
       <Navigation />
       
       <main role="main">
-        <section id="hero" aria-label="Hero section">
-          <Hero />
-        </section>
-        <section id="who-we-serve" aria-label="Who we serve">
-          <WhoWeServe />
-        </section>
-        <section id="partners" aria-label="Strategic partners" className="py-16 bg-muted/30">
-          <div className="container mx-auto px-6">
-            <UnifiedOrganizationManager />
-          </div>
-        </section>
-        <section id="services" aria-label="Our services">
-          <OurServices />
-        </section>
-        <section id="why-choose-polrydian" aria-label="Why choose Polrydian">
-          <WhyChoosePolrydian />
-        </section>
-        <section id="case-studies" aria-label="Case studies and testimonials">
-          <CaseStudiesTestimonials />
-        </section>
-        <section id="insights" aria-label="Latest insights">
-          <LatestInsightsTeaser />
-        </section>
-        <section id="contact" aria-label="Contact section">
-          <Contact />
-        </section>
-        <section id="newsletter" aria-label="Newsletter subscription" className="py-16 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
-          <div className="container mx-auto px-6">
-            <div className="max-w-2xl mx-auto">
-              <NewsletterSignup />
+        <ErrorBoundary fallback={<ErrorFallback title="Hero Section Unavailable" />}>
+          <section id="hero" aria-label="Hero section">
+            <Hero />
+          </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary fallback={<ErrorFallback title="Section Unavailable" />}>
+          <section id="who-we-serve" aria-label="Who we serve">
+            <WhoWeServe />
+          </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary fallback={<ErrorFallback title="Partners Section Unavailable" />}>
+          <section id="partners" aria-label="Strategic partners" className="py-16 bg-muted/30">
+            <div className="container mx-auto px-6">
+              <UnifiedOrganizationManager />
             </div>
-          </div>
-        </section>
+          </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary fallback={<ErrorFallback title="Services Section Unavailable" />}>
+          <section id="services" aria-label="Our services">
+            <OurServices />
+          </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary fallback={<ErrorFallback title="Section Unavailable" />}>
+          <section id="why-choose-polrydian" aria-label="Why choose Polrydian">
+            <WhyChoosePolrydian />
+          </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary fallback={<ErrorFallback title="Case Studies Section Unavailable" />}>
+          <section id="case-studies" aria-label="Case studies and testimonials">
+            <CaseStudiesTestimonials />
+          </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary fallback={<ErrorFallback title="Insights Section Unavailable" />}>
+          <section id="insights" aria-label="Latest insights">
+            <LatestInsightsTeaser />
+          </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary fallback={<ErrorFallback title="Contact Section Unavailable" />}>
+          <section id="contact" aria-label="Contact section">
+            <Contact />
+          </section>
+        </ErrorBoundary>
+        
+        <ErrorBoundary fallback={<ErrorFallback title="Newsletter Section Unavailable" />}>
+          <section id="newsletter" aria-label="Newsletter subscription" className="py-16 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
+            <div className="container mx-auto px-6">
+              <div className="max-w-2xl mx-auto">
+                <NewsletterSignup />
+              </div>
+            </div>
+          </section>
+        </ErrorBoundary>
       </main>
       
       
