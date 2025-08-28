@@ -1,13 +1,13 @@
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
-import { About } from "@/components/About";
-import { Services } from "@/components/Services";
-import { Experience } from "@/components/Experience";
+import { WhoWeServe } from "@/components/WhoWeServe";
+import { OurServices } from "@/components/OurServices";
+import { WhyChoosePolrydian } from "@/components/WhyChoosePolrydian";
+import { CaseStudiesTestimonials } from "@/components/CaseStudiesTestimonials";
+import { LatestInsightsTeaser } from "@/components/LatestInsightsTeaser";
 import { Contact } from "@/components/Contact";
-
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { UnifiedOrganizationManager } from "@/components/UnifiedOrganizationManager";
-import InsightsDashboard from "@/components/InsightsDashboard";
 import Footer from "@/components/Footer";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
@@ -74,19 +74,25 @@ const Index = () => {
         <section id="hero" aria-label="Hero section">
           <Hero />
         </section>
+        <section id="who-we-serve" aria-label="Who we serve">
+          <WhoWeServe />
+        </section>
         <section id="partners" aria-label="Strategic partners" className="py-16 bg-muted/30">
           <div className="container mx-auto px-6">
             <UnifiedOrganizationManager />
           </div>
         </section>
-        <section id="insights" aria-label="Economic insights" className="py-16">
-          <InsightsDashboard />
+        <section id="services" aria-label="Our services">
+          <OurServices />
         </section>
-        <section id="services" aria-label="Services section">
-          <Services />
+        <section id="why-choose-polrydian" aria-label="Why choose Polrydian">
+          <WhyChoosePolrydian />
         </section>
-        <section id="experience" aria-label="Experience section">
-          <Experience />
+        <section id="case-studies" aria-label="Case studies and testimonials">
+          <CaseStudiesTestimonials />
+        </section>
+        <section id="insights" aria-label="Latest insights">
+          <LatestInsightsTeaser />
         </section>
         <section id="contact" aria-label="Contact section">
           <Contact />

@@ -29,12 +29,10 @@ export const Hero = () => {
         {/* Main Heading */}
         <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
-            Transforming Complexity into 
-            <span className="text-accent block mt-2">Strategic Clarity</span>
+            Board‑Level Advisory for Complex Supply Chains, Deep Tech & Geopolitics
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
-            Strategic consulting with Patrick Misiewicz, Founder of Polrydian Group. Specializing in corridor economics—mapping 
-            strategic flows of capital, technology, and expertise to transform complex global challenges into competitive advantages.
+            Trusted advisor to sovereign funds, port & logistics operators, defence integrators and deep tech innovators
           </p>
           
           {/* Enhanced Corridor Economics Section */}
@@ -48,7 +46,7 @@ export const Hero = () => {
               href="/schedule" 
               className="inline-flex items-center justify-center bg-accent text-accent-foreground px-10 py-6 text-xl rounded-lg hover:bg-accent/90 shadow-elegant transition-colors font-semibold"
             >
-              Schedule Strategic Consultation
+              Book a Strategy Session
               <ArrowRight className="ml-2 h-5 w-5" />
             </a>
           </div>

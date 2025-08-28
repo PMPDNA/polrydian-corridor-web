@@ -12,6 +12,7 @@ import { CorridorEconomicsIntelligence } from "@/components/CorridorEconomicsInt
 import { CSISAnalysisFeed } from "@/components/CSISAnalysisFeed";
 import { TradeGuysPodcast } from "@/components/TradeGuysPodcast";
 import { PolicyNewsUpdates } from "@/components/PolicyNewsUpdates";
+import InsightsDashboard from "@/components/InsightsDashboard";
 
 import EconomicDataRefresh from "@/components/EconomicDataRefresh";
 import { 
@@ -200,6 +201,11 @@ export default function Insights() {
         {/* Enhanced Economic Insights - Single Unified Display */}
         <section className="mb-12">
           <EnhancedEconomicInsights />
+        </section>
+
+        {/* Economic Indicators Dashboard */}
+        <section className="mb-12">
+          <InsightsDashboard />
         </section>
 
 
