@@ -57,7 +57,6 @@ export const About = () => {
         .from('profiles')
         .select('avatar_url')
         .eq('user_id', user.id)
-        .not('avatar_url', 'is', null)
         .maybeSingle();
 
       if (error) {
@@ -65,11 +64,14 @@ export const About = () => {
         return;
       }
 
-      if (profiles?.avatar_url) {
+      console.log('Profile data received:', profiles);
+      
+      if (profiles?.avatar_url && profiles.avatar_url.trim() !== '') {
         console.log('Profile photo loaded:', profiles.avatar_url);
         setProfilePhoto(profiles.avatar_url);
       } else {
         console.log('No profile photo found for user');
+        setProfilePhoto(''); // Clear any existing photo
       }
     } catch (error) {
       console.error('Error loading profile photo:', error);
@@ -102,23 +104,29 @@ export const About = () => {
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // Update the current user's profile with new avatar URL
+      // Update the current user's profile with new avatar URL (upsert in case profile doesn't exist)
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          user_id: user.id,
           avatar_url: publicUrl,
           display_name: 'Patrick Misiewicz'
-        })
-        .eq('user_id', user.id);
+        }, {
+          onConflict: 'user_id'
+        });
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Update error:', updateError);
+        throw updateError;
+      }
 
+      console.log('Profile updated successfully with URL:', publicUrl);
       setProfilePhoto(publicUrl);
       
       // Force reload the profile photo
       setTimeout(() => {
         loadProfilePhoto();
-      }, 1000);
+      }, 500);
       
       toast({
         title: "Photo Updated",
