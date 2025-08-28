@@ -1,13 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Globe2, Zap, Clock } from "lucide-react";
-import polrydianHeroBg from "@/assets/polrydian-hero-bg.jpg";
-import corridorDiagram from "@/assets/corridor-economics-diagram.jpg";
 import { PolrydianLogo } from "@/components/PolrydianLogo";
 import { ProofChips } from "@/components/ProofChips";
 import { StoicQuoteRotator } from "@/components/StoicQuoteRotator";
 import { EnhancedCorridorEconomics } from "@/components/EnhancedCorridorEconomics";
 import CalendlyPopup from "./CalendlyPopup";
-import { LearnMoreModal } from "./LearnMoreModal";
 import { trackEvent, trackPerformance } from "@/utils/analytics";
 import { useEffect } from "react";
 

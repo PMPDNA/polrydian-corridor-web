@@ -6,9 +6,9 @@ interface PolrydianLogoProps {
 
 export const PolrydianLogo = ({ className = "", size = "md", variant = "compact" }: PolrydianLogoProps) => {
   const sizeClasses = {
-    sm: "h-8",
-    md: "h-12", 
-    lg: "h-16"
+    sm: "w-8 h-8",
+    md: "w-12 h-12", 
+    lg: "w-16 h-16"
   };
 
   const textSizeClasses = {
@@ -19,7 +19,7 @@ export const PolrydianLogo = ({ className = "", size = "md", variant = "compact"
 
   // Geometric icon that matches your crystalline logo design
   const GeometricIcon = () => (
-    <div className={`${sizeClasses[size]} aspect-square relative`}>
+    <div className={`${sizeClasses[size]} flex-shrink-0 inline-block relative`}>
       <svg viewBox="0 0 100 100" className="w-full h-full">
         {/* Multi-layered geometric shape inspired by your logo */}
         <defs>
