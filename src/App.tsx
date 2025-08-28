@@ -14,7 +14,11 @@ import Insights from "./pages/Insights";
 
 import Privacy from "./pages/Privacy";
 
+import SovereignFunds from "./pages/SovereignFunds";
+import PortsLogistics from "./pages/PortsLogistics";
+import DefenceTech from "./pages/DefenceTech";
 import Articles from "./pages/Articles";
+import { ArticlesRedirect } from "./components/ArticlesRedirect";
 import ArticleDetail from "./pages/ArticleDetail";
 import ContributeArticle from "./pages/ContributeArticle";
 import Schedule from "./pages/Schedule";
@@ -65,9 +69,15 @@ const App = () => {
             <Route path="/services" element={<Services />} />
             <Route path="/insights" element={<Insights />} />
             
+            {/* ICP Landing Pages */}
+            <Route path="/sovereign-funds" element={<SovereignFunds />} />
+            <Route path="/ports-logistics" element={<PortsLogistics />} />
+            <Route path="/defence-tech" element={<DefenceTech />} />
+            
             <Route path="/privacy" element={<Privacy />} />
             
-            <Route path="/articles" element={<Articles />} />
+            {/* Redirect Articles to Insights */}
+            <Route path="/articles" element={<ArticlesRedirect />} />
             <Route path="/articles/:slug" element={<ArticleDetail />} />
             <Route path="/contribute" element={<ContributeArticle />} />
             <Route path="/schedule" element={<Schedule />} />

@@ -9,21 +9,21 @@ export const WhoWeServe = () => {
       icon: Building2,
       title: "Sovereign Funds & Family Offices",
       description: "Strategic investment guidance for complex cross-border opportunities, infrastructure projects, and emerging market entry strategies.",
-      link: "/services/sovereign-funds", // Placeholder link
+      link: "/sovereign-funds",
       color: "from-blue-500/10 to-blue-600/10"
     },
     {
       icon: Ship,
       title: "Ports & Logistics Operators",
       description: "Corridor optimization, supply chain diversification, and strategic partnerships for global trade facilitation and port development.",
-      link: "/services/ports-logistics", // Placeholder link
+      link: "/ports-logistics",
       color: "from-green-500/10 to-green-600/10"
     },
     {
       icon: Shield,
       title: "Defence & Deep Tech Companies",
       description: "Technology integration strategies, geopolitical risk assessment, and market entry support for critical infrastructure and defense technologies.",
-      link: "/services/defence-tech", // Placeholder link
+      link: "/defence-tech",
       color: "from-purple-500/10 to-purple-600/10"
     }
   ];

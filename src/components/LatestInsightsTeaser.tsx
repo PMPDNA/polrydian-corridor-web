@@ -107,7 +107,19 @@ export const LatestInsightsTeaser = () => {
         )}
 
         <div className="text-center">
-          <Button asChild variant="outline" size="lg">
+          <Button 
+            asChild 
+            variant="outline" 
+            size="lg"
+            onClick={() => {
+              // Track insights page navigation
+              (window as any).gtag?.('event', 'insights_view_all', {
+                event_category: 'navigation',
+                event_label: 'homepage_teaser_cta',
+                value: 1
+              });
+            }}
+          >
             <Link to="/insights" className="gap-2">
               View All Insights
               <ArrowRight className="h-4 w-4" />

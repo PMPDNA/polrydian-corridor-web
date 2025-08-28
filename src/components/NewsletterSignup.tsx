@@ -194,7 +194,19 @@ export const NewsletterSignup = ({ variant = 'full', className = '' }: Newslette
             </div>
           </div>
 
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button 
+            type="submit" 
+            disabled={loading} 
+            className="w-full"
+            onClick={() => {
+              // Track newsletter signup
+              (window as any).gtag?.('event', 'newsletter_signup', {
+                event_category: 'engagement',
+                event_label: 'homepage_newsletter',
+                value: 1
+              });
+            }}
+          >
             {loading ? 'Subscribing...' : 'Subscribe to Strategic Insights'}
           </Button>
 

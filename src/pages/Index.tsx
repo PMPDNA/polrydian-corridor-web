@@ -58,9 +58,77 @@ const Index = () => {
           "name": "Polrydian Group",
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://www.polrydian.com/search?q={query}",
+            "target": "https://www.polrydian.com/insights?q={query}",
             "query-input": "required name=query"
           }
+        })
+      }} />
+
+      {/* Professional Service Schema */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          "name": "Polrydian Group Strategic Advisory",
+          "description": "Board-level advisory for complex supply chains, deep tech & geopolitics",
+          "url": "https://www.polrydian.com",
+          "serviceType": ["Strategic Consulting", "Corridor Economics", "Geopolitical Risk Analysis"],
+          "areaServed": "Worldwide",
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Strategic Advisory Services",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Corridor Economics Strategy",
+                  "description": "Strategic analysis of economic corridors and cross-border trade flows"
+                }
+              },
+              {
+                "@type": "Offer", 
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Infrastructure & M&A Advisory",
+                  "description": "Deal advisory and infrastructure investment strategy"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service", 
+                  "name": "Geopolitical & Technology Risk Consulting",
+                  "description": "Risk assessment and strategic guidance for complex geopolitical environments"
+                }
+              }
+            ]
+          }
+        })
+      }} />
+
+      {/* Person Schema for Patrick Misiewicz */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Patrick Misiewicz",
+          "jobTitle": "Strategic Advisor & Principal",
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Polrydian Group"
+          },
+          "url": "https://www.polrydian.com/about",
+          "sameAs": [
+            "https://www.linkedin.com/in/patrick-misiewicz"
+          ],
+          "knowsAbout": [
+            "Corridor Economics",
+            "Strategic Consulting", 
+            "Geopolitical Analysis",
+            "Supply Chain Strategy",
+            "Infrastructure Development"
+          ]
         })
       }} />
       
