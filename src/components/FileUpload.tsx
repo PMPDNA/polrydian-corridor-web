@@ -73,10 +73,14 @@ export function FileUpload({
 
       try {
         // Upload to Supabase Storage with organized folder structure
+        const bucketName = category === 'avatars' ? 'avatars' : 'images';
         const folderPath = folder || category;
-        const fileName = `${folderPath}/${Date.now()}_${file.name}`;
+        const fileName = category === 'avatars' 
+          ? `${Date.now()}_${file.name}` 
+          : `${folderPath}/${Date.now()}_${file.name}`;
+          
         const { data, error } = await supabase.storage
-          .from('images')
+          .from(bucketName)
           .upload(fileName, file);
 
         if (error) {
@@ -91,7 +95,7 @@ export function FileUpload({
 
         // Get public URL
         const { data: { publicUrl } } = supabase.storage
-          .from('images')
+          .from(bucketName)
           .getPublicUrl(fileName);
 
         const uploadedFile: UploadedFile = {
@@ -106,18 +110,20 @@ export function FileUpload({
         newFiles.push(uploadedFile);
         uploadedUrls.push(publicUrl);
 
-        // Store in database with proper categorization
-        await supabase
-          .from('images')
-          .insert({
-            file_path: publicUrl,
-            name: file.name,
-            file_type: file.type,
-            file_size: file.size,
-            category: category,
-            is_public: true,
-            uploaded_by: (await supabase.auth.getUser()).data.user?.id
-          });
+        // Store in database with proper categorization (only for non-avatar uploads)
+        if (category !== 'avatars') {
+          await supabase
+            .from('images')
+            .insert({
+              file_path: publicUrl,
+              name: file.name,
+              file_type: file.type,
+              file_size: file.size,
+              category: category,
+              is_public: true,
+              uploaded_by: (await supabase.auth.getUser()).data.user?.id
+            });
+        }
 
       } catch (error) {
         console.error('Error processing file:', error);

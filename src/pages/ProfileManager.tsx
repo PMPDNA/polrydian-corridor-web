@@ -1,6 +1,6 @@
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { Navigation } from "@/components/Navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SocialMediaManager } from "@/components/SocialMediaManager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,8 @@ import {
   Trash2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 interface ProfileData {
   photo: string;
@@ -43,6 +45,7 @@ interface ProfileData {
 
 export default function ProfileManager() {
   const { toast } = useToast();
+  const { user } = useSupabaseAuth();
   const [profileData, setProfileData] = useState<ProfileData>({
     photo: "",
     name: "Patrick Oscar Misiewicz",
@@ -51,17 +54,90 @@ export default function ProfileManager() {
     calendlyUsername: "",
     documents: []
   });
-
+  const [loading, setLoading] = useState(false);
   const [showCalendlySetup, setShowCalendlySetup] = useState(false);
 
-  const handlePhotoUpload = (urls: string[]) => {
-    if (urls.length > 0) {
-      setProfileData(prev => ({ ...prev, photo: urls[0] }));
-      toast({
-        title: "Profile photo updated",
-        description: "Your profile photo has been successfully uploaded.",
-      });
+  // Load existing profile data
+  useEffect(() => {
+    if (user) {
+      loadProfileData();
     }
+  }, [user]);
+
+  const loadProfileData = async () => {
+    if (!user) return;
+    
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('avatar_url, display_name, bio')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      if (profile) {
+        setProfileData(prev => ({
+          ...prev,
+          photo: profile.avatar_url || "",
+          name: profile.display_name || prev.name,
+          bio: profile.bio || prev.bio
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading profile data:', error);
+    }
+  };
+
+  const saveProfileChanges = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          avatar_url: profileData.photo || null,
+          display_name: profileData.name,
+          bio: profileData.bio
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Profile updated",
+        description: "Your profile changes have been saved successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: "Save failed",
+        description: error.message || "Failed to save profile changes. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePhotoUpload = async (urls: string[]) => {
+    if (urls.length === 0) return;
+
+    const newPhotoUrl = urls[0];
+    setProfileData(prev => ({ ...prev, photo: newPhotoUrl }));
+
+    toast({
+      title: "Profile photo uploaded",
+      description: "Photo uploaded successfully. Click 'Save Changes' to persist.",
+    });
   };
 
   const handleDocumentUpload = (files: File[]) => {
@@ -166,6 +242,7 @@ export default function ProfileManager() {
                     accept="image/*"
                     label="Upload Profile Photo"
                     maxSize={5}
+                    category="avatars"
                   />
                 </div>
               </div>
@@ -341,14 +418,10 @@ export default function ProfileManager() {
         {/* Save Changes */}
         <div className="flex justify-end">
           <Button 
-            onClick={() => {
-              toast({
-                title: "Profile updated",
-                description: "Your profile changes have been saved successfully.",
-              });
-            }}
+            onClick={saveProfileChanges}
+            disabled={loading || !user}
           >
-            Save Changes
+            {loading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </div>

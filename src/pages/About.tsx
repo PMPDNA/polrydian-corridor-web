@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -6,11 +6,53 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, ExternalLink, Award, Users, MapPin } from "lucide-react";
 import { EnhancedSEO } from "@/components/EnhancedSEO";
+import { supabase } from "@/integrations/supabase/client";
 
 import profileImage from "@/assets/patrick-profile.jpg";
 
 export default function About() {
   const [showFullBio, setShowFullBio] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState<string>('');
+  const [displayName, setDisplayName] = useState<string>('Patrick Oscar Misiewicz');
+  const [profileBio, setProfileBio] = useState<string>('');
+
+  // Load profile data from Supabase
+  useEffect(() => {
+    loadProfileData();
+  }, []);
+
+  const loadProfileData = async () => {
+    try {
+      // Look for the admin user's profile (could be multiple admins)
+      const { data: profiles, error } = await supabase
+        .from('profiles')
+        .select('avatar_url, display_name, bio, user_id')
+        .not('avatar_url', 'is', null)
+        .limit(1);
+
+      if (error) {
+        console.log('No profile found or error loading:', error);
+        return;
+      }
+
+      if (profiles && profiles.length > 0) {
+        const profile = profiles[0];
+        console.log('Profile data loaded:', profile);
+        
+        if (profile.avatar_url && profile.avatar_url.trim() !== '') {
+          setProfilePhoto(profile.avatar_url);
+        }
+        if (profile.display_name) {
+          setDisplayName(profile.display_name);
+        }
+        if (profile.bio) {
+          setProfileBio(profile.bio);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading profile data:', error);
+    }
+  };
 
   const shortBio = "Patrick Misiewicz is founder of Polrydian Group, specializing in corridor economics—turning complexity and geopolitical friction into strategic clarity. His approach draws from Stoicism and experience across 60 countries, applying disciplined analysis to create sustainable pathways for organizations.";
 
@@ -125,7 +167,7 @@ Let's talk about your challenges clearly, and create the corridor that moves you
             <div className="flex justify-center lg:justify-end">
               <div className="relative">
                 <img
-                  src={profileImage}
+                  src={profilePhoto || profileImage}
                   alt="Patrick Misiewicz, strategic consulting and corridor economics expert"
                   loading="lazy"
                   className="w-80 h-80 rounded-2xl object-cover shadow-elegant"
