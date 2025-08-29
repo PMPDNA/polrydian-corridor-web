@@ -6,6 +6,21 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Health check endpoint
+const handleHealthCheck = () => {
+  return new Response(
+    JSON.stringify({ 
+      status: 'ok', 
+      service: 'fetch-fred-data',
+      timestamp: new Date().toISOString()
+    }),
+    { 
+      status: 200, 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    }
+  )
+}
+
 // Economic indicators with their FRED series IDs
 const ECONOMIC_INDICATORS = {
   'GDP': 'GDP',
@@ -49,6 +64,11 @@ const logIntegrationEvent = async (supabase: any, operation: string, status: str
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
+  }
+
+  // Health check endpoint
+  if (req.url.includes('/health')) {
+    return handleHealthCheck()
   }
 
   try {

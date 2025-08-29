@@ -1690,6 +1690,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      audit_log_event: {
+        Args: {
+          event_action: string
+          event_details?: Json
+          event_severity?: string
+        }
+        Returns: string
+      }
       check_admin_access: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -1711,6 +1719,13 @@ export type Database = {
           identifier_value: string
           max_attempts?: number
           window_minutes?: number
+        }
+        Returns: boolean
+      }
+      check_user_role_secure: {
+        Args: {
+          required_role: Database["public"]["Enums"]["app_role"]
+          target_user_id: string
         }
         Returns: boolean
       }
@@ -1745,6 +1760,15 @@ export type Database = {
       encrypt_token_secure: {
         Args: { token_text: string }
         Returns: string
+      }
+      enhanced_rate_limit_check: {
+        Args: {
+          action_type: string
+          identifier_key: string
+          max_requests?: number
+          window_minutes?: number
+        }
+        Returns: Json
       }
       extract_first_ip: {
         Args: { ip_string: string }
@@ -1846,6 +1870,10 @@ export type Database = {
       sync_linkedin_article_to_articles: {
         Args: { linkedin_article_id: string }
         Returns: string
+      }
+      system_health_check: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       validate_password_reset_token: {
         Args: { reset_token: string }

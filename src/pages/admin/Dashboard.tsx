@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast"
 import TwoFactorSetup from "@/components/TwoFactorSetup"
 import { RealTimeDashboard } from "@/components/RealTimeDashboard"
 import { IntegrationHealthMonitor } from "@/components/IntegrationHealthMonitor"
+import { SystemHealthMonitor } from "@/components/SystemHealthMonitor"
+import { EnvironmentVariableAuditor } from "@/components/EnvironmentVariableAuditor"
 import {
   LayoutDashboard,
   FileText,
@@ -319,21 +321,17 @@ export default function AdminDashboard() {
           <AutomatedContentScheduler />
         </div>
 
-        {/* Session Timeout Info */}
-        <Card className="border-orange-200 bg-orange-50/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-800">
-              <Clock className="h-5 w-5" />
-              Session Security
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-orange-700">
-              Your admin session will automatically expire after 1 hour of inactivity. 
-              You'll receive a 5-minute warning before automatic logout.
-            </p>
-          </CardContent>
-        </Card>
+        {/* System Health Monitoring */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold">System Health & Monitoring</h2>
+          <SystemHealthMonitor />
+        </div>
+
+        {/* Environment Audit */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold">Environment Configuration</h2>
+          <EnvironmentVariableAuditor />
+        </div>
       </div>
     </AdminLayout>
   )
