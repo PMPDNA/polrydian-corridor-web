@@ -1,4 +1,5 @@
-import { SECURITY_CONFIG } from './security-config'
+import { SECURITY_CONFIG } from './security-config';
+import { safeEnv } from './safe-utils';
 
 // Security headers and CSP configuration
 export const securityHeaders = {
@@ -59,7 +60,7 @@ export const authRateLimit = new AuthRateLimit();
 
 // Apply security headers (for development warning)
 export const applySecurityHeaders = () => {
-  if (import.meta.env.DEV) {
+  if (safeEnv.isDev()) {
     console.warn('Security headers should be configured at the web server level in production');
   }
 };
@@ -68,11 +69,12 @@ export const applySecurityHeaders = () => {
 export const validateSecurityConfig = () => {
   const warnings = [];
   
-  if (import.meta.env.DEV) {
+  if (safeEnv.isDev()) {
     warnings.push('Running in development mode');
   }
   
-  if (!import.meta.env.VITE_SUPABASE_URL?.startsWith('https://')) {
+  const supabaseUrl = safeEnv.get('VITE_SUPABASE_URL');
+  if (!supabaseUrl?.startsWith('https://')) {
     warnings.push('Supabase URL should use HTTPS');
   }
   

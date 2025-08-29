@@ -1,5 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
+import { useMemo } from 'react';
+import { getOrigin } from '@/lib/safe-utils';
 
 interface EnhancedSEOProps {
   title?: string;
@@ -97,11 +99,11 @@ export function EnhancedSEO({
   const finalDescription = description || defaults.description;
   const finalKeywords = keywords || defaults.keywords;
   
-  const currentUrl = url || `${window.location.origin}${location.pathname}`;
+  const currentUrl = url || `${getOrigin()}${location.pathname}`;
   const canonical = canonicalUrl || currentUrl;
   const fullTitle = finalTitle.includes("Polrydian") ? finalTitle : `${finalTitle} | Polrydian Corridor Web`;
   const keywordsString = finalKeywords.join(", ");
-  const fullImageUrl = image ? (image.startsWith('http') ? image : `${window.location.origin}${image}`) : `${window.location.origin}/images/polrydian-hero-bg.jpg`;
+  const fullImageUrl = image ? (image.startsWith('http') ? image : `${getOrigin()}${image}`) : `${getOrigin()}/images/polrydian-hero-bg.jpg`;
 
   // Generate comprehensive structured data
   const generateStructuredData = () => {
@@ -129,7 +131,7 @@ export function EnhancedSEO({
           "name": "Polrydian Corridor Web",
           "logo": {
             "@type": "ImageObject",
-            "url": `${window.location.origin}/images/polrydian-logo.png`
+            "url": `${getOrigin()}/images/polrydian-logo.png`
           }
         },
         "datePublished": publishedTime,
@@ -185,13 +187,13 @@ export function EnhancedSEO({
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": window.location.origin
+        "item": getOrigin()
       }
     ];
 
     pathSegments.forEach((segment, index) => {
       const name = segment.charAt(0).toUpperCase() + segment.slice(1);
-      const url = `${window.location.origin}/${pathSegments.slice(0, index + 1).join('/')}`;
+      const url = `${getOrigin()}/${pathSegments.slice(0, index + 1).join('/')}`;
       
       breadcrumbItems.push({
         "@type": "ListItem",
@@ -292,7 +294,7 @@ export function EnhancedSEO({
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "Polrydian Corridor Web",
-            "url": window.location.origin,
+            "url": getOrigin(),
             "description": finalDescription,
             "publisher": {
               "@type": "Organization",
@@ -302,7 +304,7 @@ export function EnhancedSEO({
               "@type": "SearchAction",
               "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": `${window.location.origin}/search?q={search_term_string}`
+                "urlTemplate": `${getOrigin()}/search?q={search_term_string}`
               },
               "query-input": "required name=search_term_string"
             }

@@ -2,6 +2,8 @@ import React, { Component, ReactNode } from 'react';
 import { AlertTriangle, RefreshCcw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { RetryButton } from './RetryButton';
+import { safeEnv } from '@/lib/safe-utils';
 
 interface Props {
   children: ReactNode;
@@ -72,7 +74,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   We apologize for the inconvenience. An unexpected error has occurred.
                 </p>
                 
-                {import.meta.env.DEV && this.state.error && (
+                {safeEnv.isDev() && this.state.error && (
                   <details className="text-left bg-muted/30 p-4 rounded-lg mb-4">
                     <summary className="cursor-pointer font-medium text-sm mb-2">
                       Error Details (Development Mode)
@@ -101,10 +103,9 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button onClick={this.handleReset} variant="default">
-                  <RefreshCcw className="h-4 w-4 mr-2" />
+                <RetryButton onRetry={this.handleReset}>
                   Try Again
-                </Button>
+                </RetryButton>
                 
                 <Button onClick={this.handleReload} variant="outline">
                   <RefreshCcw className="h-4 w-4 mr-2" />

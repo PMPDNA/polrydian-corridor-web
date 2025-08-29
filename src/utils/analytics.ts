@@ -1,4 +1,5 @@
 // Analytics utility functions with error handling and privacy compliance
+import { safeEnv, safeStorage } from '@/lib/safe-utils';
 
 interface AnalyticsEvent {
   action: string;
@@ -7,6 +8,9 @@ interface AnalyticsEvent {
   value?: number;
   custom_parameters?: Record<string, any>;
 }
+
+// Throttle analytics storage to prevent editor slowdown
+const MAX_STORED_EVENTS = 100;
 
 export const trackEvent = ({ 
   action, 
@@ -38,8 +42,16 @@ export const trackEvent = ({
       });
     }
 
+    // Store events with throttling to prevent editor slowdown
+    const storedEvents = safeStorage.get('analytics_events', []);
+    const newEvents = [...storedEvents, { action, category, label, value, custom_parameters, timestamp: Date.now() }];
+    
+    // Keep only the last MAX_STORED_EVENTS
+    const throttledEvents = newEvents.slice(-MAX_STORED_EVENTS);
+    safeStorage.set('analytics_events', throttledEvents);
+
     // Development logging
-    if (import.meta.env.DEV) {
+    if (safeEnv.isDev()) {
       console.log('Analytics Event:', { action, category, label, value, custom_parameters });
     }
   } catch (error) {
@@ -50,14 +62,14 @@ export const trackEvent = ({
 export const trackPageView = (page_title: string, page_location: string) => {
   try {
     if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('config', import.meta.env.VITE_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID', {
+      (window as any).gtag('config', safeEnv.get('VITE_GA_MEASUREMENT_ID', 'GA_MEASUREMENT_ID'), {
         page_title,
         page_location,
         send_page_view: true
       });
     }
 
-    if (import.meta.env.DEV) {
+    if (safeEnv.isDev()) {
       console.log('Page View:', { page_title, page_location });
     }
   } catch (error) {
@@ -76,7 +88,7 @@ export const trackPerformance = (metric: string, value: number, unit: string = '
       });
     }
 
-    if (import.meta.env.DEV) {
+    if (safeEnv.isDev()) {
       console.log('Performance Metric:', { metric, value, unit });
     }
   } catch (error) {

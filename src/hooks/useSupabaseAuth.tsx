@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '@/integrations/supabase/client'
-import { getUserDisplayName, isUserAdminSync, getUserRole, clearUserRoleCache } from '@/utils/userUtils'
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session, AuthError } from '@supabase/supabase-js';
+import { logSecurityEvent } from '@/lib/security-monitoring';
+import { toast } from 'sonner';
+import { getOrigin } from '@/lib/safe-utils';
+import { getUserDisplayName, isUserAdminSync, getUserRole, clearUserRoleCache } from '@/utils/userUtils';
 
 interface AuthContextType {
   user: User | null
@@ -165,7 +168,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       return { data: null, error: { message: 'Password must be at least 8 characters' } }
     }
     
-    const redirectUrl = `${window.location.origin}/`
+    const redirectUrl = `${getOrigin()}/`
     
     const { data, error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
@@ -233,7 +236,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   }
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/reset-password`
+    const redirectUrl = `${getOrigin()}/reset-password`
     console.log('Sending password reset to:', email, 'with redirect:', redirectUrl)
     
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {

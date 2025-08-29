@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { RetryButton } from './RetryButton';
+import { safeEnv } from '@/lib/safe-utils';
 
 interface ErrorFallbackProps {
   error?: Error;
@@ -37,7 +39,7 @@ export const ErrorFallback = ({
             {description}
           </CardDescription>
           
-          {error && import.meta.env.DEV && (
+          {error && safeEnv.isDev() && (
             <details className="mt-4 text-left">
               <summary className="cursor-pointer text-sm font-medium mb-2">
                 Error Details (Development Only)
@@ -49,10 +51,13 @@ export const ErrorFallback = ({
           )}
         </CardHeader>
         <CardContent>
-          <Button onClick={handleRefresh} className="w-full gap-2">
-            <RefreshCw className="h-4 w-4" />
-            Try Again
-          </Button>
+          <div className="flex gap-2">
+            <RetryButton onRetry={handleRefresh} />
+            <Button onClick={handleRefresh} variant="outline" className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Refresh Page
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
