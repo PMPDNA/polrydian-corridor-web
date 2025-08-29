@@ -39,7 +39,7 @@ export const trackEvent = ({
     }
 
     // Development logging
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('Analytics Event:', { action, category, label, value, custom_parameters });
     }
   } catch (error) {
@@ -50,14 +50,14 @@ export const trackEvent = ({
 export const trackPageView = (page_title: string, page_location: string) => {
   try {
     if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('config', process.env.VITE_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID', {
+      (window as any).gtag('config', import.meta.env.VITE_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID', {
         page_title,
         page_location,
         send_page_view: true
       });
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('Page View:', { page_title, page_location });
     }
   } catch (error) {
@@ -76,7 +76,7 @@ export const trackPerformance = (metric: string, value: number, unit: string = '
       });
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('Performance Metric:', { metric, value, unit });
     }
   } catch (error) {

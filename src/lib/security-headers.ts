@@ -59,7 +59,7 @@ export const authRateLimit = new AuthRateLimit();
 
 // Apply security headers (for development warning)
 export const applySecurityHeaders = () => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.warn('Security headers should be configured at the web server level in production');
   }
 };
@@ -68,7 +68,7 @@ export const applySecurityHeaders = () => {
 export const validateSecurityConfig = () => {
   const warnings = [];
   
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     warnings.push('Running in development mode');
   }
   

@@ -37,7 +37,7 @@ export const ErrorFallback = ({
             {description}
           </CardDescription>
           
-          {error && process.env.NODE_ENV === 'development' && (
+          {error && import.meta.env.DEV && (
             <details className="mt-4 text-left">
               <summary className="cursor-pointer text-sm font-medium mb-2">
                 Error Details (Development Only)
