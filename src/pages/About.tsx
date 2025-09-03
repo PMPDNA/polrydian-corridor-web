@@ -165,15 +165,14 @@ Let's talk about your challenges clearly, and create the corridor that moves you
             
             {/* Profile Image */}
             <div className="flex justify-center lg:justify-end">
-              <div className="relative">
-                <img
-                  src={profilePhoto || profileImage}
-                  alt="Patrick Misiewicz, strategic consulting and corridor economics expert"
-                  loading="lazy"
-                  className="w-80 h-80 rounded-2xl object-cover shadow-elegant"
-                />
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-primary/20 to-transparent"></div>
-              </div>
+              <img
+                src={profilePhoto || profileImage}
+                alt="Patrick Misiewicz, strategic consulting and corridor economics expert"
+                loading="lazy"
+                decoding="async"
+                className="w-80 h-80 rounded-2xl object-cover"
+                style={{ objectPosition: 'center 20%' }}
+              />
             </div>
           </div>
         </div>
