@@ -25,13 +25,16 @@ class CSPManager {
     return this.nonce
   }
 
-  // Generate CSP header value with current nonce
+  // Generate CSP header value with current nonce (exclude frame-ancestors for meta)
   getCSPHeader(): string {
     const directives = {
       ...SECURITY_CONFIG.CSP_DIRECTIVES,
       'style-src': [...SECURITY_CONFIG.CSP_DIRECTIVES['style-src'], `'nonce-${this.nonce}'`],
       'script-src': [...SECURITY_CONFIG.CSP_DIRECTIVES['script-src'], `'nonce-${this.nonce}'`],
     }
+
+    // Remove frame-ancestors from meta CSP (not supported in meta tags)
+    delete directives['frame-ancestors']
 
     return Object.entries(directives)
       .map(([directive, sources]) => `${directive} ${sources.join(' ')}`)
@@ -73,8 +76,19 @@ class CSPManager {
 // Global CSP manager instance
 export const cspManager = new CSPManager()
 
-// Initialize on DOM ready
+// Initialize on DOM ready with CSP violation monitoring
 if (typeof window !== 'undefined') {
+  // Add CSP violation listener
+  document.addEventListener('securitypolicyviolation', (event) => {
+    console.warn('🔒 CSP Violation:', {
+      directive: event.violatedDirective,
+      blockedURI: event.blockedURI,
+      originalPolicy: event.originalPolicy,
+      lineNumber: event.lineNumber,
+      columnNumber: event.columnNumber
+    })
+  })
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       cspManager.applyCSPMetaTag()

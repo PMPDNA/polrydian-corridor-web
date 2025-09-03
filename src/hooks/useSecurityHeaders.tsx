@@ -1,13 +1,9 @@
 import { useEffect } from 'react'
 
-// Security headers and CSP implementation
+// Security headers implementation (CSRF only - CSP handled by security-csp.ts)
 export const useSecurityHeaders = () => {
   useEffect(() => {
-    // Generate a nonce for inline scripts if needed
-    const nonce = crypto.getRandomValues(new Uint8Array(16))
-      .reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '')
-    
-    // Set security headers via meta tags (best effort for client-side)
+    // Only handle basic security meta tags, not CSP
     const setMetaTag = (name: string, content: string) => {
       let meta = document.querySelector(`meta[name="${name}"]`)
       if (!meta) {
@@ -18,26 +14,8 @@ export const useSecurityHeaders = () => {
       meta.setAttribute('content', content)
     }
 
-    // Security headers
+    // Basic security headers (non-CSP)
     setMetaTag('referrer', 'strict-origin-when-cross-origin')
-    
-    // Basic CSP via meta tag (limited but better than nothing)
-    const cspContent = [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' https://plausible.io https://www.googletagmanager.com",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https: blob:",
-      "connect-src 'self' https://*.supabase.co https://api.linkedin.com https://api.stlouisfed.org",
-      "frame-src 'self' https://calendly.com",
-      "object-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'"
-    ].join('; ')
-    
-    setMetaTag('Content-Security-Policy', cspContent)
-    
-    // Store nonce for use in components if needed
-    ;(window as any).securityNonce = nonce
     
     // Cleanup function
     return () => {
