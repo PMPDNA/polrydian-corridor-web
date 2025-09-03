@@ -212,6 +212,8 @@ export function PartnerLogoSelector({
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="business">Business</SelectItem>
+                        <SelectItem value="institutional">Institutional</SelectItem>
                         <SelectItem value="partner">Partner</SelectItem>
                         <SelectItem value="investment">Investment</SelectItem>
                         <SelectItem value="real_estate">Real Estate</SelectItem>

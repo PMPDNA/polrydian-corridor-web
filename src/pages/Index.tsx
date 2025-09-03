@@ -4,6 +4,7 @@ import { Hero } from '@/components/Hero';
 import { WhoWeServe } from '@/components/WhoWeServe';
 import { OurServices } from '@/components/OurServices';
 import { WhyChoosePolrydian } from '@/components/WhyChoosePolrydian';
+import { HomePartners } from '@/components/HomePartners';
 import { CaseStudiesTestimonials } from '@/components/CaseStudiesTestimonials';
 import { LatestInsightsTeaser } from '@/components/LatestInsightsTeaser';
 import { Contact } from '@/components/Contact';
@@ -65,6 +66,10 @@ const Index = () => {
         
         <section id="why-choose-polrydian" aria-label="Why choose Polrydian">
           <WhyChoosePolrydian />
+        </section>
+        
+        <section id="partners" aria-label="Our partners">
+          <HomePartners />
         </section>
         
         <section id="case-studies" aria-label="Case studies and testimonials">
