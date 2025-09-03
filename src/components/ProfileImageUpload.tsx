@@ -107,16 +107,17 @@ export const ProfileImageUpload = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-center">
-          <div className="relative w-32 h-32 rounded-full overflow-hidden bg-muted">
+          <div className="relative w-48 h-48 rounded-full overflow-hidden bg-muted border-4 border-border shadow-lg">
             {profileUrl ? (
               <img 
                 src={profileUrl} 
                 alt="Profile" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                style={{ objectPosition: 'center 20%' }}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <User className="h-12 w-12 text-muted-foreground" />
+                <User className="h-16 w-16 text-muted-foreground" />
               </div>
             )}
           </div>
