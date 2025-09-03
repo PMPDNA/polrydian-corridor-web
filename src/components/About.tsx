@@ -159,17 +159,18 @@ export const About = () => {
           {/* Profile Picture directly under the heading */}
           <div className="flex justify-center mb-12">
             <div className="relative group">
-              <div className="w-64 h-80 bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-6 shadow-elegant">
-                <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center overflow-hidden relative group">
-                  {profilePhoto ? (
-                    <img 
-                      src={profilePhoto} 
-                      alt="Patrick Misiewicz" 
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover rounded-xl"
-                    />
-                  ) : (
+              <div className="w-64 h-80 rounded-xl overflow-hidden shadow-lg">
+                {profilePhoto ? (
+                  <img 
+                    src={profilePhoto} 
+                    alt="Patrick Misiewicz" 
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: 'center 20%' }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
                     <div className="text-center p-4">
                       <div className="w-16 h-16 bg-accent/20 rounded-full mx-auto mb-3 flex items-center justify-center">
                         <span className="text-xl font-bold text-accent">PM</span>
@@ -178,37 +179,37 @@ export const About = () => {
                       <p className="text-sm text-muted-foreground mb-2">Founder, Polrydian Group</p>
                       <p className="text-xs text-muted-foreground">Commercial Real Estate & Strategic Consulting</p>
                     </div>
-                  )}
+                  </div>
+                )}
                    
-                   {/* Admin photo upload functionality */}
-                   {isAdmin && (
-                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer rounded-xl">
-                       <label htmlFor="photo-upload" className="cursor-pointer">
-                         <div className="text-center text-white">
-                           <Camera className="h-8 w-8 mx-auto mb-2" />
-                           <p className="text-sm font-medium">
-                             {isUploading ? "Uploading..." : "Update Photo"}
-                           </p>
-                         </div>
-                         <input
-                           id="photo-upload"
-                           type="file"
-                           accept="image/*"
-                           onChange={handleFileUpload}
-                           disabled={isUploading}
-                           className="hidden"
-                         />
-                       </label>
-                     </div>
-                   )}
-                   
-                   {/* Non-admin message */}
-                   {!user && (
-                     <div className="absolute bottom-2 left-2 right-2 bg-black/60 text-white text-xs p-2 rounded">
-                       Admin login required for photo updates
-                     </div>
-                   )}
-                </div>
+                {/* Admin photo upload functionality */}
+                {isAdmin && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                    <label htmlFor="photo-upload" className="cursor-pointer">
+                      <div className="text-center text-white">
+                        <Camera className="h-8 w-8 mx-auto mb-2" />
+                        <p className="text-sm font-medium">
+                          {isUploading ? "Uploading..." : "Update Photo"}
+                        </p>
+                      </div>
+                      <input
+                        id="photo-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        disabled={isUploading}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
+                
+                {/* Non-admin message */}
+                {!user && (
+                  <div className="absolute bottom-2 left-2 right-2 bg-black/60 text-white text-xs p-2 rounded">
+                    Admin login required for photo updates
+                  </div>
+                )}
               </div>
               
               {/* Quote overlay */}

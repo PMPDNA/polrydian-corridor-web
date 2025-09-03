@@ -107,7 +107,7 @@ export const ProfileImageUpload = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-center">
-          <div className="relative w-48 h-48 rounded-full overflow-hidden bg-muted border-4 border-border shadow-lg">
+          <div className="relative w-48 h-48 rounded-xl overflow-hidden">
             {profileUrl ? (
               <img 
                 src={profileUrl} 
@@ -116,7 +116,7 @@ export const ProfileImageUpload = () => {
                 style={{ objectPosition: 'center 20%' }}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center">
+              <div className="w-full h-full flex items-center justify-center bg-muted">
                 <User className="h-16 w-16 text-muted-foreground" />
               </div>
             )}
