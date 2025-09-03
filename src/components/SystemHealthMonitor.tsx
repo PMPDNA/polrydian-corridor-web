@@ -32,9 +32,11 @@ interface ServiceHealth {
 export const SystemHealthMonitor = () => {
   const [healthStatus, setHealthStatus] = useState<HealthStatus | null>(null);
   const [services, setServices] = useState<ServiceHealth[]>([
-    { name: 'Main Health Check', status: 'unknown', url: '/functions/v1/health-check' },
-    { name: 'FRED Data Integration', status: 'unknown', url: '/functions/v1/fetch-fred-data/health' },
-    { name: 'LinkedIn Integration', status: 'unknown', url: '/functions/v1/linkedin-integration/health' },
+    { name: 'Main Health Check', status: 'unknown', url: '/functions/v1/health-check?health=1' },
+    { name: 'FRED Data Integration', status: 'unknown', url: '/functions/v1/fetch-fred-data?health=1' },
+    { name: 'LinkedIn Integration', status: 'unknown', url: '/functions/v1/linkedin-integration?health=1' },
+    { name: 'Contact Form', status: 'unknown', url: '/functions/v1/secure-contact-form?health=1' },
+    { name: 'LinkedIn Publishing', status: 'unknown', url: '/functions/v1/publish-to-linkedin?health=1' },
   ]);
   const [loading, setLoading] = useState(false);
 
@@ -99,7 +101,7 @@ export const SystemHealthMonitor = () => {
     checkSystemHealth();
     const interval = setInterval(checkSystemHealth, 60000); // Check every minute
     return () => clearInterval(interval);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getStatusIcon = (status: string) => {
     switch (status) {
