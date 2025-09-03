@@ -22,7 +22,7 @@ export const SECURITY_CONFIG = {
     'object-src': ["'none'"],
     'media-src': ["'self'", "https://*.supabase.co"],
     'frame-src': ["'self'", "https://calendly.com", "https://*.calendly.com"],
-    'frame-ancestors': ["'none'"],
+    'frame-ancestors': typeof window !== 'undefined' && window.location?.hostname?.includes('lovable') ? ["'self'", "https://*.lovable.app", "https://*.lovable.dev"] : ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"],
     'upgrade-insecure-requests': [],
