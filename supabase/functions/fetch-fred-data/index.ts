@@ -67,7 +67,8 @@ serve(async (req) => {
   }
 
   // Health check endpoint
-  if (req.url.includes('/health')) {
+  const url = new URL(req.url)
+  if (url.searchParams.get('health') === '1' || req.url.includes('/health')) {
     return handleHealthCheck()
   }
 

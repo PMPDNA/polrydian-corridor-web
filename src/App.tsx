@@ -48,6 +48,7 @@ import NotFound from "./pages/NotFound";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { EnhancedSEO } from "./components/EnhancedSEO";
+import { StagingBanner } from "./components/StagingBanner";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <StagingBanner />
           <EnhancedSEO />
           <Routes>
             <Route path="/" element={<Index />} />

@@ -2,8 +2,28 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://qemtvnwemcpzhvbwjbsk.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlbXR2bndlbWNwemh2YndqYnNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NTE2ODQsImV4cCI6MjA2ODIyNzY4NH0.9UikTq1ajnfhthHxx_03zRk_3G3G_Bgky_w21wMXzLM";
+// Environment detection
+const isStaging = typeof window !== 'undefined' && 
+  (window.location.hostname.includes('staging') || 
+   window.location.hostname.includes('lovableproject.com'));
+
+// Production configuration (default)
+const PRODUCTION_SUPABASE_URL = "https://qemtvnwemcpzhvbwjbsk.supabase.co";
+const PRODUCTION_SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlbXR2bndlbWNwemh2YndqYnNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2NTE2ODQsImV4cCI6MjA2ODIyNzY4NH0.9UikTq1ajnfhthHxx_03zRk_3G3G_Bgky_w21wMXzLM";
+
+// Staging configuration (placeholder - would use actual staging Supabase in real deployment)
+const STAGING_SUPABASE_URL = PRODUCTION_SUPABASE_URL; // Same for now
+const STAGING_SUPABASE_KEY = PRODUCTION_SUPABASE_KEY; // Same for now
+
+// Select configuration based on environment
+const SUPABASE_URL = isStaging ? STAGING_SUPABASE_URL : PRODUCTION_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = isStaging ? STAGING_SUPABASE_KEY : PRODUCTION_SUPABASE_KEY;
+
+// Log environment detection
+if (typeof window !== 'undefined') {
+  console.log(`🌍 Environment detected: ${isStaging ? 'STAGING' : 'PRODUCTION'}`);
+  console.log(`📡 Using Supabase URL: ${SUPABASE_URL}`);
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";

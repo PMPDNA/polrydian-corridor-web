@@ -25,6 +25,24 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Health check endpoint
+  const url = new URL(req.url)
+  if (url.searchParams.get('health') === '1' || url.pathname.includes('/health')) {
+    console.log('🏥 Health check requested')
+    return new Response(
+      JSON.stringify({ 
+        status: 'ok', 
+        function: 'linkedin-integration',
+        timestamp: new Date().toISOString(),
+        service: 'LinkedIn Integration API'
+      }),
+      { 
+        status: 200, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    )
+  }
+
   try {
     console.log('📝 Reading request body...')
     const body = await req.text()

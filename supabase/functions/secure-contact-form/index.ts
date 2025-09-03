@@ -21,6 +21,26 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
+  // Health check endpoint
+  const url = new URL(req.url)
+  if (url.searchParams.get('health') === '1' || url.pathname.includes('/health')) {
+    console.log('🏥 Health check requested for secure-contact-form')
+    return new Response(
+      JSON.stringify({ 
+        status: 'ok', 
+        function: 'secure-contact-form',
+        timestamp: new Date().toISOString(),
+        service: 'Secure Contact Form API',
+        rate_limiting: 'enabled',
+        origin_validation: 'enabled'
+      }),
+      { 
+        status: 200, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    )
+  }
+
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405, headers: corsHeaders })
   }
