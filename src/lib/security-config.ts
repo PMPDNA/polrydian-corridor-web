@@ -15,13 +15,13 @@ export const SECURITY_CONFIG = {
   CSP_DIRECTIVES: {
     'default-src': ["'self'"],
     'script-src': ["'self'", "'wasm-unsafe-eval'"],
-    'style-src': ["'self'", "'nonce-{NONCE}'"], // Enhanced CSP with nonce
-    'img-src': ["'self'", "data:", "https://*.supabase.co", "https://calendly.com"],
-    'connect-src': ["'self'", "https://*.supabase.co"],
-    'font-src': ["'self'", "data:"],
+    'style-src': ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+    'img-src': ["'self'", "data:", "https://*.supabase.co", "https://calendly.com", "https://assets.calendly.com"],
+    'connect-src': ["'self'", "https://*.supabase.co", "https://calendly.com", "https://api.calendly.com"],
+    'font-src': ["'self'", "data:", "https://fonts.gstatic.com"],
     'object-src': ["'none'"],
     'media-src': ["'self'", "https://*.supabase.co"],
-    'frame-src': ["'self'", "https://calendly.com"],
+    'frame-src': ["'self'", "https://calendly.com", "https://*.calendly.com"],
     'frame-ancestors': ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"],

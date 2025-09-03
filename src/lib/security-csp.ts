@@ -29,8 +29,8 @@ class CSPManager {
   getCSPHeader(): string {
     const directives = {
       ...SECURITY_CONFIG.CSP_DIRECTIVES,
-      'style-src': ["'self'", `'nonce-${this.nonce}'`], // Remove unsafe-inline
-      'script-src': ["'self'", `'nonce-${this.nonce}'`, "'wasm-unsafe-eval'"],
+      'style-src': [...SECURITY_CONFIG.CSP_DIRECTIVES['style-src'], `'nonce-${this.nonce}'`],
+      'script-src': [...SECURITY_CONFIG.CSP_DIRECTIVES['script-src'], `'nonce-${this.nonce}'`],
     }
 
     return Object.entries(directives)
