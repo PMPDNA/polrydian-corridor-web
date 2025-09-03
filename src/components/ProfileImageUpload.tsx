@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,38 @@ import patrickProfile from "@/assets/patrick-profile.jpg";
 export const ProfileImageUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string>(patrickProfile);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+      
+      // Load existing avatar from profile
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (profile?.avatar_url) {
+          setProfileUrl(profile.avatar_url);
+        }
+      }
+    };
+    
+    getCurrentUser();
+  }, []);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
+      
+      if (!currentUser) {
+        throw new Error('You must be logged in to upload a profile image.');
+      }
       
       if (!event.target.files || event.target.files.length === 0) {
         throw new Error('You must select a file to upload.');
@@ -23,12 +50,13 @@ export const ProfileImageUpload = () => {
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const fileName = `profile-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const fileName = `${currentUser.id}/avatar-${Date.now()}.${fileExt}`;
+      const filePath = fileName;
 
+      // Upload with upsert to allow overwriting existing files
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, { upsert: true });
 
       if (uploadError) {
         throw uploadError;
@@ -38,18 +66,30 @@ export const ProfileImageUpload = () => {
         .from('avatars')
         .getPublicUrl(filePath);
 
+      // Update the profiles table with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({ 
+          user_id: currentUser.id, 
+          avatar_url: data.publicUrl 
+        });
+
+      if (updateError) {
+        throw updateError;
+      }
+
       setProfileUrl(data.publicUrl);
 
       toast({
         title: "Success",
-        description: "Profile image uploaded successfully!",
+        description: "Profile image uploaded and saved successfully!",
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading file:', error);
       toast({
         title: "Error",
-        description: "Failed to upload profile image. Please try again.",
+        description: error.message || "Failed to upload profile image. Please try again.",
         variant: "destructive",
       });
     } finally {
