@@ -1,9 +1,5 @@
 // Shared HTTP utilities for Edge Functions
-export const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-forwarded-for',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-}
+import { corsHeaders } from './cors.ts'
 
 // Helper to create consistent JSON responses
 export const json = (data: any, options: { status?: number; headers?: Record<string, string> } = {}) => {

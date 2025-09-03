@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { maybeHealth, json, extractClientIP, logError } from '../_shared/http.ts'
+import { validateInput } from '../_shared/security.ts'
 
 serve(async (req) => {
   // Check for health endpoint first
@@ -59,14 +60,19 @@ serve(async (req) => {
 
     // Parse and validate form data
     const formData = await req.json()
-    const { first_name, last_name, email, company, phone, service_area, message, urgency_level } = formData
     
-    // Basic validation
-    if (!first_name || !last_name || !email || !message) {
-      return json({ error: 'Missing required fields' }, { status: 400 })
+    // Use shared validation with required fields
+    const validationResult = validateInput(formData, ['first_name', 'last_name', 'email', 'message'])
+    if (!validationResult.isValid) {
+      return json({ 
+        error: 'Validation failed', 
+        details: validationResult.errors 
+      }, { status: 400 })
     }
     
-    // Email validation
+    const { first_name, last_name, email, company, phone, service_area, message, urgency_level } = validationResult.data
+    
+    // Additional email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return json({ error: 'Invalid email format' }, { status: 400 })

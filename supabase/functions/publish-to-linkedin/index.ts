@@ -2,16 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.51.0';
 import { maybeHealth, json, logError } from '../_shared/http.ts';
-
-// Simple base64 decryption to match linkedin-oauth implementation
-function decryptToken(encryptedToken: string): string {
-  try {
-    return atob(encryptedToken);
-  } catch (error) {
-    console.error('Decryption error:', error);
-    return encryptedToken; // Fallback for non-encrypted tokens
-  }
-}
+import { decryptTokenSecure } from '../_shared/security.ts';
 
 serve(async (req) => {
   console.log('🚀 LinkedIn publish function started');
@@ -103,8 +94,8 @@ serve(async (req) => {
 
     const personId = credentials.platform_user_id;
     
-    // Simple token decryption (implement proper decryption in production)
-    const accessToken = decryptToken(credentials.access_token_encrypted);
+    // Securely decrypt access token
+    const accessToken = await decryptTokenSecure(credentials.access_token_encrypted, supabase);
     
     console.log('✅ Using LinkedIn person ID from database:', personId);
     console.log('🔐 Access token available:', !!accessToken);
@@ -160,7 +151,7 @@ serve(async (req) => {
 
     if (!shareResponse.ok) {
       const errorText = await shareResponse.text();
-      console.error('❌ LinkedIn publish error:', errorText);
+      console.error('❌ LinkedIn publish error:', shareResponse.status, errorText);
       
       // If 401, mark credentials as inactive
       if (shareResponse.status === 401) {
@@ -169,9 +160,19 @@ serve(async (req) => {
           .update({ is_active: false })
           .eq('user_id', user.id)
           .eq('platform', 'linkedin');
+        
+        return json({ 
+          error: 'LinkedIn authentication failed. Please reconnect your account.',
+          reconnect_required: true 
+        }, { status: 401 })
       }
       
-      throw new Error(`Failed to publish to LinkedIn: ${shareResponse.status} - ${errorText}`);
+      // Return appropriate error without exposing internal details
+      const statusCode = shareResponse.status >= 400 && shareResponse.status < 500 ? 400 : 500
+      return json({ 
+        error: 'Failed to publish to LinkedIn. Please try again later.',
+        retry_recommended: true 
+      }, { status: statusCode })
     }
 
     const shareResult = await shareResponse.json();
@@ -232,8 +233,8 @@ serve(async (req) => {
   } catch (error: any) {
     logError('publish-to-linkedin', error)
     return json({ 
-      error: error.message,
-      details: 'Check the edge function logs for more information'
+      error: 'An unexpected error occurred while publishing to LinkedIn.',
+      retry_recommended: true
     }, { status: 500 })
   }
 });
