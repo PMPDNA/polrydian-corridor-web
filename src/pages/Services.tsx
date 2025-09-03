@@ -172,9 +172,12 @@ export default function Services() {
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">
             Strategic Services
           </h1>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-4">
             Transform your most complex challenges into competitive advantages through 
             corridor economics—the strategic methodology that reveals pathways others miss.
+          </p>
+          <p className="text-sm text-accent font-medium tracking-wide uppercase animate-fade-in">
+            Translating complexities into strategic clarity
           </p>
         </div>
 
