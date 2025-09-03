@@ -82,7 +82,7 @@ export function useUnifiedArticles() {
 
         let query = supabase
           .from("articles")
-          .select("*", { count: "exact" })
+          .select("id, slug, title, meta_description, featured_image, category, reading_time_minutes, published_at, user_id, created_at, updated_at, keywords", { count: "exact" })
           .eq("status", "published");
 
         // Apply filters
@@ -95,7 +95,7 @@ export function useUnifiedArticles() {
         }
 
         if (search && search.trim()) {
-          query = query.or(`title.ilike.%${search}%, content.ilike.%${search}%, meta_description.ilike.%${search}%`);
+          query = query.or(`title.ilike.%${search}%, meta_description.ilike.%${search}%`);
         }
 
         if (dateFrom) {

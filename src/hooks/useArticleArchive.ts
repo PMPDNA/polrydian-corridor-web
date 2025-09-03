@@ -18,13 +18,13 @@ export function useArticleArchive({ page, pageSize, category, search, sort = "ne
 
       let query = supabase
         .from("articles")
-        .select("*", { count: "exact" })
+        .select("id, slug, title, meta_description, featured_image, category, reading_time_minutes, published_at, user_id, created_at, updated_at, keywords", { count: "exact" })
         .eq("status", "published");
 
       if (category) query = query.eq("category", category);
       if (search && search.trim()) {
-        // Search in title and content
-        query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+        // Search in title and meta_description only (no content for performance)
+        query = query.or(`title.ilike.%${search}%,meta_description.ilike.%${search}%`);
       }
 
       query = query.order("published_at", { ascending: sort === "oldest" }).order("created_at", { ascending: sort === "oldest" });

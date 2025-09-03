@@ -18,7 +18,6 @@ import SovereignFunds from "./pages/SovereignFunds";
 import PortsLogistics from "./pages/PortsLogistics";
 import DefenceTech from "./pages/DefenceTech";
 import Articles from "./pages/Articles";
-import { ArticlesRedirect } from "./components/ArticlesRedirect";
 import ArticleDetail from "./pages/ArticleDetail";
 import ContributeArticle from "./pages/ContributeArticle";
 import Schedule from "./pages/Schedule";
@@ -78,8 +77,8 @@ const App = () => {
             
             <Route path="/privacy" element={<Privacy />} />
             
-            {/* Redirect Articles to Insights */}
-            <Route path="/articles" element={<ArticlesRedirect />} />
+            {/* Articles Section */}
+            <Route path="/articles" element={<Articles />} />
             <Route path="/articles/:slug" element={<ArticleDetail />} />
             <Route path="/contribute" element={<ContributeArticle />} />
             <Route path="/schedule" element={<Schedule />} />

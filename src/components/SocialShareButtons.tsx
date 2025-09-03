@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 interface SocialShareButtonsProps {
   article: {
     id: string;
+    slug: string;
     title: string;
     excerpt: string;
     heroImage?: string;
@@ -15,7 +16,9 @@ interface SocialShareButtonsProps {
 
 export function SocialShareButtons({ article, compact = false }: SocialShareButtonsProps) {
   const { toast } = useToast();
-  const articleUrl = `${window.location.origin}/article/${article.id}`;
+  // Use environment variable or fallback, avoiding window.location.origin for SSR compatibility
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://polrydian.com';
+  const articleUrl = `${baseUrl}/articles/${article.slug}`;
   
   const shareToLinkedIn = () => {
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`;

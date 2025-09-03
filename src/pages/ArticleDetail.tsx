@@ -190,6 +190,7 @@ export default function ArticleDetail() {
                   <SocialShareButtons 
                     article={{
                       id: article.id,
+                      slug: article.slug,
                       title: article.title,
                       excerpt: article.meta_description || article.content.substring(0, 200) + "...",
                       heroImage: article.featured_image

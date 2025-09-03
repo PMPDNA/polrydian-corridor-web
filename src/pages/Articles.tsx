@@ -10,7 +10,7 @@ export default function Articles() {
         title="Strategic Insights & Articles | Corridor Economics Analysis"
         description="Browse expert analysis on corridor economics, geopolitical strategy, supply chain optimization, and market intelligence. Strategic insights for complex global challenges."
         keywords={["strategic insights", "corridor economics", "geopolitical analysis", "supply chain", "market intelligence", "strategic consulting"]}
-        url={`${window.location.origin}/articles`}
+        url={`${typeof window !== 'undefined' ? window.location.origin : 'https://polrydian.com'}/articles`}
         type="website"
       />
       <Navigation />

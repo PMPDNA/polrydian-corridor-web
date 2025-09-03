@@ -85,15 +85,17 @@ export function ArticleArchive({
     });
   };
 
-  const getReadingTime = (content: string, readingTimeMinutes?: number) => {
+  const getReadingTime = (content?: string, readingTimeMinutes?: number) => {
     if (readingTimeMinutes) return readingTimeMinutes;
+    if (!content) return 5; // Default fallback if no content or reading time
     const wordsPerMinute = 200;
     const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).length;
     return Math.ceil(wordCount / wordsPerMinute);
   };
 
-  const getExcerpt = (content: string, metaDescription?: string) => {
+  const getExcerpt = (content?: string, metaDescription?: string) => {
     if (metaDescription) return metaDescription;
+    if (!content) return "Read the full article to learn more..."; // Fallback when no content
     return content.replace(/<[^>]*>/g, '').substring(0, 200) + "...";
   };
 
@@ -103,7 +105,7 @@ export function ArticleArchive({
     "@type": "CollectionPage",
     "name": "Strategic Insights & Articles",
     "description": "Browse published articles on corridor economics, geopolitics, supply chains, and strategy.",
-    "url": `${window.location.origin}/articles`,
+    "url": `${typeof window !== 'undefined' ? window.location.origin : 'https://polrydian.com'}/articles`,
     "mainEntity": {
       "@type": "ItemList",
       "numberOfItems": total,
@@ -111,14 +113,14 @@ export function ArticleArchive({
         "@type": "Article",
         "position": index + 1,
         "headline": article.title,
-        "description": getExcerpt(article.content, article.meta_description),
+        "description": getExcerpt(undefined, article.meta_description),
         "author": {
           "@type": "Person",
           "name": "Patrick Misiewicz"
         },
         "datePublished": article.published_at || article.created_at,
         "dateModified": article.updated_at,
-        "url": `${window.location.origin}/articles/${article.slug || article.id}`,
+        "url": `${typeof window !== 'undefined' ? window.location.origin : 'https://polrydian.com'}/articles/${article.slug || article.id}`,
         "image": article.featured_image,
         "publisher": {
           "@type": "Organization",
@@ -301,7 +303,7 @@ export function ArticleArchive({
                   </Link>
                 </CardTitle>
                 <CardDescription className="line-clamp-3">
-                  {getExcerpt(article.content, article.meta_description)}
+                  {getExcerpt(undefined, article.meta_description)}
                 </CardDescription>
               </CardHeader>
               
@@ -313,7 +315,7 @@ export function ArticleArchive({
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    <span>{getReadingTime(article.content, article.reading_time_minutes)} min</span>
+                    <span>{getReadingTime(undefined, article.reading_time_minutes)} min</span>
                   </div>
                 </div>
                 
