@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import CalendlyEmbed from '@/components/CalendlyEmbed';
+import { CalendlyInlineWidget } from '@/components/CalendlyInlineWidget';
 import { Navigation } from '@/components/Navigation';
 import { EnhancedSEO } from '@/components/EnhancedSEO';
 
@@ -63,11 +63,13 @@ export default function Schedule() {
               Book a strategic consultation to discuss your unique challenges and opportunities.
             </p>
           </div>
-          <CalendlyEmbed 
-            calendlyUrl="https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
-            height="700px"
-            title="Strategic Consultation Booking"
-            description="Select your preferred time for a comprehensive strategic discussion"
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-2">Strategic Consultation Booking</h3>
+            <p className="text-sm text-muted-foreground">Select your preferred time for a comprehensive strategic discussion</p>
+          </div>
+          <CalendlyInlineWidget 
+            url="https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
+            height={700}
           />
         </div>
       </main>
