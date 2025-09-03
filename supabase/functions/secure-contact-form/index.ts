@@ -1,48 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-// Strict CORS headers for contact form
-const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://polrydian.com, https://d85f6385-6c6d-437f-978b-9196bd33e526.lovableproject.com',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-forwarded-for',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-}
-
-// Extract client IP from headers
-function extractClientIP(headers: Headers): string | null {
-  const forwarded = headers.get('x-forwarded-for')
-  const realIp = headers.get('x-real-ip')
-  return forwarded?.split(',')[0]?.trim() || realIp || null
-}
+import { maybeHealth, json, extractClientIP, logError } from '../_shared/http.ts'
 
 serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
-
-  // Health check endpoint
-  const url = new URL(req.url)
-  if (url.searchParams.get('health') === '1' || url.pathname.includes('/health')) {
-    console.log('🏥 Health check requested for secure-contact-form')
-    return new Response(
-      JSON.stringify({ 
-        status: 'ok', 
-        function: 'secure-contact-form',
-        timestamp: new Date().toISOString(),
-        service: 'Secure Contact Form API',
-        rate_limiting: 'enabled',
-        origin_validation: 'enabled'
-      }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    )
-  }
+  // Check for health endpoint first
+  const healthResponse = maybeHealth(req, 'secure-contact-form')
+  if (healthResponse) return healthResponse
 
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405, headers: corsHeaders })
+    return json({ error: 'Method not allowed' }, { status: 405 })
   }
 
   try {
@@ -61,10 +27,14 @@ serve(async (req) => {
     const origin = req.headers.get('origin')
     
     // Verify origin is allowed
-    const allowedOrigins = ['https://polrydian.com', 'https://d85f6385-6c6d-437f-978b-9196bd33e526.lovableproject.com']
+    const allowedOrigins = [
+      'https://polrydian.com', 
+      'https://d85f6385-6c6d-437f-978b-9196bd33e526.lovableproject.com',
+      'https://d85f6385-6c6d-437f-978b-9196bd33e526.sandbox.lovable.dev'
+    ]
     if (origin && !allowedOrigins.includes(origin)) {
       console.log('Blocked request from unauthorized origin:', origin)
-      return new Response('Unauthorized origin', { status: 403, headers: corsHeaders })
+      return json({ error: 'Unauthorized origin' }, { status: 403 })
     }
 
     // Rate limiting check
@@ -83,10 +53,7 @@ serve(async (req) => {
           p_ip_address: clientIP
         })
         
-        return new Response('Rate limit exceeded. Please try again later.', { 
-          status: 429, 
-          headers: corsHeaders 
-        })
+        return json({ error: 'Rate limit exceeded. Please try again later.' }, { status: 429 })
       }
     }
 
@@ -96,13 +63,13 @@ serve(async (req) => {
     
     // Basic validation
     if (!first_name || !last_name || !email || !message) {
-      return new Response('Missing required fields', { status: 400, headers: corsHeaders })
+      return json({ error: 'Missing required fields' }, { status: 400 })
     }
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
-      return new Response('Invalid email format', { status: 400, headers: corsHeaders })
+      return json({ error: 'Invalid email format' }, { status: 400 })
     }
 
     // Insert consultation booking
@@ -142,24 +109,19 @@ serve(async (req) => {
 
     console.log('Secure contact form submission successful:', data.id)
 
-    return new Response(JSON.stringify({ 
+    return json({ 
       success: true, 
       message: 'Consultation request submitted successfully',
       id: data.id 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 
   } catch (error) {
-    console.error('Error in secure-contact-form:', error)
+    logError('secure-contact-form', error)
     
     // Log error but don't expose details to client
-    return new Response(JSON.stringify({ 
+    return json({ 
       success: false, 
       message: 'Unable to submit request. Please try again later.' 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    }, { status: 500 })
   }
 })

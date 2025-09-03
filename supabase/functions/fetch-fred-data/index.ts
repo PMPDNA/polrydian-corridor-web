@@ -1,25 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-// Health check endpoint
-const handleHealthCheck = () => {
-  return new Response(
-    JSON.stringify({ 
-      status: 'ok', 
-      service: 'fetch-fred-data',
-      timestamp: new Date().toISOString()
-    }),
-    { 
-      status: 200, 
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-    }
-  )
-}
+import { maybeHealth, json, logError } from '../_shared/http.ts'
 
 // Economic indicators with their FRED series IDs
 const ECONOMIC_INDICATORS = {
@@ -62,15 +43,9 @@ const logIntegrationEvent = async (supabase: any, operation: string, status: str
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
-
-  // Health check endpoint
-  const url = new URL(req.url)
-  if (url.searchParams.get('health') === '1' || req.url.includes('/health')) {
-    return handleHealthCheck()
-  }
+  // Check for health endpoint first
+  const healthResponse = maybeHealth(req, 'fetch-fred-data')
+  if (healthResponse) return healthResponse
 
   try {
     const supabaseClient = createClient(
@@ -176,12 +151,10 @@ serve(async (req) => {
           executionTime: Date.now() - startTime
         }, userId)
 
-        return new Response(JSON.stringify({ 
+        return json({ 
           success: true, 
           results,
           message: `Fetched ${results.length} indicators successfully`
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }
 
@@ -192,11 +165,9 @@ serve(async (req) => {
           description: getIndicatorDescription(type)
         }))
 
-        return new Response(JSON.stringify({
+        return json({
           success: true,
           indicators: availableIndicators
-        }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
       }
 
@@ -205,15 +176,12 @@ serve(async (req) => {
     }
 
   } catch (error) {
-    console.error('FRED fetch error:', error)
+    logError('fetch-fred-data', error)
     
-    return new Response(JSON.stringify({
+    return json({
       success: false,
       error: error.message
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    }, { status: 500 })
   }
 })
 

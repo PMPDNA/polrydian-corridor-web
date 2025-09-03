@@ -8,6 +8,7 @@ import {
   logSecurityEvent,
   decryptTokenSecure 
 } from '../_shared/security.ts'
+import { maybeHealth, json, logError } from '../_shared/http.ts'
 
 // Initialize Supabase client
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -19,29 +20,9 @@ const corsHeaders = getCombinedHeaders()
 serve(async (req) => {
   console.log('🚀 Function called:', req.method, req.url)
   
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    console.log('✅ Handling CORS preflight')
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  // Health check endpoint
-  const url = new URL(req.url)
-  if (url.searchParams.get('health') === '1' || url.pathname.includes('/health')) {
-    console.log('🏥 Health check requested')
-    return new Response(
-      JSON.stringify({ 
-        status: 'ok', 
-        function: 'linkedin-integration',
-        timestamp: new Date().toISOString(),
-        service: 'LinkedIn Integration API'
-      }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    )
-  }
+  // Check for health endpoint first
+  const healthResponse = maybeHealth(req, 'linkedin-integration')
+  if (healthResponse) return healthResponse
 
   try {
     console.log('📝 Reading request body...')
@@ -240,28 +221,15 @@ serve(async (req) => {
 
     console.log('✅ Sending response:', response)
 
-    return new Response(
-      JSON.stringify(response),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    )
+    return json(response)
 
   } catch (error) {
-    console.error('💥 Error:', error.message)
-    console.error('💥 Stack:', error.stack)
+    logError('linkedin-integration', error)
     
-    return new Response(
-      JSON.stringify({
-        error: error.message,
-        stack: error.stack,
-        timestamp: new Date().toISOString()
-      }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    )
+    return json({
+      error: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    }, { status: 400 })
   }
 })

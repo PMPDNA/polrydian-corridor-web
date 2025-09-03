@@ -1,11 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.51.0';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { maybeHealth, json, logError } from '../_shared/http.ts';
 
 // Simple base64 decryption to match linkedin-oauth implementation
 function decryptToken(encryptedToken: string): string {
@@ -20,31 +16,9 @@ function decryptToken(encryptedToken: string): string {
 serve(async (req) => {
   console.log('🚀 LinkedIn publish function started');
   
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    console.log('📋 CORS preflight request');
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  // Health check endpoint
-  const url = new URL(req.url)
-  if (url.searchParams.get('health') === '1' || url.pathname.includes('/health')) {
-    console.log('🏥 Health check requested for publish-to-linkedin')
-    return new Response(
-      JSON.stringify({ 
-        status: 'ok', 
-        function: 'publish-to-linkedin',
-        timestamp: new Date().toISOString(),
-        service: 'LinkedIn Publishing API',
-        authentication: 'required',
-        admin_access: 'required'
-      }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    )
-  }
+  // Check for health endpoint first
+  const healthResponse = maybeHealth(req, 'publish-to-linkedin')
+  if (healthResponse) return healthResponse
 
   try {
     console.log('🔐 Starting authentication check');
@@ -53,10 +27,7 @@ serve(async (req) => {
     const authHeader = req.headers.get('authorization');
     if (!authHeader) {
       console.log('❌ Missing authorization header');
-      return new Response(
-        JSON.stringify({ error: 'Authentication required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return json({ error: 'Authentication required' }, { status: 401 })
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -76,10 +47,7 @@ serve(async (req) => {
 
     if (authError || !user) {
       console.log('❌ Authentication failed:', authError);
-      return new Response(
-        JSON.stringify({ error: 'Authentication failed' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return json({ error: 'Authentication failed' }, { status: 401 })
     }
 
     console.log('✅ User authenticated:', user.email);
@@ -96,10 +64,7 @@ serve(async (req) => {
 
     if (roleError || !hasAdminRole) {
       console.log('❌ Access denied - admin role required');
-      return new Response(
-        JSON.stringify({ error: 'Admin access required' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return json({ error: 'Admin access required' }, { status: 403 })
     }
 
     console.log('📝 Parsing request body');
@@ -115,10 +80,7 @@ serve(async (req) => {
 
     if (!content && !message) {
       console.log('❌ Content or message is required');
-      return new Response(
-        JSON.stringify({ error: 'Content or message is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return json({ error: 'Content or message is required' }, { status: 400 })
     }
 
     console.log('🔍 Getting LinkedIn credentials from database');
@@ -133,13 +95,10 @@ serve(async (req) => {
 
     if (credError || !credentials) {
       console.error('❌ LinkedIn credentials not found in database:', credError);
-      return new Response(
-        JSON.stringify({ 
-          error: 'LinkedIn credentials not configured. Please set up your LinkedIn integration first.',
-          setup_required: true
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return json({ 
+        error: 'LinkedIn credentials not configured. Please set up your LinkedIn integration first.',
+        setup_required: true
+      }, { status: 400 })
     }
 
     const personId = credentials.platform_user_id;
@@ -263,23 +222,18 @@ serve(async (req) => {
     }
 
     console.log('🎉 LinkedIn publish completed successfully');
-    return new Response(JSON.stringify({ 
+    return json({ 
       success: true, 
       message: 'Successfully published to LinkedIn',
       post_id: shareId,
       post_url: `https://www.linkedin.com/feed/update/${shareId}`
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    })
 
   } catch (error: any) {
-    console.error('💥 Error publishing to LinkedIn:', error);
-    return new Response(JSON.stringify({ 
+    logError('publish-to-linkedin', error)
+    return json({ 
       error: error.message,
       details: 'Check the edge function logs for more information'
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    }, { status: 500 })
   }
 });
