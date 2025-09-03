@@ -1,82 +1,83 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { getCombinedHeaders } from '../_shared/security.ts'
+import { corsHeaders } from '../_shared/cors.ts'
 
-interface DatabaseResponse {
-  data?: any
-  error?: any
-}
-
-Deno.serve(async (req) => {
-  const corsHeaders = getCombinedHeaders()
-
+serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
-  try {
-    // Initialize Supabase client with service role for migration
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    })
+  // Health check endpoint
+  if (req.method === 'GET') {
+    return new Response(
+      JSON.stringify({ status: 'healthy', service: 'migrate-tokens-secure' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
 
-    console.log('Starting secure token migration...')
+  if (req.method !== 'POST') {
+    return new Response('Method not allowed', { status: 405, headers: corsHeaders })
+  }
+
+  try {
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    console.log('🔄 Starting secure token migration...')
 
     // Call the migration function
-    const { data, error }: DatabaseResponse = await supabase.rpc('migrate_existing_tokens')
+    const { data, error } = await supabase.rpc('migrate_existing_tokens')
 
     if (error) {
-      console.error('Migration error:', error)
-      throw error
+      console.error('❌ Migration error:', error)
+      return new Response(
+        JSON.stringify({ 
+          error: 'Migration failed', 
+          details: error.message 
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
     }
 
-    console.log(`Migration completed. Migrated ${data || 0} tokens.`)
+    console.log(`✅ Migration completed. Migrated ${data} tokens.`)
 
-    // Log the successful migration
+    // Log the migration event
     await supabase.from('security_audit_log').insert({
       action: 'token_migration_executed',
       details: {
-        migrated_count: data || 0,
+        migrated_count: data,
         timestamp: new Date().toISOString(),
-        severity: 'medium',
-        execution_context: 'edge_function'
+        severity: 'high'
       }
     })
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        migratedTokens: data || 0,
-        message: 'Token migration completed successfully'
+      JSON.stringify({ 
+        success: true, 
+        message: `Successfully migrated ${data} tokens to enhanced encryption`,
+        migrated_count: data
       }),
       { 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     )
 
   } catch (error) {
-    console.error('Token migration failed:', error)
-    
+    console.error('❌ Migration function error:', error)
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: error.message || 'Migration failed'
+      JSON.stringify({ 
+        error: 'Internal server error', 
+        details: error.message 
       }),
       { 
-        status: 500,
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     )
   }

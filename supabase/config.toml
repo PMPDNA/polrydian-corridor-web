@@ -21,7 +21,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.token-refresh-cron]
-verify_jwt = false
+verify_jwt = true
 
 [functions.integration-health-monitor]
 verify_jwt = true
@@ -39,7 +39,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.research-link-generator]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-sitemap]
 verify_jwt = false
@@ -51,4 +51,7 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.security-audit]
-verify_jwt = false
+verify_jwt = true
+
+[functions.migrate-tokens-secure]
+verify_jwt = true
