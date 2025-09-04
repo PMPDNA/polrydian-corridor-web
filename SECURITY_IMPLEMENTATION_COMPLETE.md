@@ -30,8 +30,6 @@ Please update these settings in your Supabase Dashboard:
 
 1. **Authentication > Settings**:
    - ✅ Reduce OTP expiry to **5 minutes** (currently too long)
-   - ✅ Enable **"Leaked Password Protection"** (currently disabled)
-   - ✅ Enable **"Breach Password Protection"** if available
 
 2. **Authentication > Rate Limiting**:
    - ✅ Set max failed attempts to **5 per 15 minutes**

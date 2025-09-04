@@ -32,7 +32,6 @@ export const SECURITY_CONFIG = {
   OTP_EXPIRY_MINUTES: 5,
   
   // Enhanced security settings
-  LEAKED_PASSWORD_PROTECTION: true,
   RATE_LIMIT_ATTEMPTS: 5,
   RATE_LIMIT_WINDOW_MINUTES: 15,
   

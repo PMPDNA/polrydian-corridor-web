@@ -270,9 +270,6 @@ export function SecurityDashboard() {
                         <div className="flex items-center gap-2">
                           <Badge variant="outline">✅ Rate Limiting</Badge>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary">⚠️ Leaked Password Protection</Badge>
-                        </div>
                       </div>
                     </div>
                     

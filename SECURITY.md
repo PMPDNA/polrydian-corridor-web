@@ -53,7 +53,6 @@ We will acknowledge receipt within 24 hours and provide a timeline for addressin
 - [x] Rate limiting implemented
 - [x] Security audit logging active
 - [x] Token encryption for social media credentials
-- [ ] Enable "Leaked Password Protection" (recommended)
 - [ ] Regular security audit reviews
 
 ## Deployment Security
