@@ -3,8 +3,6 @@ import { Navigation } from '@/components/Navigation';
 import { Hero } from '@/components/Hero';
 import { OurServices } from '@/components/OurServices';
 import { HomePartners } from '@/components/HomePartners';
-
-import { LatestInsightsTeaser } from '@/components/LatestInsightsTeaser';
 import { Contact } from '@/components/Contact';
 import Footer from '@/components/Footer';
 import { EnhancedSEO } from '@/components/EnhancedSEO';
@@ -60,11 +58,6 @@ const Index = () => {
         
         <section id="partners" aria-label="Our partners">
           <HomePartners />
-        </section>
-        
-        
-        <section id="insights" aria-label="Latest insights">
-          <LatestInsightsTeaser />
         </section>
         
         <section id="contact" aria-label="Contact section">
