@@ -126,32 +126,10 @@ export default function Services() {
     }
   ];
 
-  const caseStudies = [
-    {
-      title: "Global Manufacturing Expansion",
-      challenge: "Fortune 500 manufacturer facing complex regulatory barriers in 15 new markets",
-      solution: "Mapped regulatory corridors and identified strategic partnerships to accelerate market entry",
-      result: "Successfully streamlined market entry process and established strong operational presence across all target markets"
-    },
-    {
-      title: "Supply Chain Resilience",
-      challenge: "Technology company vulnerable to supply chain disruptions",
-      solution: "Developed diversified supply corridors with built-in redundancy and risk mitigation",
-      result: "Established robust supply chain resilience with improved reliability and operational efficiency"
-    },
-    {
-      title: "Strategic M&A Integration",
-      challenge: "Private equity firm struggling with complex acquisition integration across multiple jurisdictions",
-      solution: "Created integration corridors that addressed regulatory, cultural, and operational complexities",
-      result: "Delivered seamless integration with strong synergy realization"
-    }
-  ];
-
   const sections = [
     { id: "hero", title: "Overview" },
     { id: "core-services", title: "Core Services" },
     { id: "process", title: "Our Process" },
-    { id: "case-studies", title: "Success Stories" },
     { id: "cta", title: "Get Started" }
   ];
 
@@ -259,40 +237,6 @@ export default function Services() {
                   {index < process.length - 1 && (
                     <ArrowRight className="hidden lg:block absolute -right-3 top-1/2 transform -translate-y-1/2 h-6 w-6 text-accent" />
                   )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Case Studies */}
-        <div id="case-studies" className="space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Success Stories</h2>
-            <p className="text-muted-foreground">
-              Real results from strategic corridor economics implementation
-            </p>
-          </div>
-          
-          <div className="grid lg:grid-cols-3 gap-6">
-            {caseStudies.map((study, index) => (
-              <Card key={index} className="shadow-elegant">
-                <CardHeader>
-                  <CardTitle className="text-lg text-foreground">{study.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-2">Challenge</h4>
-                    <p className="text-sm text-muted-foreground">{study.challenge}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-2">Corridor Solution</h4>
-                    <p className="text-sm text-muted-foreground">{study.solution}</p>
-                  </div>
-                  <div className="pt-2 border-t border-border">
-                    <h4 className="font-semibold text-accent mb-2">Result</h4>
-                    <p className="text-sm text-foreground font-medium">{study.result}</p>
-                  </div>
                 </CardContent>
               </Card>
             ))}
