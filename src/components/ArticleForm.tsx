@@ -344,7 +344,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
                 placeholder="Brief description of the article"
                 rows={4}
                 required
-                maxLength={1000}
+                maxLength={1500}
               />
               {errors.excerpt && <p className="text-sm text-destructive mt-1">{errors.excerpt}</p>}
             </div>
