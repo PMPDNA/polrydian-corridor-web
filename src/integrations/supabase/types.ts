@@ -103,6 +103,7 @@ export type Database = {
           content_images: string[] | null
           content_type: string | null
           created_at: string
+          embedding: string | null
           featured_image: string | null
           id: string
           image_associations: Json | null
@@ -113,6 +114,7 @@ export type Database = {
           reading_time_minutes: number | null
           reference_sources: Json | null
           related_articles: string[] | null
+          search_tsv: unknown | null
           slug: string | null
           status: string
           title: string
@@ -133,6 +135,7 @@ export type Database = {
           content_images?: string[] | null
           content_type?: string | null
           created_at?: string
+          embedding?: string | null
           featured_image?: string | null
           id?: string
           image_associations?: Json | null
@@ -143,6 +146,7 @@ export type Database = {
           reading_time_minutes?: number | null
           reference_sources?: Json | null
           related_articles?: string[] | null
+          search_tsv?: unknown | null
           slug?: string | null
           status?: string
           title: string
@@ -163,6 +167,7 @@ export type Database = {
           content_images?: string[] | null
           content_type?: string | null
           created_at?: string
+          embedding?: string | null
           featured_image?: string | null
           id?: string
           image_associations?: Json | null
@@ -173,6 +178,7 @@ export type Database = {
           reading_time_minutes?: number | null
           reference_sources?: Json | null
           related_articles?: string[] | null
+          search_tsv?: unknown | null
           slug?: string | null
           status?: string
           title?: string
@@ -283,6 +289,48 @@ export type Database = {
           video_duration?: number | null
           video_thumbnail?: string | null
           video_url?: string | null
+        }
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          action: string
+          changed_fields: string[] | null
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          changed_fields?: string[] | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id: string
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          changed_fields?: string[] | null
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -703,6 +751,68 @@ export type Database = {
           third_parties?: Json | null
           user_id?: string | null
           visitor_id?: string | null
+        }
+        Relationships: []
+      }
+      fred_observations: {
+        Row: {
+          created_at: string | null
+          date: string
+          series_id: string
+          value: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          series_id: string
+          value?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          series_id?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fred_observations_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "fred_series"
+            referencedColumns: ["series_id"]
+          },
+        ]
+      }
+      fred_series: {
+        Row: {
+          created_at: string | null
+          frequency: string | null
+          last_updated: string | null
+          notes: string | null
+          seasonal_adjustment: string | null
+          series_id: string
+          title: string
+          units: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          frequency?: string | null
+          last_updated?: string | null
+          notes?: string | null
+          seasonal_adjustment?: string | null
+          series_id: string
+          title: string
+          units?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          frequency?: string | null
+          last_updated?: string | null
+          notes?: string | null
+          seasonal_adjustment?: string | null
+          series_id?: string
+          title?: string
+          units?: string | null
         }
         Relationships: []
       }
@@ -1353,6 +1463,65 @@ export type Database = {
           },
         ]
       }
+      scheduled_posts: {
+        Row: {
+          article_id: string | null
+          article_url: string | null
+          body: string
+          channel: string
+          created_at: string | null
+          created_by: string
+          error_message: string | null
+          id: string
+          image_url: string | null
+          platform_post_id: string | null
+          publish_at: string
+          status: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          article_id?: string | null
+          article_url?: string | null
+          body: string
+          channel: string
+          created_at?: string | null
+          created_by: string
+          error_message?: string | null
+          id?: string
+          image_url?: string | null
+          platform_post_id?: string | null
+          publish_at: string
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          article_id?: string | null
+          article_url?: string | null
+          body?: string
+          channel?: string
+          created_at?: string | null
+          created_by?: string
+          error_message?: string | null
+          id?: string
+          image_url?: string | null
+          platform_post_id?: string | null
+          publish_at?: string
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_posts_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_audit_log: {
         Row: {
           action: string
@@ -1380,6 +1549,45 @@ export type Database = {
           ip_address?: unknown | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      social_accounts: {
+        Row: {
+          access_token_encrypted: string
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          profile_data: Json | null
+          provider: string
+          refresh_token_encrypted: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token_encrypted: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          profile_data?: Json | null
+          provider: string
+          refresh_token_encrypted?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token_encrypted?: string
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          profile_data?: Json | null
+          provider?: string
+          refresh_token_encrypted?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1712,6 +1920,14 @@ export type Database = {
         }
         Returns: string
       }
+      binary_quantize: {
+        Args: { "": string } | { "": unknown }
+        Returns: unknown
+      }
+      bytea_to_text: {
+        Args: { data: string }
+        Returns: string
+      }
       check_admin_access: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -1812,6 +2028,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_latest_fred_value: {
+        Args: { p_series_id: string }
+        Returns: number
+      }
       get_latest_insights: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1829,6 +2049,42 @@ export type Database = {
           updated_at: string
         }[]
       }
+      gtrgm_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: { "": unknown }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      halfvec_avg: {
+        Args: { "": number[] }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1836,9 +2092,100 @@ export type Database = {
         }
         Returns: boolean
       }
+      hnsw_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
       html_entity_decode: {
         Args: { input: string }
         Returns: string
+      }
+      http: {
+        Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
+        Returns: Database["public"]["CompositeTypes"]["http_response"]
+      }
+      http_delete: {
+        Args:
+          | { content: string; content_type: string; uri: string }
+          | { uri: string }
+        Returns: Database["public"]["CompositeTypes"]["http_response"]
+      }
+      http_get: {
+        Args: { data: Json; uri: string } | { uri: string }
+        Returns: Database["public"]["CompositeTypes"]["http_response"]
+      }
+      http_head: {
+        Args: { uri: string }
+        Returns: Database["public"]["CompositeTypes"]["http_response"]
+      }
+      http_header: {
+        Args: { field: string; value: string }
+        Returns: Database["public"]["CompositeTypes"]["http_header"]
+      }
+      http_list_curlopt: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          curlopt: string
+          value: string
+        }[]
+      }
+      http_patch: {
+        Args: { content: string; content_type: string; uri: string }
+        Returns: Database["public"]["CompositeTypes"]["http_response"]
+      }
+      http_post: {
+        Args:
+          | { content: string; content_type: string; uri: string }
+          | { data: Json; uri: string }
+        Returns: Database["public"]["CompositeTypes"]["http_response"]
+      }
+      http_put: {
+        Args: { content: string; content_type: string; uri: string }
+        Returns: Database["public"]["CompositeTypes"]["http_response"]
+      }
+      http_reset_curlopt: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      http_set_curlopt: {
+        Args: { curlopt: string; value: string }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: { uid: string }
+        Returns: boolean
+      }
+      ivfflat_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      l2_norm: {
+        Args: { "": unknown } | { "": unknown }
+        Returns: number
+      }
+      l2_normalize: {
+        Args: { "": string } | { "": unknown } | { "": unknown }
+        Returns: unknown
       }
       log_integration_event: {
         Args: {
@@ -1893,6 +2240,30 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      set_limit: {
+        Args: { "": number }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: { "": string }
+        Returns: string[]
+      }
+      sparsevec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
       sync_linkedin_article_to_articles: {
         Args: { linkedin_article_id: string }
         Returns: string
@@ -1901,16 +2272,64 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      text_to_bytea: {
+        Args: { data: string }
+        Returns: string
+      }
+      urlencode: {
+        Args: { data: Json } | { string: string } | { string: string }
+        Returns: string
+      }
       validate_password_reset_token: {
         Args: { reset_token: string }
         Returns: boolean
+      }
+      vector_avg: {
+        Args: { "": number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { "": string } | { "": unknown }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { "": string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { "": string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
       }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
-      [_ in never]: never
+      http_header: {
+        field: string | null
+        value: string | null
+      }
+      http_request: {
+        method: unknown | null
+        uri: string | null
+        headers: Database["public"]["CompositeTypes"]["http_header"][] | null
+        content_type: string | null
+        content: string | null
+      }
+      http_response: {
+        status: number | null
+        content_type: string | null
+        headers: Database["public"]["CompositeTypes"]["http_header"][] | null
+        content: string | null
+      }
     }
   }
 }

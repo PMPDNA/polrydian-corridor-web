@@ -1,208 +1,240 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ExternalLink, TrendingUp, TrendingDown, Minus, RefreshCw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { TrendingUp, TrendingDown, Minus, RefreshCw, Clock } from 'lucide-react';
 
-// Data structure for FRED economic indicators
-interface FredData {
-  id: string;
-  title: string;
+interface FredSeries {
   series_id: string;
-  latest_value: number;
-  latest_date: string;
-  change_percent?: number;
-  description: string;
+  title: string;
   units: string;
-  frequency: string;
+  last_updated: string;
+  latest_value?: number;
+  previous_value?: number;
+  change_percent?: number;
 }
 
-interface FredDataDisplayProps {
-  seriesIds?: string[];
-  showControls?: boolean;
-}
-
-export function FredDataDisplay({ seriesIds, showControls = true }: FredDataDisplayProps) {
-  const [data, setData] = useState<FredData[]>([]);
+export function FredDataDisplay() {
+  const [series, setSeries] = useState<FredSeries[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
 
-  const fetchFredData = async () => {
+  const fetchCachedData = async () => {
     try {
-      setLoading(true);
       setError(null);
+      
+      // Fetch series with latest values
+      const { data: seriesData, error: seriesError } = await supabase
+        .from('fred_series')
+        .select('*')
+        .order('last_updated', { ascending: false });
 
-      const { data: response, error } = await supabase.functions.invoke('fred-api-integration', {
-        body: { 
-          operation: seriesIds ? 'fetch_indicators' : 'fetch_indicators',
-          indicators: seriesIds || undefined,
-          limit: 100
-        }
-      });
+      if (seriesError) throw seriesError;
 
-      if (error) throw error;
-
-      if (response?.success && response?.data && Array.isArray(response.data)) {
-        console.log('FRED data received:', response.data);
-        setData(response.data);
-      } else {
-        console.log('FRED response format issue:', response);
-        setData([]);
-        throw new Error(response?.error || 'Failed to fetch data or invalid data format');
+      if (!seriesData || seriesData.length === 0) {
+        setError('No economic data available. Try refreshing to fetch latest data.');
+        return;
       }
-    } catch (err: any) {
-      console.error('Error fetching FRED data:', err);
-      setError(err.message);
-      toast({
-        title: "Error Loading Economic Data",
-        description: err.message,
-        variant: "destructive",
-      });
+
+      // For each series, get the latest and previous values
+      const enrichedSeries = await Promise.all(
+        seriesData.map(async (s) => {
+          const { data: observations, error: obsError } = await supabase
+            .from('fred_observations')
+            .select('value, date')
+            .eq('series_id', s.series_id)
+            .order('date', { ascending: false })
+            .limit(2);
+
+          if (obsError || !observations || observations.length === 0) {
+            return {
+              ...s,
+              latest_value: null,
+              previous_value: null,
+              change_percent: null
+            };
+          }
+
+          const latest = observations[0];
+          const previous = observations[1];
+          
+          let change_percent = null;
+          if (latest && previous && previous.value !== 0) {
+            change_percent = ((latest.value - previous.value) / previous.value) * 100;
+          }
+
+          return {
+            ...s,
+            latest_value: latest?.value || null,
+            previous_value: previous?.value || null,
+            change_percent
+          };
+        })
+      );
+
+      setSeries(enrichedSeries);
+    } catch (error: any) {
+      console.error('Error fetching FRED data:', error);
+      setError('Failed to load economic data. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchFredData();
-  }, [seriesIds]);
+  const refreshData = async () => {
+    setRefreshing(true);
+    try {
+      const { error } = await supabase.functions.invoke('refresh-fred-data');
+      if (error) throw error;
+      
+      // Wait a moment for the data to be updated, then refetch
+      setTimeout(() => {
+        fetchCachedData();
+        setRefreshing(false);
+      }, 2000);
+    } catch (error: any) {
+      console.error('Error refreshing FRED data:', error);
+      setError('Failed to refresh data. Please try again.');
+      setRefreshing(false);
+    }
+  };
 
-  const getTrendIcon = (change?: number) => {
-    if (!change) return <Minus className="h-4 w-4 text-muted-foreground" />;
-    if (change > 0) return <TrendingUp className="h-4 w-4 text-green-600" />;
+  useEffect(() => {
+    fetchCachedData();
+  }, []);
+
+  const formatValue = (value: number | null, units: string) => {
+    if (value === null || value === undefined) return 'N/A';
+    
+    if (units.toLowerCase().includes('percent')) {
+      return `${value.toFixed(2)}%`;
+    }
+    
+    if (units.toLowerCase().includes('billion')) {
+      return `$${(value / 1000).toFixed(1)}T`;
+    }
+    
+    if (units.toLowerCase().includes('dollar')) {
+      return `$${value.toLocaleString()}`;
+    }
+    
+    return value.toLocaleString();
+  };
+
+  const getTrendIcon = (change: number | null) => {
+    if (change === null || change === undefined || Math.abs(change) < 0.01) {
+      return <Minus className="h-4 w-4 text-muted-foreground" />;
+    }
+    if (change > 0) {
+      return <TrendingUp className="h-4 w-4 text-green-600" />;
+    }
     return <TrendingDown className="h-4 w-4 text-red-600" />;
   };
 
-  const formatValue = (value: number, units: string) => {
-    if (units.toLowerCase().includes('percent') || units.includes('%')) {
-      return `${value.toFixed(2)}%`;
-    }
-    if (units.toLowerCase().includes('billion')) {
-      return `$${(value).toFixed(1)}B`;
-    }
-    if (units.toLowerCase().includes('million')) {
-      return `$${(value).toFixed(1)}M`;
-    }
-    if (units.toLowerCase().includes('index')) {
-      return value.toFixed(1);
-    }
-    return value.toLocaleString();
+  const formatLastUpdated = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    
+    if (diffHours < 1) return 'Just updated';
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}d ago`;
   };
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Card key={i}>
-            <CardHeader className="pb-3">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-1/2 mb-2" />
-              <Skeleton className="h-4 w-1/3" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="border-destructive">
-        <CardContent className="p-6 text-center">
-          <p className="text-destructive mb-4">Error loading economic data: {error}</p>
-          <Button onClick={fetchFredData} variant="outline">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Retry
-          </Button>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            Economic Indicators
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-24 bg-muted animate-pulse rounded-lg"></div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {showControls && (
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="text-lg font-semibold">USA Economic Indicators</h3>
-            <p className="text-sm text-muted-foreground">Latest US economic data from Federal Reserve Economic Data (FRED) - Updated daily</p>
-          </div>
-          <Button onClick={fetchFredData} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh Data
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            Economic Indicators
+            <Badge variant="secondary" className="text-xs">
+              FRED Data
+            </Badge>
+          </CardTitle>
+          <Button
+            onClick={refreshData}
+            disabled={refreshing}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
           </Button>
         </div>
-      )}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.isArray(data) && data.map((indicator) => (
-          <Card key={indicator.id} className="hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-sm font-medium line-clamp-2">
-                  {indicator.title}
-                </CardTitle>
-                <Badge variant="outline" className="text-xs">
-                  {indicator.frequency}
-                </Badge>
+      </CardHeader>
+      <CardContent>
+        {error && (
+          <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <p className="text-sm text-destructive">{error}</p>
+          </div>
+        )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {series.map((s) => (
+            <div key={s.series_id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-start justify-between mb-2">
+                <h4 className="font-medium text-sm leading-tight">{s.title}</h4>
+                {getTrendIcon(s.change_percent)}
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold">
-                    {formatValue(indicator.latest_value, indicator.units)}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    {getTrendIcon(indicator.change_percent)}
-                    {indicator.change_percent && (
-                      <span className={`text-sm ${indicator.change_percent > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {Math.abs(indicator.change_percent).toFixed(2)}%
-                      </span>
-                    )}
+              
+              <div className="space-y-1">
+                <div className="text-2xl font-bold text-foreground">
+                  {formatValue(s.latest_value, s.units)}
+                </div>
+                
+                {s.change_percent !== null && (
+                  <div className={`text-sm flex items-center gap-1 ${
+                    s.change_percent > 0 ? 'text-green-600' : 
+                    s.change_percent < 0 ? 'text-red-600' : 'text-muted-foreground'
+                  }`}>
+                    {s.change_percent > 0 ? '+' : ''}{s.change_percent.toFixed(2)}%
+                    <span className="text-muted-foreground">vs prev</span>
                   </div>
-                </div>
+                )}
                 
-                <div className="text-xs text-muted-foreground">
-                  <p>As of {new Date(indicator.latest_date).toLocaleDateString()}</p>
-                  <p className="line-clamp-2 mt-1">{indicator.description}</p>
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {formatLastUpdated(s.last_updated)}
                 </div>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start text-xs"
-                  asChild
-                >
-                  <a 
-                    href={`https://fred.stlouisfed.org/series/${indicator.series_id}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="h-3 w-3 mr-2" />
-                    View on FRED
-                  </a>
-                </Button>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      
-      {Array.isArray(data) && data.length === 0 && !loading && (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground">No economic data available.</p>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+            </div>
+          ))}
+        </div>
+        
+        {series.length === 0 && !loading && (
+          <div className="text-center py-8 text-muted-foreground">
+            <p className="mb-4">No economic data available</p>
+            <Button onClick={refreshData} disabled={refreshing}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              Fetch Latest Data
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

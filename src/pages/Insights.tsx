@@ -13,6 +13,7 @@ import { CSISAnalysisFeed } from "@/components/CSISAnalysisFeed";
 import { TradeGuysPodcast } from "@/components/TradeGuysPodcast";
 import { PolicyNewsUpdates } from "@/components/PolicyNewsUpdates";
 import InsightsDashboard from "@/components/InsightsDashboard";
+import { FredDataDisplay } from "@/components/FredDataDisplay";
 
 import EconomicDataRefresh from "@/components/EconomicDataRefresh";
 import { 
@@ -196,6 +197,11 @@ export default function Insights() {
         {/* Economic Data Refresh Controls */}
         <section className="mb-12">
           <EconomicDataRefresh />
+        </section>
+
+        {/* FRED Economic Data */}
+        <section className="mb-12">
+          <FredDataDisplay />
         </section>
 
         {/* Enhanced Economic Insights - Single Unified Display */}

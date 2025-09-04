@@ -187,10 +187,7 @@ export function CorridorEconomicsModal({ type, children }: CorridorModalProps) {
               <CardTitle>Related Economic Indicators</CardTitle>
             </CardHeader>
             <CardContent>
-              <FredDataDisplay 
-                seriesIds={data.fredSeries} 
-                showControls={false}
-              />
+              <FredDataDisplay />
             </CardContent>
           </Card>
 
