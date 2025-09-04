@@ -1734,6 +1734,14 @@ export type Database = {
         Args: { client_ip: string }
         Returns: boolean
       }
+      check_edge_function_rate_limit: {
+        Args: {
+          function_name: string
+          max_requests?: number
+          window_minutes?: number
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           identifier_value: string
