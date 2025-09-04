@@ -9,7 +9,9 @@ export function TradeGuysPodcast() {
     hosts: "Bill Reinsch and Scott Miller",
     description: "Trade Guys is a weekly CSIS podcast hosted by Bill Reinsch and Scott Miller, offering strategic insights on international trade policy, geopolitical developments, and economic corridors.",
     organization: "Center for Strategic & International Studies",
+    spotifyEmbed: "https://open.spotify.com/embed/show/7JjuE1cjlMgE8AZvH9H1pi",
     links: {
+      spotify: "https://open.spotify.com/show/7JjuE1cjlMgE8AZvH9H1pi?si=b066d8622a6a438f",
       apple: "https://podcasts.apple.com/us/podcast/the-trade-guys/id1380336613",
       google: "https://music.youtube.com/playlist?list=PLnArnDQHeUqeQDLiQC8HIfBMF8dNS-1rS",
       csis: "https://www.csis.org/podcasts/trade-guys"
@@ -35,22 +37,40 @@ export function TradeGuysPodcast() {
           {podcastInfo.description}
         </p>
 
-        {/* Primary Platform Notice */}
+        {/* Spotify Embed */}
         <div className="bg-gradient-to-br from-accent/5 to-primary/5 p-4 rounded-lg border border-accent/20">
           <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <Play className="h-4 w-4 text-blue-600" />
-            Available on Apple Podcasts & CSIS
+            <Play className="h-4 w-4 text-green-600" />
+            Listen on Spotify
           </h4>
-          <p className="text-sm text-muted-foreground">
-            The Trade Guys podcast is primarily available on Apple Podcasts and the official CSIS website. 
-            Use the links below to access the latest episodes.
-          </p>
+          <div className="rounded-lg overflow-hidden">
+            <iframe
+              src={podcastInfo.spotifyEmbed}
+              width="100%"
+              height="232"
+              frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="rounded-lg"
+            ></iframe>
+          </div>
         </div>
 
         {/* Platform Links */}
         <div>
           <h4 className="font-semibold mb-3">Listen on Other Platforms</h4>
           <div className="grid grid-cols-2 gap-3">
+            <Button variant="outline" size="sm" asChild>
+              <a 
+                href={podcastInfo.links.spotify} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                <ExternalLink className="h-3 w-3" />
+                Spotify
+              </a>
+            </Button>
             <Button variant="outline" size="sm" asChild>
               <a 
                 href={podcastInfo.links.apple} 
@@ -73,7 +93,7 @@ export function TradeGuysPodcast() {
                 Google/YouTube Music
               </a>
             </Button>
-            <Button variant="outline" size="sm" asChild className="col-span-2">
+            <Button variant="outline" size="sm" asChild>
               <a 
                 href={podcastInfo.links.csis} 
                 target="_blank" 
