@@ -4,7 +4,13 @@ import { extractClientIP, getCombinedHeaders } from '../_shared/security.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-forwarded-for',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
 }
 
 serve(async (req) => {
@@ -18,8 +24,30 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseKey)
     
-    // Get client IP for logging
+    // Get client IP for rate limiting and logging
     const clientIP = extractClientIP(req)
+    
+    // Check rate limit (5 requests per minute per IP for security auditing)
+    const { data: rateLimitData, error: rateLimitError } = await supabase
+      .rpc('check_edge_function_rate_limit', {
+        function_name: 'security-audit',
+        max_requests: 5,
+        window_minutes: 1
+      })
+    
+    if (rateLimitError || !rateLimitData) {
+      console.error('Rate limit check failed:', rateLimitError)
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded. Please try again later.',
+          code: 'RATE_LIMIT_EXCEEDED'
+        }),
+        { 
+          status: 429, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
     
     // Parse request body for security event
     const { action, details, severity, user_id } = await req.json()
