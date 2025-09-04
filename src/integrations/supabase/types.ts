@@ -682,6 +682,30 @@ export type Database = {
         }
         Relationships: []
       }
+      cookie_consent_tracking: {
+        Row: {
+          consent_data: Json
+          created_at: string
+          id: string
+          ip_address: string
+          last_updated: string
+        }
+        Insert: {
+          consent_data: Json
+          created_at?: string
+          id?: string
+          ip_address: string
+          last_updated?: string
+        }
+        Update: {
+          consent_data?: Json
+          created_at?: string
+          id?: string
+          ip_address?: string
+          last_updated?: string
+        }
+        Relationships: []
+      }
       csis_articles: {
         Row: {
           category: string
