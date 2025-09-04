@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Hero } from '@/components/Hero';
-import { WhoWeServe } from '@/components/WhoWeServe';
 import { OurServices } from '@/components/OurServices';
-import { WhyChoosePolrydian } from '@/components/WhyChoosePolrydian';
 import { HomePartners } from '@/components/HomePartners';
 
 import { LatestInsightsTeaser } from '@/components/LatestInsightsTeaser';
@@ -56,16 +54,8 @@ const Index = () => {
           <Hero />
         </section>
         
-        <section id="who-we-serve" aria-label="Who we serve">
-          <WhoWeServe />
-        </section>
-        
         <section id="services" aria-label="Our services">
           <OurServices />
-        </section>
-        
-        <section id="why-choose-polrydian" aria-label="Why choose Polrydian">
-          <WhyChoosePolrydian />
         </section>
         
         <section id="partners" aria-label="Our partners">
