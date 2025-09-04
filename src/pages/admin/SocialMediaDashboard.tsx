@@ -1,9 +1,6 @@
 import { AdminLayout } from "@/layouts/AdminLayout"
-import { SocialMediaManager } from "@/components/SocialMediaManager"
-
-import { InstagramIntegration } from "@/components/InstagramIntegration"
+import { EnhancedSocialMediaDashboard } from "@/components/EnhancedSocialMediaDashboard"
 import { EmailServiceSetup } from "@/components/EmailServiceSetup"
-import { IntegrationDashboard } from "@/components/IntegrationDashboard"
 import { IntegrationHub } from "@/components/IntegrationHub"
 import { IntegrationHealthDashboard } from "@/components/IntegrationHealthDashboard"
 import ImageManager from "@/components/ImageManager"
@@ -11,7 +8,6 @@ import FredDashboard from "@/components/FredDashboard"
 import { BookSeriesManager } from "@/components/BookSeriesManager"
 import { PublishingPipeline } from "@/components/PublishingPipeline"
 import GalleryManager from "@/components/GalleryManager"
-import LinkedInSyncManager from "@/components/LinkedInSyncManager"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -30,22 +26,10 @@ import {
 export default function SocialMediaDashboard() {
   const socialTabs = [
     {
-      id: "overview",
-      label: "Overview",
+      id: "dashboard",
+      label: "Social Dashboard",
       icon: Monitor,
-      component: <SocialMediaManager />
-    },
-    {
-      id: "linkedin",
-      label: "LinkedIn",
-      icon: Share2,
-      component: <LinkedInSyncManager />
-    },
-    {
-      id: "instagram", 
-      label: "Instagram",
-      icon: Camera,
-      component: <InstagramIntegration />
+      component: <EnhancedSocialMediaDashboard />
     },
   ];
 
@@ -90,12 +74,6 @@ export default function SocialMediaDashboard() {
       component: <IntegrationHealthDashboard />
     },
     {
-      id: "status",
-      label: "Status",
-      icon: TrendingUp,
-      component: <IntegrationDashboard />
-    },
-    {
       id: "email",
       label: "Email",
       icon: Mail,
@@ -121,8 +99,8 @@ export default function SocialMediaDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-6">
+            <Tabs defaultValue="dashboard" className="w-full">
+              <TabsList className="grid w-full grid-cols-1 mb-6">
                 {socialTabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
@@ -182,7 +160,7 @@ export default function SocialMediaDashboard() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="hub" className="w-full">
-              <TabsList className="grid w-full grid-cols-5 mb-6">
+              <TabsList className="grid w-full grid-cols-4 mb-6">
                 {systemTabs.map((tab) => {
                   const Icon = tab.icon;
                   return (

@@ -46,8 +46,8 @@ const mediaItems = [
 const systemItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
   { title: "Performance", url: "/admin/performance", icon: Activity },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Security", url: "/security", icon: Shield },
+  { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
+  { title: "Security", url: "/admin/security", icon: Shield },
 ]
 
 export function AdminSidebar() {

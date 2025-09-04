@@ -87,7 +87,7 @@ const systemCards = [
     description: "Security, analytics, and settings",
     items: ["User Management", "Security Logs", "Performance"],
     icon: Settings,
-    href: "/security",
+    href: "/admin/security",
   },
 ]
 
@@ -228,9 +228,9 @@ export default function AdminDashboard() {
                 </Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link to="/insights">
+                <Link to="/admin/analytics">
                   <Globe className="h-4 w-4 mr-2" />
-                  View Insights
+                  Admin Analytics
                 </Link>
               </Button>
             </div>
