@@ -39,13 +39,9 @@ export function HomePartners() {
     }
   };
 
-  const businessPartners = partners.filter(p => 
-    ['business', 'investment', 'real_estate', 'partner'].includes(p.category)
-  );
-
-  const institutionalPartners = partners.filter(p => 
-    ['institutional', 'academic', 'think_tank', 'government', 'fellowship'].includes(p.category)
-  );
+  const partnersList = partners.filter(p => p.category === 'partners');
+  const affiliationsList = partners.filter(p => p.category === 'affiliations');  
+  const clientsList = partners.filter(p => p.category === 'clients');
 
   if (loading) {
     return (
@@ -59,7 +55,7 @@ export function HomePartners() {
     );
   }
 
-  if (businessPartners.length === 0 && institutionalPartners.length === 0) {
+  if (partnersList.length === 0 && affiliationsList.length === 0 && clientsList.length === 0) {
     return null;
   }
 
@@ -111,17 +107,24 @@ export function HomePartners() {
         </div>
 
         <div className="space-y-12">
-          {businessPartners.length > 0 && (
+          {partnersList.length > 0 && (
             <div>
-              <h3 className="text-xl font-semibold mb-6 text-center">Business Partners</h3>
-              <PartnerGrid partners={businessPartners} />
+              <h3 className="text-xl font-semibold mb-6 text-center">Partners</h3>
+              <PartnerGrid partners={partnersList} />
             </div>
           )}
 
-          {institutionalPartners.length > 0 && (
+          {affiliationsList.length > 0 && (
             <div>
-              <h3 className="text-xl font-semibold mb-6 text-center">Institutional Partners</h3>
-              <PartnerGrid partners={institutionalPartners} />
+              <h3 className="text-xl font-semibold mb-6 text-center">Affiliations</h3>
+              <PartnerGrid partners={affiliationsList} />
+            </div>
+          )}
+
+          {clientsList.length > 0 && (
+            <div>
+              <h3 className="text-xl font-semibold mb-6 text-center">Clients</h3>
+              <PartnerGrid partners={clientsList} />
             </div>
           )}
         </div>
