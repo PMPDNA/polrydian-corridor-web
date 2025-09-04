@@ -1,165 +1,184 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { RefreshCw, TrendingUp, Users, Eye, BarChart3, Globe2, Activity, MousePointer } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { EnhancedAnalyticsDashboard } from "@/components/EnhancedAnalyticsDashboard";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { 
-  BarChart3, 
-  Users, 
-  FileText, 
-  Globe2, 
-  TrendingUp,
-  Activity,
-  Eye,
-  MousePointer
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 export default function AdminAnalytics() {
+  const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [analyticsData, setAnalyticsData] = useState({
-    totalVisitors: 0,
-    totalPageViews: 0,
-    topPages: [],
-    recentBookings: 0,
-    totalArticleViews: 0
-  });
+  const [timeRange, setTimeRange] = useState('7d');
 
-  useEffect(() => {
-    fetchAnalyticsData();
-  }, []);
-
-  const fetchAnalyticsData = async () => {
+  const fetchAnalytics = async () => {
     try {
-      setLoading(true);
-      
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(endDate.getDate() - (timeRange === '7d' ? 7 : 28));
+
       // Fetch visitor analytics
       const { data: visitorData } = await supabase
-        .from('aggregated_visitor_stats')
+        .from('visitor_analytics')
         .select('*')
-        .order('date', { ascending: false })
-        .limit(30);
+        .gte('created_at', startDate.toISOString())
+        .order('created_at', { ascending: true });
 
-      // Fetch recent bookings
+      // Fetch consultation bookings
       const { count: recentBookingsCount } = await supabase
         .from('consultation_bookings')
         .select('*', { count: 'exact', head: true })
-        .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
+        .gte('created_at', startDate.toISOString());
 
-      // Aggregate data
-      const totalVisits = visitorData?.reduce((sum, day) => sum + (day.total_visits || 0), 0) || 0;
-      const uniqueVisitors = visitorData?.reduce((sum, day) => sum + (day.unique_visitors || 0), 0) || 0;
+      // Process data for charts
+      const dailyVisits = {};
+      const topPages = {};
+      const referrers = {};
 
-      setAnalyticsData({
-        totalVisitors: uniqueVisitors,
-        totalPageViews: totalVisits,
-        topPages: [],
-        recentBookings: recentBookingsCount || 0,
-        totalArticleViews: 0
+      visitorData?.forEach(visit => {
+        const date = new Date(visit.created_at).toISOString().split('T')[0];
+        dailyVisits[date] = (dailyVisits[date] || 0) + 1;
+        if (visit.page_url) {
+          topPages[visit.page_url] = (topPages[visit.page_url] || 0) + 1;
+        }
+        if (visit.referrer) {
+          referrers[visit.referrer] = (referrers[visit.referrer] || 0) + 1;
+        }
       });
 
+      const chartData = Object.entries(dailyVisits).map(([date, visits]) => ({
+        date: new Date(date).toLocaleDateString(),
+        visits
+      }));
+
+      setAnalytics({
+        totalVisits: visitorData?.length || 0,
+        recentBookings: recentBookingsCount || 0,
+        chartData,
+        topPages: Object.entries(topPages).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 5),
+        topReferrers: Object.entries(referrers).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 5)
+      });
     } catch (error) {
-      console.error('Error fetching analytics data:', error);
+      console.error('Error fetching analytics:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const quickStats = [
-    {
-      title: "Total Visitors",
-      value: analyticsData.totalVisitors.toLocaleString(),
-      icon: Users,
-      description: "Last 30 days",
-      trend: "+12%"
-    },
-    {
-      title: "Page Views",
-      value: analyticsData.totalPageViews.toLocaleString(),
-      icon: Eye,
-      description: "Total page views",
-      trend: "+8%"
-    },
-    {
-      title: "Consultation Requests",
-      value: analyticsData.recentBookings.toString(),
-      icon: MousePointer,
-      description: "Recent bookings",
-      trend: "+24%"
-    },
-    {
-      title: "Article Views",
-      value: analyticsData.totalArticleViews.toLocaleString(),
-      icon: FileText,
-      description: "Articles engagement",
-      trend: "+16%"
-    }
-  ];
+  useEffect(() => {
+    fetchAnalytics();
+  }, [timeRange]);
+
+  if (loading) {
+    return (
+      <AdminLayout title="Analytics Dashboard">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-muted rounded w-48"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-32 bg-muted rounded"></div>
+            ))}
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout title="Analytics Dashboard">
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <BarChart3 className="h-8 w-8" />
-              Analytics Dashboard
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Track website performance, visitor engagement, and business metrics.
-            </p>
-          </div>
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
           <div className="flex gap-2">
-            <Button variant="outline" asChild>
-              <Link to="/insights">
-                <Globe2 className="h-4 w-4 mr-2" />
-                Public Insights
-              </Link>
+            <Button
+              variant={timeRange === '7d' ? 'default' : 'outline'}
+              onClick={() => setTimeRange('7d')}
+            >
+              7 Days
+            </Button>
+            <Button
+              variant={timeRange === '28d' ? 'default' : 'outline'}
+              onClick={() => setTimeRange('28d')}
+            >
+              28 Days
+            </Button>
+            <Button onClick={fetchAnalytics} variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
             </Button>
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {quickStats.map((stat) => (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                <stat.icon className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{stat.description}</span>
-                  <Badge variant="secondary" className="text-green-600">
-                    {stat.trend}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Visits</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{analytics?.totalVisits || 0}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Avg Daily Visits</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {Math.round((analytics?.totalVisits || 0) / (timeRange === '7d' ? 7 : 28))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Consultation Requests</CardTitle>
+              <MousePointer className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{analytics?.recentBookings || 0}</div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Enhanced Analytics Dashboard */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Detailed Analytics
-            </CardTitle>
-            <CardDescription>
-              Comprehensive analytics including visitor behavior, content performance, and business metrics.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <EnhancedAnalyticsDashboard />
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Visits Over Time</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={analytics?.chartData || []}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="visits" stroke="hsl(var(--primary))" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-        {/* Admin Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Top Pages</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {analytics?.topPages?.map(([page, visits], index) => (
+                  <div key={page} className="flex justify-between items-center">
+                    <span className="text-sm truncate">{page}</span>
+                    <span className="text-sm font-medium">{visits}</span>
+                  </div>
+                )) || <p className="text-muted-foreground">No data available</p>}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Analytics Actions</CardTitle>
@@ -175,9 +194,11 @@ export default function AdminAnalytics() {
                   Performance Monitor
                 </Link>
               </Button>
-              <Button variant="outline" onClick={() => fetchAnalyticsData()}>
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Refresh Data
+              <Button variant="outline" asChild>
+                <Link to="/insights">
+                  <Globe2 className="h-4 w-4 mr-2" />
+                  Public Insights
+                </Link>
               </Button>
             </div>
           </CardContent>
