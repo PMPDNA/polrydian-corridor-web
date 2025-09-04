@@ -6,9 +6,10 @@ import { ExternalLink, Play, Headphones } from "lucide-react";
 export function TradeGuysPodcast() {
   const podcastInfo = {
     title: "Trade Guys",
-    hosts: "Bill Reinsch and Scott Miller",
+    hosts: "Bill Reinsch and Scott Miller", 
     description: "Trade Guys is a weekly CSIS podcast hosted by Bill Reinsch and Scott Miller, offering strategic insights on international trade policy, geopolitical developments, and economic corridors.",
     organization: "Center for Strategic & International Studies",
+    spotifyEmbed: "https://open.spotify.com/embed/show/7JjuE1cjlMgE8AZvH9H1pi",
     links: {
       apple: "https://podcasts.apple.com/us/podcast/the-trade-guys/id1380336613",
       csis: "https://www.csis.org/podcasts/trade-guys"
@@ -34,16 +35,25 @@ export function TradeGuysPodcast() {
           {podcastInfo.description}
         </p>
 
-        {/* Available Platforms Notice */}
+        {/* Spotify Embed */}
         <div className="bg-gradient-to-br from-accent/5 to-primary/5 p-4 rounded-lg border border-accent/20">
           <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <Play className="h-4 w-4 text-blue-600" />
-            Available on Apple Podcasts
+            <Play className="h-4 w-4 text-green-600" />
+            Listen on Spotify
           </h4>
-          <p className="text-sm text-muted-foreground">
-            The Trade Guys podcast is officially available on Apple Podcasts and the CSIS website. 
-            New episodes are released weekly with insights on trade policy and economic corridors.
-          </p>
+          <div className="rounded-lg overflow-hidden">
+            <iframe
+              src={`${podcastInfo.spotifyEmbed}?utm_source=generator`}
+              width="100%"
+              height="352"
+              frameBorder="0"
+              allowFullScreen={true}
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="rounded-lg"
+              title="Spotify Podcast Player"
+            ></iframe>
+          </div>
         </div>
 
         {/* Platform Links */}
