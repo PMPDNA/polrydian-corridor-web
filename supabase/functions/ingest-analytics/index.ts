@@ -35,7 +35,8 @@ serve(async (req) => {
       session_id, 
       user_id, 
       page_load_time,
-      engagement_time 
+      engagement_time,
+      consent_given = false
     } = await req.json().catch(() => ({}));
 
     // Get client IP and hash it for privacy
@@ -43,24 +44,47 @@ serve(async (req) => {
                req.headers.get("cf-connecting-ip") ?? 
                "0.0.0.0";
     
+    // Check for consent before collecting any analytics data
+    if (!consent_given) {
+      // Check if user has previously given consent
+      const { data: consentRecord } = await supabase
+        .from('cookie_consent_tracking')
+        .select('consent_data')
+        .eq('ip_address', ip)
+        .single();
+      
+      const hasAnalyticsConsent = consentRecord?.consent_data?.analytics === true;
+      
+      if (!hasAnalyticsConsent) {
+        return new Response(JSON.stringify({ 
+          error: 'Analytics consent required',
+          consentRequired: true
+        }), { 
+          status: 403, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+    
     const ip_hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip))
       .then((buf) => Array.from(new Uint8Array(buf))
         .map(b => b.toString(16).padStart(2, "0")).join(""));
 
-    console.log('Ingesting analytics event:', { path, referrer, utm_source, device_type });
+    console.log('Ingesting analytics event with consent:', { path, referrer, utm_source, device_type });
 
+    // Only collect minimal, anonymized data
     const { error } = await supabase
       .from("visitor_analytics")
       .insert({
         path,
-        referrer,
+        referrer: referrer ? new URL(referrer).hostname : null, // Only store referrer domain
         utm_source,
         utm_medium,
         utm_campaign,
         device_type,
         browser,
-        country,
-        region,
+        country: country ? country.substring(0, 2) : null, // Only country code, not city
+        region: null, // Don't store region for privacy
         session_id,
         user_id,
         page_load_time,

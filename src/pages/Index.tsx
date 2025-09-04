@@ -6,6 +6,7 @@ import { HomePartners } from '@/components/HomePartners';
 import { Contact } from '@/components/Contact';
 import Footer from '@/components/Footer';
 import { EnhancedSEO } from '@/components/EnhancedSEO';
+import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { trackPageView } from '@/utils/analytics';
 import { getOrigin } from '@/lib/safe-utils';
@@ -15,23 +16,38 @@ const Index = () => {
   const { track } = useAnalytics();
 
   useEffect(() => {
-    // Track page view with enhanced analytics
-    trackPageView('Homepage | Polrydian Group', `${getOrigin()}${window.location.pathname}`);
+    // Listen for consent updates
+    const handleConsentUpdate = (event: CustomEvent) => {
+      if (event.detail.analytics) {
+        // Track page view with enhanced analytics only after consent
+        trackPageView('Homepage | Polrydian Group', `${getOrigin()}${window.location.pathname}`);
+        track('page_load_complete');
+      }
+    };
+
+    window.addEventListener('consentUpdated', handleConsentUpdate as EventListener);
     
-    // Track homepage specific metrics
-    const startTime = performance.now();
-    
+    // Check if consent already exists
+    if (window.cookieConsent?.analytics) {
+      trackPageView('Homepage | Polrydian Group', `${getOrigin()}${window.location.pathname}`);
+    }
+
     const handleLoad = () => {
-      const loadTime = performance.now() - startTime;
-      track('page_load_complete');
+      if (window.cookieConsent?.analytics) {
+        track('page_load_complete');
+      }
     };
 
     if (document.readyState === 'complete') {
       handleLoad();
     } else {
       window.addEventListener('load', handleLoad);
-      return () => window.removeEventListener('load', handleLoad);
     }
+
+    return () => {
+      window.removeEventListener('consentUpdated', handleConsentUpdate as EventListener);
+      window.removeEventListener('load', handleLoad);
+    };
   }, [track]);
 
   return (
@@ -66,6 +82,7 @@ const Index = () => {
       </main>
       
       <Footer />
+      <CookieConsentBanner />
     </div>
   );
 };

@@ -12,6 +12,12 @@ interface AnalyticsEvent {
 // Throttle analytics storage to prevent editor slowdown
 const MAX_STORED_EVENTS = 100;
 
+// Check if analytics consent is given
+const hasAnalyticsConsent = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return window.cookieConsent?.analytics === true;
+};
+
 export const trackEvent = ({ 
   action, 
   category = 'engagement', 
@@ -20,6 +26,12 @@ export const trackEvent = ({
   custom_parameters 
 }: AnalyticsEvent) => {
   try {
+    // Check consent before tracking
+    if (!hasAnalyticsConsent()) {
+      console.debug('Analytics tracking skipped - no consent');
+      return;
+    }
+
     // Google Analytics 4
     if (typeof (window as any).gtag === 'function') {
       (window as any).gtag('event', action, {
@@ -42,13 +54,15 @@ export const trackEvent = ({
       });
     }
 
-    // Store events with throttling to prevent editor slowdown
-    const storedEvents = safeStorage.get('analytics_events', []);
-    const newEvents = [...storedEvents, { action, category, label, value, custom_parameters, timestamp: Date.now() }];
-    
-    // Keep only the last MAX_STORED_EVENTS
-    const throttledEvents = newEvents.slice(-MAX_STORED_EVENTS);
-    safeStorage.set('analytics_events', throttledEvents);
+    // Send to server with consent flag
+    sendAnalyticsToServer({
+      action,
+      category,
+      label,
+      value,
+      custom_parameters,
+      consent_given: true
+    });
 
     // Development logging
     if (safeEnv.isDev()) {
@@ -61,6 +75,12 @@ export const trackEvent = ({
 
 export const trackPageView = (page_title: string, page_location: string) => {
   try {
+    // Check consent before tracking
+    if (!hasAnalyticsConsent()) {
+      console.debug('Page view tracking skipped - no consent');
+      return;
+    }
+
     if (typeof (window as any).gtag === 'function') {
       (window as any).gtag('config', safeEnv.get('VITE_GA_MEASUREMENT_ID', 'GA_MEASUREMENT_ID'), {
         page_title,
@@ -68,6 +88,15 @@ export const trackPageView = (page_title: string, page_location: string) => {
         send_page_view: true
       });
     }
+
+    // Send to server with consent flag
+    sendAnalyticsToServer({
+      action: 'page_view',
+      category: 'navigation',
+      label: page_title,
+      custom_parameters: { page_location },
+      consent_given: true
+    });
 
     if (safeEnv.isDev()) {
       console.log('Page View:', { page_title, page_location });
@@ -79,6 +108,12 @@ export const trackPageView = (page_title: string, page_location: string) => {
 
 export const trackPerformance = (metric: string, value: number, unit: string = 'ms') => {
   try {
+    // Check consent before tracking
+    if (!hasAnalyticsConsent()) {
+      console.debug('Performance tracking skipped - no consent');
+      return;
+    }
+
     if (typeof (window as any).gtag === 'function') {
       (window as any).gtag('event', 'timing_complete', {
         name: metric,
@@ -87,6 +122,16 @@ export const trackPerformance = (metric: string, value: number, unit: string = '
         custom_map: { metric_unit: unit }
       });
     }
+
+    // Send to server with consent flag
+    sendAnalyticsToServer({
+      action: 'performance_metric',
+      category: 'performance',
+      label: metric,
+      value: Math.round(value),
+      custom_parameters: { unit },
+      consent_given: true
+    });
 
     if (safeEnv.isDev()) {
       console.log('Performance Metric:', { metric, value, unit });
@@ -98,6 +143,12 @@ export const trackPerformance = (metric: string, value: number, unit: string = '
 
 export const trackConversion = (conversion_id: string, value?: number, currency: string = 'USD') => {
   try {
+    // Check consent before tracking
+    if (!hasAnalyticsConsent()) {
+      console.debug('Conversion tracking skipped - no consent');
+      return;
+    }
+
     if (typeof (window as any).gtag === 'function') {
       (window as any).gtag('event', 'conversion', {
         send_to: conversion_id,
@@ -116,3 +167,41 @@ export const trackConversion = (conversion_id: string, value?: number, currency:
     console.warn('Conversion tracking error:', error);
   }
 };
+
+// Helper function to send analytics data to server
+const sendAnalyticsToServer = async (data: any) => {
+  try {
+    if (typeof window === 'undefined') return;
+
+    // Collect minimal browser and device info with consent
+    const analyticsData = {
+      path: window.location.pathname,
+      referrer: document.referrer,
+      device_type: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      browser: navigator.userAgent.split(' ')[0],
+      session_id: sessionStorage.getItem('session_id') || Math.random().toString(36).substring(7),
+      ...data
+    };
+
+    await fetch('/functions/v1/ingest-analytics', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(analyticsData),
+    });
+  } catch (error) {
+    console.warn('Failed to send analytics to server:', error);
+  }
+};
+
+// Extend window interface for TypeScript
+declare global {
+  interface Window {
+    cookieConsent?: {
+      necessary: boolean;
+      analytics: boolean;
+      marketing: boolean;
+    };
+  }
+}
