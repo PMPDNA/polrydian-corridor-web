@@ -1679,9 +1679,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      aggregated_visitor_stats: {
+        Row: {
+          avg_visit_duration: number | null
+          countries_count: number | null
+          date: string | null
+          device_types_count: number | null
+          total_visits: number | null
+          unique_visitors: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      anonymize_old_visitor_data: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       assign_admin_role: {
         Args: { target_user_id: string }
         Returns: boolean
@@ -1752,6 +1766,10 @@ export type Database = {
       cleanup_old_performance_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      cleanup_visitor_data_gdpr: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       current_user_id: {
         Args: Record<PropertyKey, never>
