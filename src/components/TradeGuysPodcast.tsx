@@ -43,15 +43,16 @@ export function TradeGuysPodcast() {
           </h4>
           <div className="rounded-lg overflow-hidden">
             <iframe
-              src={`${podcastInfo.spotifyEmbed}?utm_source=generator`}
+              src={`${podcastInfo.spotifyEmbed}?utm_source=generator&theme=0`}
               width="100%"
               height="352"
               frameBorder="0"
               allowFullScreen={true}
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; web-share"
+              sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
               loading="lazy"
               className="rounded-lg"
-              title="Spotify Podcast Player"
+              title="Spotify Podcast Player - The Trade Guys"
             ></iframe>
           </div>
         </div>
