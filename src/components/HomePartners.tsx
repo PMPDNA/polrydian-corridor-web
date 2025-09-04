@@ -109,7 +109,6 @@ export function HomePartners() {
         <div className="space-y-12">
           {partnersList.length > 0 && (
             <div>
-              <h3 className="text-xl font-semibold mb-6 text-center">Partners</h3>
               <PartnerGrid partners={partnersList} />
             </div>
           )}

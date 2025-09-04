@@ -80,18 +80,18 @@ export const OurServices = () => {
         </div>
 
         <div className="text-center">
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
             Ready to transform your strategic challenges into competitive advantages?
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg">
-              <Link to="/schedule" className="gap-2">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-2xl mx-auto">
+            <Button asChild size="lg" className="w-full sm:w-auto min-w-[200px]">
+              <Link to="/schedule" className="gap-2 flex items-center justify-center">
                 Book a Strategy Session
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link to="/about" className="gap-2">
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto min-w-[200px]">
+              <Link to="/about" className="gap-2 flex items-center justify-center">
                 Learn About Our Approach
                 <ArrowRight className="h-4 w-4" />
               </Link>
