@@ -342,9 +342,9 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
                 value={formData.excerpt}
                 onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
                 placeholder="Brief description of the article"
-                rows={3}
+                rows={4}
                 required
-                maxLength={500}
+                maxLength={1000}
               />
               {errors.excerpt && <p className="text-sm text-destructive mt-1">{errors.excerpt}</p>}
             </div>
