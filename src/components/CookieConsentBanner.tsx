@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { X, Settings, Shield, BarChart3, Target } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ConsentPreferences {
   necessary: boolean;
@@ -26,10 +27,11 @@ export function CookieConsentBanner() {
 
   const checkConsentStatus = async () => {
     try {
-      const response = await fetch('/functions/v1/track-cookie-consent', {
+      const { data, error } = await supabase.functions.invoke('track-cookie-consent', {
         method: 'GET',
       });
-      const data = await response.json();
+
+      if (error) throw error;
       
       if (!data.hasConsent) {
         setShowBanner(true);
@@ -45,25 +47,21 @@ export function CookieConsentBanner() {
 
   const saveConsent = async (consentData: ConsentPreferences) => {
     try {
-      const response = await fetch('/functions/v1/track-cookie-consent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ consent: consentData }),
+      const { data, error } = await supabase.functions.invoke('track-cookie-consent', {
+        body: { consent: consentData },
       });
 
-      if (response.ok) {
-        // Set global consent state
-        window.cookieConsent = consentData;
-        setShowBanner(false);
-        setShowSettings(false);
-        
-        // Dispatch consent event for analytics
-        window.dispatchEvent(new CustomEvent('consentUpdated', { 
-          detail: consentData 
-        }));
-      }
+      if (error) throw error;
+
+      // Set global consent state
+      window.cookieConsent = consentData;
+      setShowBanner(false);
+      setShowSettings(false);
+      
+      // Dispatch consent event for analytics
+      window.dispatchEvent(new CustomEvent('consentUpdated', { 
+        detail: consentData 
+      }));
     } catch (error) {
       console.error('Failed to save consent:', error);
     }

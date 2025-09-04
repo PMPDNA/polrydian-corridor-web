@@ -5,6 +5,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Shield, BarChart3, Target, Download, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ConsentPreferences {
   necessary: boolean;
@@ -26,10 +27,11 @@ export function ConsentManager() {
 
   const loadCurrentPreferences = async () => {
     try {
-      const response = await fetch('/functions/v1/track-cookie-consent', {
+      const { data, error } = await supabase.functions.invoke('track-cookie-consent', {
         method: 'GET',
       });
-      const data = await response.json();
+      
+      if (error) throw error;
       
       if (data.hasConsent && data.consent) {
         setPreferences(data.consent);
@@ -42,21 +44,17 @@ export function ConsentManager() {
   const savePreferences = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/functions/v1/track-cookie-consent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ consent: preferences }),
+      const { data, error } = await supabase.functions.invoke('track-cookie-consent', {
+        body: { consent: preferences },
       });
 
-      if (response.ok) {
-        window.cookieConsent = preferences;
-        window.dispatchEvent(new CustomEvent('consentUpdated', { 
-          detail: preferences 
-        }));
-        toast.success('Consent preferences updated successfully');
-      }
+      if (error) throw error;
+
+      window.cookieConsent = preferences;
+      window.dispatchEvent(new CustomEvent('consentUpdated', { 
+        detail: preferences 
+      }));
+      toast.success('Consent preferences updated successfully');
     } catch (error) {
       console.error('Failed to save consent preferences:', error);
       toast.error('Failed to update preferences');
