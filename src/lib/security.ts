@@ -10,7 +10,7 @@ export const articleSchema = z.object({
   
   excerpt: z.string()
     .min(1, 'Excerpt is required')
-    .max(500, 'Excerpt must be less than 500 characters'),
+    .max(1500, 'Excerpt must be less than 1500 characters'),
   
   content: z.string()
     .min(1, 'Content is required')
