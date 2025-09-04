@@ -32,12 +32,14 @@ export function SecurityMiddleware({ children }: SecurityMiddlewareProps) {
               original: event.originalPolicy
             })
 
-            // Log security event
-            supabase.from('security_audit_log').insert({
-              action: 'csp_violation',
-              details: {
-                directive: event.violatedDirective,
-                blocked_uri: event.blockedURI,
+            // Log security event using secure edge function
+            supabase.functions.invoke('security-audit', {
+              body: {
+                action: 'csp_violation',
+                details: {
+                  directive: event.violatedDirective,
+                  blocked_uri: event.blockedURI
+                },
                 severity: 'medium'
               }
             }).then()
@@ -46,19 +48,23 @@ export function SecurityMiddleware({ children }: SecurityMiddlewareProps) {
           // Monitor authentication state changes for security logging
           supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' && session) {
-              supabase.from('security_audit_log').insert({
-                action: 'user_login_success',
-                details: {
-                  timestamp: new Date().toISOString(),
-                  user_id: session.user.id,
+              supabase.functions.invoke('security-audit', {
+                body: {
+                  action: 'user_login_success',
+                  details: {
+                    timestamp: new Date().toISOString(),
+                    user_id: session.user.id
+                  },
                   severity: 'low'
                 }
               }).then()
             } else if (event === 'SIGNED_OUT') {
-              supabase.from('security_audit_log').insert({
-                action: 'user_logout',
-                details: {
-                  timestamp: new Date().toISOString(),
+              supabase.functions.invoke('security-audit', {
+                body: {
+                  action: 'user_logout',
+                  details: {
+                    timestamp: new Date().toISOString()
+                  },
                   severity: 'low'
                 }
               }).then()

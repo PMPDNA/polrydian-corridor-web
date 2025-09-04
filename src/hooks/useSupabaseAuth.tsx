@@ -186,7 +186,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      console.log('Attempting sign in for:', email);
+      console.log('Attempting sign in for user');
       
       // Enhanced input validation
       if (!email || !password) {
@@ -223,10 +223,11 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       console.error('Sign in error:', error);
       
-      // Enhanced security logging  
+      // Enhanced security logging (mask email for privacy)
       try {
         const { logFailedAuth } = await import('@/lib/security-monitoring')
-        await logFailedAuth(email, error.message)
+        const maskedEmail = email.replace(/(.{2}).*(@.*)/, '$1***$2')
+        await logFailedAuth(maskedEmail, error.message)
       } catch (logError) {
         console.warn('Failed to log auth attempt:', logError)
       }
@@ -237,7 +238,8 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
 
   const resetPassword = async (email: string) => {
     const redirectUrl = `${getOrigin()}/reset-password`
-    console.log('Sending password reset to:', email, 'with redirect:', redirectUrl)
+    const maskedEmail = email.replace(/(.{2}).*(@.*)/, '$1***$2')
+    console.log('Sending password reset to user:', maskedEmail, 'with redirect:', redirectUrl)
     
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,

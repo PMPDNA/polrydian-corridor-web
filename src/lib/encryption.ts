@@ -59,19 +59,22 @@ export const validateTokenSecurity = (token: string): {
   }
 }
 
-// Log security events for token operations
+// Log security events for token operations using secure edge function
 export const logTokenEvent = async (event: string, details: Record<string, any> = {}) => {
   try {
-    await supabase.from('security_audit_log').insert({
-      action: `token_${event}`,
-      details: {
-        ...details,
-        timestamp: new Date().toISOString(),
-        client_info: {
-          userAgent: navigator.userAgent,
-          platform: navigator.platform,
-          language: navigator.language
-        }
+    await supabase.functions.invoke('security-audit', {
+      body: {
+        action: `token_${event}`,
+        details: {
+          ...details,
+          timestamp: new Date().toISOString(),
+          client_info: {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language
+          }
+        },
+        severity: 'medium'
       }
     })
   } catch (error) {
