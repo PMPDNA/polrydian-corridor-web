@@ -5,7 +5,7 @@ import { WhoWeServe } from '@/components/WhoWeServe';
 import { OurServices } from '@/components/OurServices';
 import { WhyChoosePolrydian } from '@/components/WhyChoosePolrydian';
 import { HomePartners } from '@/components/HomePartners';
-import { CaseStudiesTestimonials } from '@/components/CaseStudiesTestimonials';
+
 import { LatestInsightsTeaser } from '@/components/LatestInsightsTeaser';
 import { Contact } from '@/components/Contact';
 import Footer from '@/components/Footer';
@@ -72,9 +72,6 @@ const Index = () => {
           <HomePartners />
         </section>
         
-        <section id="case-studies" aria-label="Case studies and testimonials">
-          <CaseStudiesTestimonials />
-        </section>
         
         <section id="insights" aria-label="Latest insights">
           <LatestInsightsTeaser />
