@@ -55,3 +55,6 @@ verify_jwt = true
 
 [functions.migrate-tokens-secure]
 verify_jwt = true
+
+[functions.track-cookie-consent]
+verify_jwt = false
