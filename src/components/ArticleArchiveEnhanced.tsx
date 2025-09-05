@@ -178,10 +178,7 @@ export function ArticleArchiveEnhanced({
             Strategic Intelligence
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Authoritative analysis transforming global complexity into competitive advantage. 
-            <span className="block mt-4 text-primary font-medium">
-              Trusted by executives at Fortune 500 companies and sovereign funds worldwide.
-            </span>
+            Authoritative analysis transforming global complexity into competitive advantage.
           </p>
         </div>
       )}
@@ -194,7 +191,7 @@ export function ArticleArchiveEnhanced({
               Refine Your Search
             </CardTitle>
             <CardDescription className="text-base">
-              Filter through {total} articles of strategic analysis and market intelligence
+              Filter through {total} articles of strategic analysis
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
