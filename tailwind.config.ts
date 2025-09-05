@@ -74,7 +74,23 @@ export default {
 			},
 			fontFamily: {
 				'sans': ['Libre Franklin', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'sans-serif'],
-				'polrydian': ['Libre Franklin', 'sans-serif']
+				'serif': ['Crimson Text', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
+				'polrydian': ['Libre Franklin', 'sans-serif'],
+				'heading': ['Crimson Text', 'serif']
+			},
+			spacing: {
+				'4': '8px',
+				'8': '16px', 
+				'12': '24px',
+				'16': '32px',
+				'20': '40px',
+				'24': '48px',
+				'28': '56px',
+				'32': '64px',
+				'40': '80px',
+				'48': '96px',
+				'56': '112px',
+				'64': '128px'
 			},
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',

@@ -18,8 +18,9 @@ All colors MUST be HSL.
     --popover-foreground: 215 25% 27%;
 
     /* Polrydian Blue Brand Colors */
-    --primary: 213 92% 30%; /* Deep Polrydian Blue */
+    --primary: 213 84% 30%; /* Deep professional blue */
     --primary-foreground: 0 0% 98%;
+    --primary-accent: 43 74% 49%; /* Sophisticated gold accent */
 
     --secondary: 213 20% 96%;
     --secondary-foreground: 215 25% 27%;

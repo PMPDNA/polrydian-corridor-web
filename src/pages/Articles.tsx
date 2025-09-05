@@ -1,6 +1,6 @@
 import { Navigation } from "@/components/Navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { ArticleArchive } from "@/components/ArticleArchive";
+import { ArticleArchiveEnhanced } from "@/components/ArticleArchiveEnhanced";
 import { EnhancedSEO } from "@/components/EnhancedSEO";
 
 export default function Articles() {
@@ -18,8 +18,8 @@ export default function Articles() {
         <Breadcrumbs />
       </div>
       
-      <div className="container mx-auto px-4 pb-12">
-        <ArticleArchive showFilters={true} pageSize={12} showHero={true} />
+      <div className="container mx-auto px-4 pb-16">
+        <ArticleArchiveEnhanced showFilters={true} pageSize={12} showHero={true} />
       </div>
     </div>
   );
