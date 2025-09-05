@@ -74,21 +74,27 @@ export function HomePartners() {
                 <img
                   src={partner.logo_url}
                   alt={`${partner.name} logo`}
-                  className="max-h-28 max-w-full object-contain transition-all duration-300"
+                  className="max-h-28 max-w-full object-contain transition-all duration-300 mx-auto"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none';
                   }}
                 />
-                {/* Hover tooltip */}
+                {/* Improved hover tooltip */}
                 {partner.description && (
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-background text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 max-w-xs text-center">
-                    {partner.description}
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground"></div>
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 max-w-sm text-left shadow-lg">
+                    <div className="font-semibold mb-1">{partner.name}</div>
+                    <div className="text-xs leading-relaxed text-gray-200">
+                      {partner.description.length > 120 
+                        ? partner.description.substring(0, 120) + "..." 
+                        : partner.description
+                      }
+                    </div>
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                   </div>
                 )}
               </div>
-              <div className="space-y-2">
-                <h3 className="font-semibold text-base leading-tight text-foreground">{partner.name}</h3>
+              <div className="space-y-2 text-center">
+                <h3 className="font-semibold text-base leading-tight text-foreground text-center">{partner.name}</h3>
                 {partner.website_url && (
                   <a
                     href={partner.website_url}
