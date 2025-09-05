@@ -183,7 +183,7 @@ const sendAnalyticsToServer = async (data: any) => {
       ...data
     };
 
-    await fetch('/functions/v1/ingest-analytics', {
+    await fetch('https://qemtvnwemcpzhvbwjbsk.supabase.co/functions/v1/ingest-analytics', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
