@@ -60,16 +60,16 @@ export function HomePartners() {
   }
 
   const PartnerGrid = ({ partners: partnerList }: { partners: Partner[] }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
       {partnerList.map((partner) => (
         <Card key={partner.id} className="group hover:shadow-lg transition-shadow duration-300">
-          <CardContent className="p-8">
+          <CardContent className="p-6">
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-full h-24 flex items-center justify-center bg-white rounded-lg border border-muted/20 p-4">
+              <div className="w-full h-32 flex items-center justify-center bg-white rounded-lg border border-muted/20 p-4">
                 <img
                   src={partner.logo_url}
                   alt={`${partner.name} logo`}
-                  className="max-h-20 max-w-full object-contain filter hover:grayscale-0 transition-all duration-300"
+                  className="max-h-28 max-w-full object-contain transition-all duration-300"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = 'none';
                   }}
@@ -77,18 +77,15 @@ export function HomePartners() {
               </div>
               <div className="space-y-2">
                 <h3 className="font-semibold text-base leading-tight text-foreground">{partner.name}</h3>
-                {partner.description && (
-                  <p className="text-sm text-muted-foreground leading-relaxed">{partner.description}</p>
-                )}
                 {partner.website_url && (
                   <a
                     href={partner.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+                    className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
                   >
                     <ExternalLink className="h-4 w-4" />
-                    Visit Website
+                    Visit
                   </a>
                 )}
               </div>
