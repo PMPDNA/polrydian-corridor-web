@@ -1,0 +1,32 @@
+name: AI Autofix
+on:
+  issue_comment:
+    types: [created]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  autofix:
+    if: >
+      github.event.issue.pull_request != null &&
+      (contains(github.event.comment.body, '/autofix') || contains(github.event.comment.body, '/ai fix'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - name: Claude implement patch
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Apply minimal diffs to resolve review feedback. Don't touch infra/secrets.
+            Add/adjust tests if logic changes. Follow ai/rules.md.
+      - name: Commit any changes
+        run: |
+          git config user.name "ai-fusion-bot"
+          git config user.email "ai-fusion-bot@users.noreply.github.com"
+          git add -A
+          git commit -m "AI: autofix" || echo "No changes"
+          git push || true
