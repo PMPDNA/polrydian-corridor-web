@@ -1,0 +1,54 @@
+name: AI Review (Claude + ChatGPT)
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled]
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+jobs:
+  review:
+    if: "!contains(github.event.pull_request.labels.*.name, 'ai:pause')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - name: Claude code review
+        if: "!contains(github.event.pull_request.labels.*.name, 'skip:claude')"
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Review this PR for correctness, security, performance, and DX.
+            Propose minimal diffs when safe. Obey ai/rules.md.
+      - name: Collect unified diff
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          git diff --unified=0 --no-color origin/${{ github.base_ref }}..HEAD > pr.diff
+      - name: ChatGPT review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          BODY=$(jq -Rs . < pr.diff)
+          read -r -d '' PAYLOAD << 'JSON'
+          {
+            "model": "gpt-5-mini",
+            "input": [
+              {"role":"system","content":"You are a senior code reviewer. Focus on security, edge cases, tests, performance. Be concise and actionable."},
+              {"role":"system","content":"Repo policies:\n$(cat ai/rules.md 2>/dev/null || echo 'No ai/rules.md found.')"},
+              {"role":"user","content":"Review this unified diff and propose line-specific comments and minimal patches where safe."},
+              {"role":"user","content":'REPLACE_ME_BODY'}
+            ]
+          }
+          JSON
+          PAYLOAD=${PAYLOAD/REPLACE_ME_BODY/$BODY}
+          RESP=$(curl -s https://api.openai.com/v1/responses \
+            -H "Authorization: Bearer $OPENAI_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+          echo "$RESP" | jq -r '.output_text' > comment.md || echo "No output" > comment.md
+          echo "\n---\n(Automated ChatGPT review. Label 'ai:pause' to stop; 'skip:claude' to skip Claude.)" >> comment.md
+          gh pr comment "$PR_NUMBER" --body-file comment.md
