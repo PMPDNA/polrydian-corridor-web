@@ -445,6 +445,13 @@ export type Database = {
             referencedRelation: "articles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "book_chapters_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "featured_articles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       client_preferences: {
@@ -958,6 +965,13 @@ export type Database = {
             columns: ["article_id"]
             isOneToOne: false
             referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "image_usage_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "featured_articles"
             referencedColumns: ["id"]
           },
           {
@@ -1479,6 +1493,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "publishing_schedule_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "featured_articles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "publishing_schedule_chapter_id_fkey"
             columns: ["chapter_id"]
             isOneToOne: false
@@ -1542,6 +1563,13 @@ export type Database = {
             columns: ["article_id"]
             isOneToOne: false
             referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduled_posts_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "featured_articles"
             referencedColumns: ["id"]
           },
         ]
@@ -1919,6 +1947,51 @@ export type Database = {
           device_types_count: number | null
           total_visits: number | null
           unique_visitors: number | null
+        }
+        Relationships: []
+      }
+      featured_articles: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string | null
+          featured_image: string | null
+          id: string | null
+          meta_description: string | null
+          published_at: string | null
+          reading_time_minutes: number | null
+          slug: string | null
+          status: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          featured_image?: string | null
+          id?: string | null
+          meta_description?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          slug?: string | null
+          status?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          featured_image?: string | null
+          id?: string | null
+          meta_description?: string | null
+          published_at?: string | null
+          reading_time_minutes?: number | null
+          slug?: string | null
+          status?: string | null
+          title?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -2335,6 +2408,17 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      article_category:
+        | "geopolitics"
+        | "strategy"
+        | "ma"
+        | "philosophy"
+        | "deep_tech"
+        | "defense"
+        | "corridor_economics"
+        | "supply_chain"
+        | "market_analysis"
+        | "general"
     }
     CompositeTypes: {
       http_header: {
@@ -2479,6 +2563,18 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      article_category: [
+        "geopolitics",
+        "strategy",
+        "ma",
+        "philosophy",
+        "deep_tech",
+        "defense",
+        "corridor_economics",
+        "supply_chain",
+        "market_analysis",
+        "general",
+      ],
     },
   },
 } as const
