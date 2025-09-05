@@ -67,39 +67,6 @@ export const Hero = () => {
           {/* Enhanced Corridor Economics Section */}
           <EnhancedCorridorEconomics />
         </div>
-
-        {/* Call to Action - Enhanced Calendly Integration */}
-        <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-          <div className="flex justify-center">
-            <CalendlyPopup
-              calendlyUrl="https://calendly.com/patrick-misiewicz/strategic-consulting-intro-call"
-              buttonText="Book a Strategy Session"
-              variant="default"
-              size="lg"
-              className="bg-accent text-accent-foreground px-10 py-6 text-xl shadow-elegant font-semibold hover:bg-accent/90"
-              prefill={{
-                name: "",
-                email: "",
-                customAnswers: {
-                  "utm_source": "homepage_hero",
-                  "utm_campaign": "strategy_session_cta"
-                }
-              }}
-            />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Free initial consultation • Priority response for urgent strategic matters
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center text-sm">
-            <a href="/services" className="text-accent hover:text-accent/80 underline">
-              View Strategic Solutions
-            </a>
-            <span className="hidden sm:inline text-muted-foreground">•</span>
-            <a href="/about" className="text-accent hover:text-accent/80 underline">
-              Learn About Our Approach
-            </a>
-          </div>
-        </div>
         
         {/* Proof Elements */}
         <ProofChips />
