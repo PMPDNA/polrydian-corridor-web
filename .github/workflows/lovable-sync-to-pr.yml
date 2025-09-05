@@ -1,0 +1,27 @@
+name: PR from dev to main when Lovable updates
+on:
+  push:
+    branches: [ "dev" ]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - name: Create PR dev -> main
+        id: cpr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "Lovable sync → Promote dev → main"
+          body: "Automated PR created from Lovable-synced branch."
+          branch: lovable-promote-${{ github.run_number }}
+          base: main
+          labels: ai:review
+      - name: Output PR
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: echo "PR #${{ steps.cpr.outputs.pull-request-number }} - ${{ steps.cpr.outputs.pull-request-url }}"
