@@ -60,7 +60,7 @@ export const OurServices = () => {
                 <p className="text-muted-foreground leading-relaxed mb-6">
                   {service.description}
                 </p>
-                <ul className="space-y-2 mb-8 flex-grow">
+                <ul className="space-y-2 mb-6 flex-grow">
                   {service.highlights.map((highlight, highlightIndex) => (
                     <li key={highlightIndex} className="text-sm text-muted-foreground flex items-center gap-2">
                       <ArrowRight className="h-3 w-3 text-accent flex-shrink-0" />
@@ -68,12 +68,6 @@ export const OurServices = () => {
                     </li>
                   ))}
                 </ul>
-                <Button asChild variant="outline" className="w-full group-hover:bg-accent/10">
-                  <Link to={service.link} className="gap-2">
-                    Learn More
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
               </CardContent>
             </Card>
           ))}
@@ -83,14 +77,20 @@ export const OurServices = () => {
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
             Ready to transform your strategic challenges into competitive advantages?
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-2xl mx-auto">
-            <Button asChild size="lg" className="w-full sm:w-auto min-w-[200px]">
-              <Link to="/schedule" className="gap-2 flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-3xl mx-auto">
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto min-w-[180px]">
+              <Link to="/services" className="gap-2 flex items-center justify-center">
+                Learn More
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="w-full sm:w-auto min-w-[180px]">
+              <Link to="/contact" className="gap-2 flex items-center justify-center">
                 Book a Strategy Session
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto min-w-[200px]">
+            <Button asChild variant="outline" size="lg" className="w-full sm:w-auto min-w-[180px]">
               <Link to="/about" className="gap-2 flex items-center justify-center">
                 Learn About Our Approach
                 <ArrowRight className="h-4 w-4" />
