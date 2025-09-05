@@ -5,8 +5,11 @@ import { EnhancedCorridorEconomics } from "@/components/EnhancedCorridorEconomic
 import CalendlyPopup from "./CalendlyPopup";
 import { trackEvent, trackPerformance } from "@/utils/analytics";
 import { useEffect } from "react";
+import { useWebsiteContent } from "@/hooks/useWebsiteContent";
 
 export const Hero = () => {
+  const { getContent } = useWebsiteContent('hero');
+  
   useEffect(() => {
     // Track hero section view and performance
     const startTime = performance.now();
@@ -58,10 +61,10 @@ export const Hero = () => {
         {/* Main Heading */}
         <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
-            Board‑Level Advisory for Complex Supply Chains, Deep Tech & Geopolitics
+            {getContent('title', 'Board‑Level Advisory for Complex Supply Chains, Deep Tech & Geopolitics')}
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
-            Trusted advisor to sovereign funds, port & logistics operators, defence integrators and deep tech innovators
+            {getContent('subtitle', 'Trusted advisor to sovereign funds, port & logistics operators, defence integrators and deep tech innovators')}
           </p>
           
           {/* Enhanced Corridor Economics Section */}

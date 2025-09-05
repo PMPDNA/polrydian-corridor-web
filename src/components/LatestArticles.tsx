@@ -66,10 +66,10 @@ export function LatestArticles() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">
-            Latest Strategic Insights
+            Latest Articles
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Stay informed with our latest analysis on corridor economics, geopolitics, and strategic consulting
+            Stay informed with our latest articles on corridor economics, geopolitics, and strategic consulting
           </p>
         </div>
 

@@ -10,7 +10,7 @@ export default function Footer() {
         { name: "Home", href: "/" },
         { name: "About", href: "/about" },
         { name: "Services", href: "/services" },
-        { name: "Insights", href: "/insights" },
+        { name: "Articles", href: "/articles" },
         { name: "Contact", href: "/schedule" }
       ]
     },

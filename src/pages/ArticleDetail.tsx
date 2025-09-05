@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-
+import { useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,6 +18,35 @@ export default function ArticleDetail() {
   const navigate = useNavigate();
   const { useArticleBySlug } = useUnifiedArticles();
   const { data: article, isLoading: loading } = useArticleBySlug(slug!);
+
+  // Track article view
+  useEffect(() => {
+    if (article?.slug) {
+      const trackView = async () => {
+        try {
+          // Generate session ID if not exists
+          let sessionId = sessionStorage.getItem('polrydian_session');
+          if (!sessionId) {
+            sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            sessionStorage.setItem('polrydian_session', sessionId);
+          }
+
+          await supabase.functions.invoke('track-article-view', {
+            body: {
+              article_slug: article.slug,
+              session_id: sessionId,
+              referrer: document.referrer || '',
+              reading_time_seconds: 0
+            }
+          });
+        } catch (error) {
+          console.error('Failed to track article view:', error);
+        }
+      };
+
+      trackView();
+    }
+  }, [article?.slug]);
 
 
   const formatDate = (dateString: string) => {

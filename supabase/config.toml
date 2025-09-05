@@ -5,6 +5,9 @@ enabled = true
 site_url = "https://polrydian.com"
 additional_redirect_urls = ["https://d85f6385-6c6d-437f-978b-9196bd33e526.lovableproject.com"]
 
+[functions.track-article-view]
+verify_jwt = false
+
 [functions.sync-linkedin-feed]
 verify_jwt = true
 
