@@ -3,7 +3,7 @@ import { Navigation } from '@/components/Navigation';
 import { Hero } from '@/components/Hero';
 import { OurServices } from '@/components/OurServices';
 import { HomePartners } from '@/components/HomePartners';
-import { LatestInsightsTeaser } from '@/components/LatestInsightsTeaser';
+import { LatestArticles } from '@/components/LatestArticles';
 import { Contact } from '@/components/Contact';
 import Footer from '@/components/Footer';
 import { EnhancedSEO } from '@/components/EnhancedSEO';
@@ -77,8 +77,8 @@ const Index = () => {
           <HomePartners />
         </section>
         
-        <section id="insights" aria-label="Latest insights and articles">
-          <LatestInsightsTeaser />
+        <section id="articles" aria-label="Latest articles">
+          <LatestArticles />
         </section>
         
         <section id="contact" aria-label="Contact section">

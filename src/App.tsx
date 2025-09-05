@@ -12,7 +12,6 @@ import { SecurityDashboard as SecurityDashboardComponent } from "@/components/Se
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Services from "./pages/Services";
-import Insights from "./pages/Insights";
 
 import Privacy from "./pages/Privacy";
 
@@ -72,7 +71,6 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<Services />} />
-              <Route path="/insights" element={<Insights />} />
               
               {/* ICP Landing Pages */}
               <Route path="/sovereign-funds" element={<SovereignFunds />} />

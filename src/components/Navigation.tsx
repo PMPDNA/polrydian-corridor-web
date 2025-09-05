@@ -12,7 +12,7 @@ export const Navigation = () => {
     { label: "Home", path: "/" },
     { label: "About", path: "/about" },
     { label: "Services", path: "/services" },
-    { label: "Insights", path: "/insights" },
+    { label: "Articles", path: "/articles" },
     { label: "Contact", path: "/schedule" },
   ];
 
