@@ -1,0 +1,22 @@
+name: Lovable Readiness / Uptime
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hit health endpoint
+        env:
+          TARGET_URL: ${{ secrets.HEALTHCHECK_URL }}
+          TIMEOUT: "10000"
+        run: |
+          if [ -z "$TARGET_URL" ]; then
+            echo "Set HEALTHCHECK_URL secret to your /api/health endpoint." && exit 1
+          fi
+          code=$(curl -s -o /tmp/out.json -w "%{http_code}" --max-time 10 "$TARGET_URL")
+          echo "HTTP: $code"; cat /tmp/out.json || true
+          test "$code" = "200" || (echo "Healthcheck failed" && exit 1)
