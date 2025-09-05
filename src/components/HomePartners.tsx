@@ -43,6 +43,8 @@ export function HomePartners() {
   const affiliationsList = partners.filter(p => p.category === 'affiliations');  
   const clientsList = partners.filter(p => p.category === 'clients');
 
+  console.log('Partners:', partnersList.length, 'Affiliations:', affiliationsList.length, 'Clients:', clientsList.length);
+
   if (loading) {
     return (
       <section className="py-16 bg-muted/30">
@@ -65,7 +67,10 @@ export function HomePartners() {
         <Card key={partner.id} className="group hover:shadow-lg transition-shadow duration-300">
           <CardContent className="p-6">
             <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-full h-32 flex items-center justify-center bg-white rounded-lg border border-muted/20 p-4">
+              <div 
+                className="w-full h-32 flex items-center justify-center bg-white rounded-lg border border-muted/20 p-4 relative"
+                title={partner.description || partner.name}
+              >
                 <img
                   src={partner.logo_url}
                   alt={`${partner.name} logo`}
@@ -74,6 +79,13 @@ export function HomePartners() {
                     (e.target as HTMLImageElement).style.display = 'none';
                   }}
                 />
+                {/* Hover tooltip */}
+                {partner.description && (
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-background text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10 max-w-xs text-center">
+                    {partner.description}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground"></div>
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 <h3 className="font-semibold text-base leading-tight text-foreground">{partner.name}</h3>
