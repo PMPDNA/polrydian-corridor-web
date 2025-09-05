@@ -92,6 +92,61 @@ export type Database = {
         }
         Relationships: []
       }
+      article_views: {
+        Row: {
+          article_id: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          article_id: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          article_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_views_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "article_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_views_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_views_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "featured_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       articles: {
         Row: {
           auto_publish_linkedin: boolean | null
@@ -124,6 +179,7 @@ export type Database = {
           video_duration: number | null
           video_thumbnail: string | null
           video_url: string | null
+          view_count: number | null
         }
         Insert: {
           auto_publish_linkedin?: boolean | null
@@ -156,6 +212,7 @@ export type Database = {
           video_duration?: number | null
           video_thumbnail?: string | null
           video_url?: string | null
+          view_count?: number | null
         }
         Update: {
           auto_publish_linkedin?: boolean | null
@@ -188,6 +245,7 @@ export type Database = {
           video_duration?: number | null
           video_thumbnail?: string | null
           video_url?: string | null
+          view_count?: number | null
         }
         Relationships: [
           {
@@ -438,6 +496,13 @@ export type Database = {
           video_duration_5min?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "book_chapters_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "article_analytics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "book_chapters_article_id_fkey"
             columns: ["article_id"]
@@ -960,6 +1025,13 @@ export type Database = {
           usage_type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "image_usage_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "article_analytics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "image_usage_article_id_fkey"
             columns: ["article_id"]
@@ -1489,6 +1561,13 @@ export type Database = {
             foreignKeyName: "publishing_schedule_article_id_fkey"
             columns: ["article_id"]
             isOneToOne: false
+            referencedRelation: "article_analytics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "publishing_schedule_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
             referencedRelation: "articles"
             referencedColumns: ["id"]
           },
@@ -1558,6 +1637,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "scheduled_posts_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "article_analytics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "scheduled_posts_article_id_fkey"
             columns: ["article_id"]
@@ -1950,6 +2036,22 @@ export type Database = {
         }
         Relationships: []
       }
+      article_analytics: {
+        Row: {
+          category: string | null
+          id: string | null
+          published_at: string | null
+          slug: string | null
+          title: string | null
+          total_views: number | null
+          unique_ips: number | null
+          unique_sessions: number | null
+          unique_users: number | null
+          view_count: number | null
+          view_date: string | null
+        }
+        Relationships: []
+      }
       featured_articles: {
         Row: {
           category: string | null
@@ -2120,6 +2222,10 @@ export type Database = {
       get_admin_emails: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      get_article_unique_views: {
+        Args: { article_uuid: string }
+        Returns: number
       }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
