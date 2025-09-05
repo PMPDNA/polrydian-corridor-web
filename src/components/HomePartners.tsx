@@ -81,13 +81,10 @@ export function HomePartners() {
                 />
                 {/* Improved hover tooltip */}
                 {partner.description && (
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 max-w-sm text-left shadow-lg">
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-4 py-3 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-50 max-w-lg w-96 text-left shadow-lg">
                     <div className="font-semibold mb-1">{partner.name}</div>
                     <div className="text-xs leading-relaxed text-gray-200">
-                      {partner.description.length > 120 
-                        ? partner.description.substring(0, 120) + "..." 
-                        : partner.description
-                      }
+                      {partner.description}
                     </div>
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
                   </div>
