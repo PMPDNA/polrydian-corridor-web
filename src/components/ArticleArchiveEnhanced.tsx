@@ -8,8 +8,10 @@ import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, Pagi
 import { Calendar, Clock, User, Search, Filter, TrendingUp, Star, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useUnifiedArticles, ArticleArchiveParams } from "@/hooks/useUnifiedData";
+import { useFeaturedArticles } from "@/hooks/useFeaturedArticles";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { EnhancedSEO } from "@/components/EnhancedSEO";
+import { ArticlesHeroCarousel } from "@/components/ArticlesHeroCarousel";
 
 interface ArticleArchiveProps {
   showFilters?: boolean;
@@ -42,6 +44,7 @@ export function ArticleArchiveEnhanced({
 
   const { data: archiveData, isLoading, error } = useArticleArchive(archiveParams);
   const { data: categories } = useCategories();
+  const { data: featuredArticles, isLoading: featuredLoading } = useFeaturedArticles(5);
 
   const articles = archiveData?.items || [];
   const totalPages = archiveData?.totalPages || 0;
@@ -172,15 +175,24 @@ export function ArticleArchiveEnhanced({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
+      {/* Hero Carousel - Only show when there are featured articles */}
       {showHero && (
-        <div className="text-center space-y-8 max-w-4xl mx-auto">
-          <h1 className="text-6xl font-heading font-bold text-foreground leading-tight">
-            Strategic Intelligence
-          </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed">
-            Authoritative analysis transforming global complexity into competitive advantage.
-          </p>
-        </div>
+        featuredLoading ? (
+          <div className="h-[600px] w-full bg-muted/30 rounded-xl animate-pulse flex items-center justify-center mb-16">
+            <LoadingSpinner />
+          </div>
+        ) : featuredArticles && featuredArticles.length > 0 ? (
+          <ArticlesHeroCarousel articles={featuredArticles} />
+        ) : (
+          <div className="text-center space-y-8 max-w-4xl mx-auto">
+            <h1 className="text-6xl font-heading font-bold text-foreground leading-tight">
+              Strategic Intelligence
+            </h1>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              Authoritative analysis transforming global complexity into competitive advantage.
+            </p>
+          </div>
+        )
       )}
 
       {showFilters && (

@@ -23,7 +23,7 @@ interface Article {
   title: string;
   excerpt: string;
   content: string;
-  category: "Strategy" | "Geopolitics" | "Philosophy" | "Defense & Aerospace";
+  category: "geopolitics" | "strategy" | "ma" | "philosophy" | "deep_tech" | "defense" | "corridor_economics" | "supply_chain" | "market_analysis" | "general";
   heroImage: string;
   publishDate: string;
   readTime: number;
@@ -63,7 +63,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
         // Use direct category field if available, fallback to first keyword for legacy compatibility
         const directCategory = (article as any).category;
         const legacyCategory = (article as any).keywords?.[0];
-        return directCategory || legacyCategory || "Strategy";
+        return directCategory || legacyCategory || "strategy";
       case 'linkedinUrl':
         return 'linkedin_url' in article ? article.linkedin_url : (article as any).linkedinUrl || fallback;
       default:
@@ -75,7 +75,7 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
     title: getArticleField('title'),
     excerpt: getArticleField('excerpt'),
     content: getArticleField('content'),
-    category: getArticleField('category', "Strategy") as "Strategy" | "Geopolitics" | "Philosophy" | "Defense & Aerospace",
+    category: getArticleField('category', "strategy") as "geopolitics" | "strategy" | "ma" | "philosophy" | "deep_tech" | "defense" | "corridor_economics" | "supply_chain" | "market_analysis" | "general",
     heroImage: getArticleField('heroImage'),
     publishDate: getArticleField('publishDate', new Date().toISOString().split('T')[0]),
     readTime: getArticleField('readTime', 5),
@@ -326,10 +326,16 @@ export function ArticleForm({ article, onSave, onCancel }: ArticleFormProps) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Strategy">Strategy</SelectItem>
-                    <SelectItem value="Geopolitics">Geopolitics</SelectItem>
-                    <SelectItem value="Philosophy">Philosophy</SelectItem>
-                    <SelectItem value="Defense & Aerospace">Defense & Aerospace</SelectItem>
+                    <SelectItem value="geopolitics">Geopolitics</SelectItem>
+                    <SelectItem value="strategy">Strategy</SelectItem>
+                    <SelectItem value="ma">M&A</SelectItem>
+                    <SelectItem value="philosophy">Philosophy</SelectItem>
+                    <SelectItem value="deep_tech">Deep Tech</SelectItem>
+                    <SelectItem value="defense">Defense</SelectItem>
+                    <SelectItem value="corridor_economics">Corridor Economics</SelectItem>
+                    <SelectItem value="supply_chain">Supply Chain</SelectItem>
+                    <SelectItem value="market_analysis">Market Analysis</SelectItem>
+                    <SelectItem value="general">General</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
