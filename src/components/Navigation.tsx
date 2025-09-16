@@ -39,7 +39,7 @@ export const Navigation = () => {
         <div className="flex justify-between items-center">
           {/* Polrydian Logo */}
           <Link to="/" className="hover:opacity-80 transition-opacity">
-            <PolrydianLogo variant="compact" size="sm" />
+            <PolrydianLogo variant="mini" size="sm" />
           </Link>
 
           {/* Personal Branding */}

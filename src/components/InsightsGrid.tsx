@@ -37,7 +37,7 @@ export const InsightsGrid = () => {
     <section className="py-16 bg-background">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <h2 className="font-sans text-4xl md:text-5xl font-bold text-foreground mb-4">
             Latest Insights
           </h2>
           <p className="font-sans text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -85,7 +85,7 @@ export const InsightsGrid = () => {
                   )}
                 </div>
                 
-                <h3 className="font-serif text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                <h3 className="font-sans text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary transition-colors line-clamp-2">
                   {article.title}
                 </h3>
                 

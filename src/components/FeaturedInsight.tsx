@@ -31,7 +31,7 @@ export const FeaturedInsight = () => {
     <section className="py-16 bg-muted/30">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <h2 className="font-sans text-4xl md:text-5xl font-bold text-foreground mb-4">
             Featured Insight
           </h2>
           <p className="font-sans text-lg text-muted-foreground max-w-2xl mx-auto">

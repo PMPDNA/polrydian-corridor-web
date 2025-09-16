@@ -6,7 +6,7 @@ export const CredibilityBar = () => {
     {
       icon: <Globe className="w-5 h-5" />,
       text: "65+ Countries",
-      subtext: "Travelled"
+      subtext: "Global Experience"
     },
     {
       icon: <Users className="w-5 h-5" />,
@@ -16,12 +16,12 @@ export const CredibilityBar = () => {
     {
       icon: <Award className="w-5 h-5" />,
       text: "10+ Years",
-      subtext: "Strategic Consulting"
+      subtext: "Fortune 500 & Sovereign Clients"
     },
     {
       icon: <Building className="w-5 h-5" />,
-      text: "Fortune 500",
-      subtext: "& Sovereign Clients"
+      text: "Strategy",
+      subtext: "Innovation | Partnership"
     }
   ];
 

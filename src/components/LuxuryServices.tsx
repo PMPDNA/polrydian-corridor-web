@@ -29,7 +29,7 @@ export const LuxuryServices = () => {
     <section className="py-20 bg-muted/30">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h2 className="font-sans text-4xl md:text-5xl font-bold text-foreground mb-6">
             Our Services
           </h2>
           <p className="font-sans text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -50,7 +50,7 @@ export const LuxuryServices = () => {
                   <div className="absolute inset-0 w-20 h-20 mx-auto bg-gradient-to-br from-primary/20 to-accent/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 
-                <h3 className="font-serif text-2xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
+                <h3 className="font-sans text-2xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
                   {service.title}
                 </h3>
                 

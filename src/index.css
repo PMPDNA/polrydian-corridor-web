@@ -2,80 +2,77 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Luxury Bohemian-Chic Design System */
+/* Polrydian Professional Brand Design System */
 @layer base {
   :root {
-    /* Luxury Bohemian-Chic Color Palette - Light mode */
-    --background: 40 15% 92%; /* Warm beige/taupe */
-    --foreground: 25 15% 15%; /* Rich dark brown */
-    --card: 42 20% 95%; /* Slightly warmer card background */
-    --card-foreground: 25 15% 15%;
-    --popover: 42 20% 95%;
-    --popover-foreground: 25 15% 15%;
-    --primary: 158 64% 25%; /* Deep emerald green */
-    --primary-foreground: 42 20% 95%;
-    --secondary: 45 29% 74%; /* Muted gold/beige */
-    --secondary-foreground: 25 15% 15%;
-    --muted: 40 20% 85%; /* Soft neutral */
-    --muted-foreground: 25 10% 45%;
-    --accent: 45 85% 47%; /* Muted gold accent */
-    --accent-foreground: 25 15% 15%;
+    /* Official Polrydian Brand Colors - Light mode */
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 215 65% 23%; /* Primary Polrydian blue */
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 215 65% 23%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 65% 23%;
+    --primary: 215 65% 23%; /* Primary Polrydian blue #143C60 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 200 34% 53%; /* Light Polrydian blue #5D94B0 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 96%; /* Very light gray */
+    --muted-foreground: 0 0% 30%; /* Dark gray #4C4C4C */
+    --accent: 200 34% 53%; /* Light blue accent */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 42 20% 95%;
-    --border: 40 15% 80%; /* Soft border */
-    --input: 40 15% 88%; /* Input background */
-    --ring: 158 64% 25%; /* Emerald focus ring */
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 80%; /* Light gray #CCCCCC */
+    --input: 0 0% 96%;
+    --ring: 215 65% 23%; /* Primary blue focus ring */
 
-    /* Luxury Polrydian brand colors */
-    --polrydian-emerald: 158 64% 25%; /* Deep emerald green */
-    --polrydian-gold: 45 85% 47%; /* Muted gold */
-    --polrydian-beige: 40 15% 92%; /* Warm beige base */
-    --polrydian-cream: 42 20% 95%; /* Warmer cream */
-    --polrydian-bronze: 35 25% 35%; /* Rich bronze for text */
+    /* Official Polrydian brand colors */
+    --polrydian-primary: 215 65% 23%; /* #143C60 */
+    --polrydian-secondary: 200 34% 53%; /* #5D94B0 */
+    --polrydian-dark-gray: 0 0% 30%; /* #4C4C4C */
+    --polrydian-light-gray: 0 0% 80%; /* #CCCCCC */
 
-    /* Luxury gradients with texture feeling */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--polrydian-emerald)), hsl(var(--polrydian-gold)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--polrydian-beige)) 0%, hsl(var(--polrydian-cream)) 50%, hsl(var(--polrydian-beige)) 100%);
+    /* Professional gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--polrydian-primary)), hsl(var(--polrydian-secondary)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--polrydian-primary)) 0%, hsl(215 65% 18%) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
-    --gradient-emerald: linear-gradient(135deg, hsl(158 64% 25%) 0%, hsl(158 54% 35%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(45 85% 47%) 0%, hsl(45 75% 57%) 100%);
 
-    /* Luxury shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--polrydian-emerald) / 0.3);
-    --shadow-glow: 0 0 40px hsl(var(--polrydian-gold) / 0.4);
+    /* Professional shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--polrydian-primary) / 0.3);
+    --shadow-glow: 0 0 40px hsl(var(--polrydian-secondary) / 0.4);
 
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     /* Sidebar */
-    --sidebar-background: 40 15% 90%;
-    --sidebar-foreground: 25 15% 15%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 215 65% 23%;
   }
 
   .dark {
-    /* Dark mode - sophisticated dark emerald palette */
-    --background: 158 35% 8%; /* Deep emerald-black */
-    --foreground: 42 20% 90%; /* Warm cream text */
-    --card: 158 25% 12%; /* Slightly lighter dark emerald */
-    --card-foreground: 42 20% 90%;
-    --popover: 158 25% 12%;
-    --popover-foreground: 42 20% 90%;
-    --primary: 158 64% 35%; /* Lighter emerald for contrast */
-    --primary-foreground: 158 35% 8%;
-    --secondary: 45 25% 25%; /* Dark gold */
-    --secondary-foreground: 42 20% 90%;
-    --muted: 158 20% 15%; /* Muted dark emerald */
-    --muted-foreground: 40 15% 65%;
-    --accent: 45 70% 55%; /* Brighter gold for dark mode */
-    --accent-foreground: 158 35% 8%;
+    /* Dark mode - professional blue palette */
+    --background: 215 65% 8%; /* Very dark blue */
+    --foreground: 0 0% 95%; /* Near white text */
+    --card: 215 65% 12%; /* Slightly lighter dark blue */
+    --card-foreground: 0 0% 95%;
+    --popover: 215 65% 12%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 200 34% 53%; /* Light blue for contrast */
+    --primary-foreground: 215 65% 8%;
+    --secondary: 215 65% 18%; /* Darker blue */
+    --secondary-foreground: 0 0% 95%;
+    --muted: 215 65% 15%; /* Muted dark blue */
+    --muted-foreground: 0 0% 70%;
+    --accent: 200 34% 53%; /* Light blue accent */
+    --accent-foreground: 215 65% 8%;
     --destructive: 0 62.8% 50%;
-    --destructive-foreground: 42 20% 90%;
-    --border: 158 20% 20%; /* Subtle emerald border */
-    --input: 158 20% 15%;
-    --ring: 158 64% 35%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 215 65% 20%; /* Subtle blue border */
+    --input: 215 65% 15%;
+    --ring: 200 34% 53%;
 
-    --sidebar-background: 158 25% 10%;
-    --sidebar-foreground: 42 20% 90%;
+    --sidebar-background: 215 65% 10%;
+    --sidebar-foreground: 0 0% 95%;
   }
 }
 
