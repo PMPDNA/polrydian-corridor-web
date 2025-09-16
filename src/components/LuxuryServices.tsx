@@ -29,10 +29,10 @@ export const LuxuryServices = () => {
     <section className="py-20 bg-muted/30">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-sans text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6">
             Our Services
           </h2>
-          <p className="font-sans text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="font-body text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Comprehensive strategic consulting services designed to transform 
             complexity into competitive advantage
           </p>

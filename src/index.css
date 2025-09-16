@@ -2,143 +2,232 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Polrydian Professional Brand Design System */
-@layer base {
-  :root {
-    /* Official Polrydian Brand Colors - Light mode */
-    --background: 0 0% 100%; /* Pure white */
-    --foreground: 215 65% 23%; /* Primary Polrydian blue */
-    --card: 0 0% 100%; /* White cards */
-    --card-foreground: 215 65% 23%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 65% 23%;
-    --primary: 215 65% 23%; /* Primary Polrydian blue #143C60 */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 200 34% 53%; /* Light Polrydian blue #5D94B0 */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 96%; /* Very light gray */
-    --muted-foreground: 0 0% 30%; /* Dark gray #4C4C4C */
-    --accent: 200 34% 53%; /* Light blue accent */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 80%; /* Light gray #CCCCCC */
-    --input: 0 0% 96%;
-    --ring: 215 65% 23%; /* Primary blue focus ring */
-
-    /* Official Polrydian brand colors */
-    --polrydian-primary: 215 65% 23%; /* #143C60 */
-    --polrydian-secondary: 200 34% 53%; /* #5D94B0 */
-    --polrydian-dark-gray: 0 0% 30%; /* #4C4C4C */
-    --polrydian-light-gray: 0 0% 80%; /* #CCCCCC */
-
-    /* Professional gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--polrydian-primary)), hsl(var(--polrydian-secondary)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--polrydian-primary)) 0%, hsl(215 65% 18%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
-
-    /* Professional shadows */
-    --shadow-elegant: 0 10px 30px -10px hsl(var(--polrydian-primary) / 0.3);
-    --shadow-glow: 0 0 40px hsl(var(--polrydian-secondary) / 0.4);
-
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    /* Sidebar */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 215 65% 23%;
-  }
-
-  .dark {
-    /* Dark mode - professional blue palette */
-    --background: 215 65% 8%; /* Very dark blue */
-    --foreground: 0 0% 95%; /* Near white text */
-    --card: 215 65% 12%; /* Slightly lighter dark blue */
-    --card-foreground: 0 0% 95%;
-    --popover: 215 65% 12%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 200 34% 53%; /* Light blue for contrast */
-    --primary-foreground: 215 65% 8%;
-    --secondary: 215 65% 18%; /* Darker blue */
-    --secondary-foreground: 0 0% 95%;
-    --muted: 215 65% 15%; /* Muted dark blue */
-    --muted-foreground: 0 0% 70%;
-    --accent: 200 34% 53%; /* Light blue accent */
-    --accent-foreground: 215 65% 8%;
-    --destructive: 0 62.8% 50%;
-    --destructive-foreground: 0 0% 95%;
-    --border: 215 65% 20%; /* Subtle blue border */
-    --input: 215 65% 15%;
-    --ring: 200 34% 53%;
-
-    --sidebar-background: 215 65% 10%;
-    --sidebar-foreground: 0 0% 95%;
-  }
+/* Root Variables for Polrydian Bohemian-Chic Brand */
+:root {
+  /* Primary Colors - Bohemian Warm Neutrals */
+  --background: 245 242 237; /* #f5f2ed - Warm beige background */
+  --foreground: 62 39 35; /* #3e2723 - Deep warm brown for readability */
+  --card: 252 249 246; /* #fcf9f6 - Soft warm white for cards */
+  --card-foreground: 62 39 35; /* #3e2723 - Dark brown text on cards */
+  
+  /* Primary Colors - Deep Emerald */
+  --primary: 0 77 64; /* #004d40 - Deep emerald green */
+  --primary-foreground: 252 249 246; /* #fcf9f6 - Warm white text on primary */
+  --primary-50: 224 242 241; /* #e0f2f1 - Very light emerald */
+  --primary-900: 0 77 64; /* #004d40 - Deep emerald */
+  
+  /* Secondary & Accent Colors */
+  --secondary: 239 235 229; /* #efebe5 - Light warm taupe */
+  --secondary-foreground: 78 52 46; /* #4e342e - Dark brown for contrast */
+  --accent: 184 134 11; /* #b8860b - Muted gold accent */
+  --accent-foreground: 252 249 246; /* #fcf9f6 - Light text on gold */
+  --accent-50: 254 252 232; /* #fefce8 - Very light gold */
+  --accent-600: 154 114 10; /* #9a720a - Darker gold for hover */
+  
+  /* Utility Colors */
+  --muted: 250 247 242; /* #faf7f2 - Very light warm background */
+  --muted-foreground: 121 85 72; /* #795548 - Warm muted text */
+  --border: 233 229 221; /* #e9e5dd - Warm light border */
+  --input: 233 229 221; /* #e9e5dd - Input border */
+  --ring: 0 77 64; /* #004d40 - Focus ring (matches primary) */
+  
+  /* Status Colors */
+  --destructive: 183 28 28; /* #b71c1c - Deep warm red */
+  --destructive-foreground: 252 249 246; /* #fcf9f6 - Light text on error */
+  
+  /* Pop-over and Card Variants */
+  --popover: 252 249 246; /* #fcf9f6 - Warm popover background */
+  --popover-foreground: 62 39 35; /* #3e2723 - Dark brown popover text */
+  
+  /* Radius for consistent rounded corners */
+  --radius: 0.5rem; /* 8px */
+  
+  /* Sidebar Colors */
+  --sidebar-background: 0 77 64; /* #004d40 - Deep emerald sidebar */
+  --sidebar-foreground: 252 249 246; /* #fcf9f6 - Light text */
+  --sidebar-primary: 184 134 11; /* #b8860b - Gold primary */
+  --sidebar-primary-foreground: 62 39 35; /* #3e2723 - Dark text on gold */
+  --sidebar-accent: 0 105 92; /* #00695c - Medium emerald accent */
+  --sidebar-accent-foreground: 252 249 246; /* #fcf9f6 - Light text */
+  --sidebar-border: 0 105 92; /* #00695c - Emerald border */
+  --sidebar-ring: 184 134 11; /* #b8860b - Gold ring */
+  
+  /* Brand Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(0 105 92));
+  --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(154 114 10) 100%);
+  --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+  --gradient-warm: linear-gradient(135deg, hsl(var(--background)), hsl(var(--secondary)));
+  --gradient-luxury: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  
+  /* Enhanced Shadows with Brand Colors */
+  --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.2);
+  --shadow-glow: 0 0 40px hsl(var(--accent) / 0.3);
+  --shadow-card: 0 4px 20px -4px hsl(var(--foreground) / 0.08);
+  --shadow-warm: 0 8px 25px -8px hsl(var(--primary) / 0.15);
+  
+  /* Texture and Pattern Overlays */
+  --texture-paper: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23795548' fill-opacity='0.02'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='53' cy='53' r='1'/%3E%3Ccircle cx='37' cy='23' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  
+  /* Smooth Transitions */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-luxury: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Global styles */
+.dark {
+  --background: 33 25 20; /* #211914 - Dark warm brown */
+  --foreground: 252 249 246; /* #fcf9f6 - Warm off-white */
+  --card: 44 35 28; /* #2c231c - Dark warm card */
+  --card-foreground: 245 242 237; /* #f5f2ed - Light text on cards */
+  
+  --primary: 0 105 92; /* #00695c - Medium emerald for dark mode */
+  --primary-foreground: 252 249 246; /* #fcf9f6 - Light text */
+  --primary-50: 44 35 28; /* #2c231c - Dark emerald tint */
+  --primary-900: 0 77 64; /* #004d40 - Darker variant */
+  
+  --secondary: 62 48 39; /* #3e3027 - Dark warm taupe */
+  --secondary-foreground: 233 229 221; /* #e9e5dd - Light text */
+  --accent: 205 164 94; /* #cda45e - Lighter gold for dark mode */
+  --accent-foreground: 33 25 20; /* #211914 - Dark text on gold */
+  --accent-50: 62 48 39; /* #3e3027 - Dark gold tint */
+  --accent-600: 154 114 10; /* #9a720a - Darker gold variant */
+  
+  --muted: 44 35 28; /* #2c231c - Dark muted background */
+  --muted-foreground: 161 136 127; /* #a1887f - Warm muted text */
+  --border: 62 48 39; /* #3e3027 - Dark warm border */
+  --input: 62 48 39; /* #3e3027 - Input border */
+  --ring: 0 105 92; /* #00695c - Focus ring */
+  
+  --destructive: 211 47 47; /* #d32f2f - Warm red for dark mode */
+  --destructive-foreground: 252 249 246; /* #fcf9f6 - Light text */
+  
+  --popover: 44 35 28; /* #2c231c - Dark warm popover */
+  --popover-foreground: 245 242 237; /* #f5f2ed - Light text */
+  
+  --sidebar-background: 44 35 28; /* #2c231c */
+  --sidebar-foreground: 245 242 237; /* #f5f2ed */
+  --sidebar-primary: 205 164 94; /* #cda45e */
+  --sidebar-primary-foreground: 33 25 20; /* #211914 */
+  --sidebar-accent: 62 48 39; /* #3e3027 */
+  --sidebar-accent-foreground: 233 229 221; /* #e9e5dd */
+  --sidebar-border: 62 48 39; /* #3e3027 */
+  --sidebar-ring: 205 164 94; /* #cda45e */
+  
+  /* Dark mode gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(0 77 64));
+  --gradient-accent: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(154 114 10) 100%);
+  --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+  --gradient-warm: linear-gradient(135deg, hsl(var(--background)), hsl(var(--secondary)));
+  --gradient-luxury: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  
+  /* Dark mode shadows */
+  --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+  --shadow-glow: 0 0 40px hsl(var(--accent) / 0.2);
+  --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
+  --shadow-warm: 0 8px 25px -8px hsl(var(--primary) / 0.2);
+}
+
+/* Base styles applied to all elements */
 * {
-  @apply border-border;
+  border-color: hsl(var(--border));
 }
 
 body {
-  @apply bg-background text-foreground font-sans;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Inter', system-ui, sans-serif;
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
-/* Accessibility enhancements */
+/* Accessibility: Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-/* Focus styles */
-:focus-visible {
-  @apply outline-2 outline-ring outline-offset-2;
+/* Enhanced focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }
 
 /* Skip link for accessibility */
 .skip-link {
-  @apply absolute top-0 left-0 bg-primary text-primary-foreground px-4 py-2 rounded-br-md transform -translate-y-full focus:translate-y-0 transition-transform z-50;
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
 }
 
-/* Custom scrollbar */
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Custom scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-muted;
+  background: hsl(var(--muted));
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50;
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 6px;
 }
 
-/* Animations */
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.animate-fade-in {
-  animation: fade-in 0.6s ease-out forwards;
-}
-
-/* Typography utilities */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+/* Typography utilities for consistent line clamping */
+.line-clamp-1 {
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
