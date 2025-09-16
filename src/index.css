@@ -2,216 +2,146 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
+/* Luxury Bohemian-Chic Design System */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 215 25% 27%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
-
-    /* Polrydian Blue Brand Colors */
-    --primary: 213 84% 30%; /* Deep professional blue */
-    --primary-foreground: 0 0% 98%;
-    --primary-accent: 43 74% 49%; /* Sophisticated gold accent */
-
-    --secondary: 213 20% 96%;
-    --secondary-foreground: 215 25% 27%;
-
-    --muted: 213 20% 96%;
-    --muted-foreground: 215 12% 50%;
-
-    --accent: 195 100% 50%; /* Bright Polrydian Blue */
-    --accent-foreground: 0 0% 98%;
-
+    /* Luxury Bohemian-Chic Color Palette - Light mode */
+    --background: 40 15% 92%; /* Warm beige/taupe */
+    --foreground: 25 15% 15%; /* Rich dark brown */
+    --card: 42 20% 95%; /* Slightly warmer card background */
+    --card-foreground: 25 15% 15%;
+    --popover: 42 20% 95%;
+    --popover-foreground: 25 15% 15%;
+    --primary: 158 64% 25%; /* Deep emerald green */
+    --primary-foreground: 42 20% 95%;
+    --secondary: 45 29% 74%; /* Muted gold/beige */
+    --secondary-foreground: 25 15% 15%;
+    --muted: 40 20% 85%; /* Soft neutral */
+    --muted-foreground: 25 10% 45%;
+    --accent: 45 85% 47%; /* Muted gold accent */
+    --accent-foreground: 25 15% 15%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 42 20% 95%;
+    --border: 40 15% 80%; /* Soft border */
+    --input: 40 15% 88%; /* Input background */
+    --ring: 158 64% 25%; /* Emerald focus ring */
 
-    --border: 213 20% 90%;
-    --input: 213 20% 90%;
-    --ring: 213 92% 30%;
+    /* Luxury Polrydian brand colors */
+    --polrydian-emerald: 158 64% 25%; /* Deep emerald green */
+    --polrydian-gold: 45 85% 47%; /* Muted gold */
+    --polrydian-beige: 40 15% 92%; /* Warm beige base */
+    --polrydian-cream: 42 20% 95%; /* Warmer cream */
+    --polrydian-bronze: 35 25% 35%; /* Rich bronze for text */
 
-    /* Custom Polrydian design tokens */
-    --primary-50: 213 92% 95%;
-    --primary-900: 213 92% 20%;
-    --accent-50: 195 100% 95%;
-    --accent-600: 195 100% 35%;
-    
-    /* Polrydian Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(213 92% 30%) 0%, hsl(213 92% 20%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(195 100% 50%) 0%, hsl(195 100% 35%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(213 92% 30%) 0%, hsl(215 25% 27%) 50%, hsl(213 92% 20%) 100%);
-    
-    /* Shadows */
-    --shadow-elegant: 0 10px 25px -5px hsla(213, 92%, 30%, 0.1), 0 4px 6px -2px hsla(213, 92%, 30%, 0.05);
-    --shadow-glow: 0 0 40px hsla(195, 100%, 50%, 0.15);
-    
+    /* Luxury gradients with texture feeling */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--polrydian-emerald)), hsl(var(--polrydian-gold)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--polrydian-beige)) 0%, hsl(var(--polrydian-cream)) 50%, hsl(var(--polrydian-beige)) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+    --gradient-emerald: linear-gradient(135deg, hsl(158 64% 25%) 0%, hsl(158 54% 35%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(45 85% 47%) 0%, hsl(45 75% 57%) 100%);
+
+    /* Luxury shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(var(--polrydian-emerald) / 0.3);
+    --shadow-glow: 0 0 40px hsl(var(--polrydian-gold) / 0.4);
+
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar */
+    --sidebar-background: 40 15% 90%;
+    --sidebar-foreground: 25 15% 15%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode - sophisticated dark emerald palette */
+    --background: 158 35% 8%; /* Deep emerald-black */
+    --foreground: 42 20% 90%; /* Warm cream text */
+    --card: 158 25% 12%; /* Slightly lighter dark emerald */
+    --card-foreground: 42 20% 90%;
+    --popover: 158 25% 12%;
+    --popover-foreground: 42 20% 90%;
+    --primary: 158 64% 35%; /* Lighter emerald for contrast */
+    --primary-foreground: 158 35% 8%;
+    --secondary: 45 25% 25%; /* Dark gold */
+    --secondary-foreground: 42 20% 90%;
+    --muted: 158 20% 15%; /* Muted dark emerald */
+    --muted-foreground: 40 15% 65%;
+    --accent: 45 70% 55%; /* Brighter gold for dark mode */
+    --accent-foreground: 158 35% 8%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 42 20% 90%;
+    --border: 158 20% 20%; /* Subtle emerald border */
+    --input: 158 20% 15%;
+    --ring: 158 64% 35%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 158 25% 10%;
+    --sidebar-foreground: 42 20% 90%;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
+/* Global styles */
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground font-sans;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-  }
 }
 
-/* Accessibility Enhancements */
-[data-high-contrast="true"] {
-  --background: 0 0% 0%;
-  --foreground: 0 0% 100%;
-  --card: 0 0% 10%;
-  --card-foreground: 0 0% 100%;
-  --primary: 0 0% 100%;
-  --primary-foreground: 0 0% 0%;
-  --muted: 0 0% 20%;
-  --muted-foreground: 0 0% 90%;
-  --border: 0 0% 40%;
+/* Focus styles */
+:focus-visible {
+  @apply outline-2 outline-ring outline-offset-2;
 }
 
-[data-reduced-motion="true"] * {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
-  scroll-behavior: auto !important;
-}
-
-[data-font-size="large"] {
-  font-size: 1.125rem;
-}
-
-[data-font-size="extra-large"] {
-  font-size: 1.25rem;
-}
-
-/* Focus indicators */
-*:focus-visible {
-  outline: 2px solid hsl(var(--primary));
-  outline-offset: 2px;
-}
-
-/* Skip to content link */
+/* Skip link for accessibility */
 .skip-link {
-  position: absolute;
-  top: -40px;
-  left: 6px;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  padding: 8px;
-  text-decoration: none;
-  border-radius: 4px;
-  z-index: 1000;
+  @apply absolute top-0 left-0 bg-primary text-primary-foreground px-4 py-2 rounded-br-md transform -translate-y-full focus:translate-y-0 transition-transform z-50;
 }
 
-.skip-link:focus {
-  top: 6px;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* Article content styling to prevent word breaks */
-.prose {
-  word-break: normal;
-  white-space: normal;
-  overflow-wrap: break-word;
-  hyphens: none;
+::-webkit-scrollbar-track {
+  @apply bg-muted;
 }
 
-.prose p {
-  word-break: normal;
-  white-space: normal;
-  line-height: 1.7;
-  margin-bottom: 1.25em;
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50;
 }
 
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-  word-break: normal;
-  white-space: normal;
-  line-height: 1.2;
-  margin-top: 2em;
-  margin-bottom: 0.75em;
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.prose h1:first-child, .prose h2:first-child, .prose h3:first-child {
-  margin-top: 0;
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
 }
 
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+/* Typography utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.animate-scroll {
-  animation: scroll 30s linear infinite;
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
