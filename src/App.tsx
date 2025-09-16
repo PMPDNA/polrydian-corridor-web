@@ -22,7 +22,7 @@ import Articles from "./pages/Articles";
 import ArticleDetail from "./pages/ArticleDetail";
 import ContributeArticle from "./pages/ContributeArticle";
 import Schedule from "./pages/Schedule";
-import ProfileManager from "./pages/ProfileManager";
+import ProfileManager from "./pages/admin/ProfileManager";
 import ResetPassword from "./pages/ResetPassword";
 import { AuthCallback } from "./pages/AuthCallback";
 import AdminPage from "./pages/AdminPage";
