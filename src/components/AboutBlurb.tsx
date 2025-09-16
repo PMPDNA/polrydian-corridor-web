@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import patrickProfile from "@/assets/patrick-profile.jpg";
+import { useProfileImage } from "@/hooks/useProfileImage";
 
 export const AboutBlurb = () => {
+  const { profileImageUrl, isLoading } = useProfileImage();
+
   return (
     <section className="py-16 bg-background">
       <div className="max-w-6xl mx-auto px-6">
@@ -14,11 +16,15 @@ export const AboutBlurb = () => {
               {/* Portrait */}
               <div className="flex justify-center md:justify-start">
                 <div className="relative">
-                  <img 
-                    src={patrickProfile}
-                    alt="Patrick Misiewicz - Geopolitical Advisor & Founder"
-                    className="w-48 h-48 rounded-full object-cover shadow-lg border-4 border-accent/20"
-                  />
+                  {isLoading ? (
+                    <div className="w-48 h-48 rounded-full bg-muted animate-pulse" />
+                  ) : (
+                    <img 
+                      src={profileImageUrl}
+                      alt="Patrick Misiewicz - Geopolitical Advisor & Founder"
+                      className="w-48 h-48 rounded-full object-cover shadow-lg border-4 border-accent/20"
+                    />
+                  )}
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-accent/10"></div>
                 </div>
               </div>

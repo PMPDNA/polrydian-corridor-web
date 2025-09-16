@@ -98,7 +98,9 @@ const App = () => {
               } />
               <Route path="/admin/profile" element={
                 <ErrorBoundary>
-                  <ProfileManager />
+                  <SupabaseProtectedRoute requireAdmin={true}>
+                    <ProfileManager />
+                  </SupabaseProtectedRoute>
                 </ErrorBoundary>
               } />
               <Route path="/admin/social-dashboard" element={
