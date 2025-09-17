@@ -73,11 +73,10 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			fontFamily: {
-				sans: ["Inter", "system-ui", "sans-serif"], /* Clean sans-serif for body text */
-				serif: ["Playfair Display", "Georgia", "serif"], /* Modern serif for headings */
-				heading: ["Playfair Display", "Georgia", "serif"], /* Luxury headings */
-				body: ["Inter", "system-ui", "sans-serif"], /* Clean body text */
-				polrydian: ["Playfair Display", "serif"], /* Brand font */
+				'sans': ['Libre Franklin', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'sans-serif'],
+				'serif': ['Crimson Text', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
+				'polrydian': ['Libre Franklin', 'sans-serif'],
+				'heading': ['Crimson Text', 'serif']
 			},
 			spacing: {
 				'4': '8px',
@@ -96,23 +95,14 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-accent': 'var(--gradient-accent)',
-				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-subtle': 'var(--gradient-subtle)',
-				'gradient-warm': 'var(--gradient-warm)',
-				'gradient-luxury': 'var(--gradient-luxury)',
-				'texture-paper': 'var(--texture-paper)',
+				'gradient-hero': 'var(--gradient-hero)'
 			},
 			boxShadow: {
 				'elegant': 'var(--shadow-elegant)',
-				'glow': 'var(--shadow-glow)',
-				'card': 'var(--shadow-card)',
-				'warm': 'var(--shadow-warm)',
-				'luxury': '0 20px 40px -12px hsl(var(--primary) / 0.25)',
+				'glow': 'var(--shadow-glow)'
 			},
 			transitionTimingFunction: {
-				'smooth': 'var(--transition-smooth)',
-				'spring': 'var(--transition-spring)',
-				'luxury': 'var(--transition-luxury)',
+				'smooth': 'var(--transition-smooth)'
 			},
 			keyframes: {
 				'accordion-down': {
@@ -138,18 +128,13 @@ export default {
 				'slide-in-right': {
 					'0%': { opacity: '0', transform: 'translateX(30px)' },
 					'100%': { opacity: '1', transform: 'translateX(0)' }
-				},
-				'float': {
-					'0%, 100%': { transform: 'translateY(0px)' },
-					'50%': { transform: 'translateY(-10px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.6s ease-out',
-				'slide-in-right': 'slide-in-right 0.8s ease-out',
-				'float': 'float 6s ease-in-out infinite'
+				'slide-in-right': 'slide-in-right 0.8s ease-out'
 			}
 		}
 	},
