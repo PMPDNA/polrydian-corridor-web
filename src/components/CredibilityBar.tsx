@@ -5,23 +5,23 @@ export const CredibilityBar = () => {
   const credentials = [
     {
       icon: <Globe className="w-5 h-5" />,
-      text: "65+ Countries",
+      text: "60+ Countries",
       subtext: "Global Experience"
     },
     {
-      icon: <Users className="w-5 h-5" />,
-      text: "US/Poland",
-      subtext: "Dual-Citizen Advisor"
-    },
-    {
       icon: <Award className="w-5 h-5" />,
-      text: "10+ Years",
-      subtext: "Fortune 500 & Sovereign Clients"
+      text: "15+ Years",
+      subtext: "Strategic Consulting"
     },
     {
       icon: <Building className="w-5 h-5" />,
-      text: "Strategy",
-      subtext: "Innovation | Partnership"
+      text: "Multi-Corridor",
+      subtext: "Infrastructure Expert"
+    },
+    {
+      icon: <Users className="w-5 h-5" />,
+      text: "Strategic Pathways",
+      subtext: "Economic Development"
     }
   ];
 

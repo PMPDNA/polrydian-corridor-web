@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { LuxuryHero } from '@/components/LuxuryHero';
 import { CredibilityBar } from '@/components/CredibilityBar';
-import { AboutBlurb } from '@/components/AboutBlurb';
+import { CorridorEconomics } from '@/components/CorridorEconomics';
 import { FeaturedInsight } from '@/components/FeaturedInsight';
 import { InsightsGrid } from '@/components/InsightsGrid';
 import { LuxuryServices } from '@/components/LuxuryServices';
@@ -58,9 +58,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <EnhancedSEO 
-        title="Geopolitical Foresight for a Connected World"
-        description="High-end geopolitical consulting focused on transatlantic economic corridors. Strategic advisory for Fortune 500 and sovereign clients worldwide."
-        keywords={["geopolitical consulting","corridor economics","transatlantic strategy","strategic advisory","Patrick Misiewicz","Polrydian Group"]}
+        title="Board-Level Advisory for Complex Supply Chains, Deep Tech & Geopolitics"
+        description="Trusted advisor to sovereign funds, port & logistics operators, defence integrators and deep tech innovators. Strategic mapping and optimization of capital, technology, and expertise flows across global regions."
+        keywords={["corridor economics","board level advisory","supply chain strategy","deep tech consulting","geopolitical risk","infrastructure advisory","Patrick Misiewicz","Polrydian Group"]}
         image={heroImage}
         url={`${getOrigin()}/`}
         type="website"
@@ -77,8 +77,8 @@ const Index = () => {
           <CredibilityBar />
         </section>
         
-        <section id="about" aria-label="About Patrick Misiewicz">
-          <AboutBlurb />
+        <section id="corridor-economics" aria-label="Corridor Economics explanation">
+          <CorridorEconomics />
         </section>
         
         <section id="featured-insight" aria-label="Featured insight">
