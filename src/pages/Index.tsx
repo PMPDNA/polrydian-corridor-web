@@ -9,6 +9,7 @@ import { LuxuryServices } from '@/components/LuxuryServices';
 import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
 import { LuxuryFooter } from '@/components/LuxuryFooter';
+import { HomePartners } from '@/components/HomePartners';
 import { AIChatbot } from '@/components/AIChatbot';
 import { EnhancedSEO } from '@/components/EnhancedSEO';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
@@ -93,6 +94,9 @@ const Index = () => {
           <LuxuryServices />
         </section>
         
+        <section id="partners" aria-label="Our partners">
+          <HomePartners />
+        </section>
         
         <section id="newsletter" aria-label="Newsletter signup">
           <NewsletterSignup />
