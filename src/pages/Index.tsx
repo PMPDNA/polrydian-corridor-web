@@ -93,9 +93,6 @@ const Index = () => {
           <LuxuryServices />
         </section>
         
-        <section id="testimonials" aria-label="Client testimonials">
-          <TestimonialsSection />
-        </section>
         
         <section id="newsletter" aria-label="Newsletter signup">
           <NewsletterSignup />
