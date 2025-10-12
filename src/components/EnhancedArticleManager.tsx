@@ -30,26 +30,15 @@ import {
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ArticleForm } from '@/components/ArticleForm';
+import { type Article } from '@/hooks/useArticles';
 
-interface Article {
-  id: string;
-  title: string;
-  status: string;
-  content: string;
-  reading_time_minutes?: number;
-  published_at?: string;
-  created_at: string;
-  updated_at: string;
-  category?: string;
-  featured_image?: string;
-  user_id: string;
-}
-
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: Article['status']) => {
   switch (status) {
     case 'published':
       return 'bg-green-100 text-green-800 border-green-200';
-    case 'scheduled':
+    case 'archived':
       return 'bg-blue-100 text-blue-800 border-blue-200';
     case 'draft':
     default:
@@ -72,6 +61,9 @@ export const EnhancedArticleManager = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('updated_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showNewArticleDialog, setShowNewArticleDialog] = useState(false);
+  const [showEditArticleDialog, setShowEditArticleDialog] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -93,7 +85,7 @@ export const EnhancedArticleManager = () => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setArticles(data || []);
+      setArticles((data || []) as Article[]);
     } catch (error) {
       console.error('Error fetching articles:', error);
       toast({
@@ -135,6 +127,24 @@ export const EnhancedArticleManager = () => {
     }
   };
 
+  const handleEditArticle = (article: Article) => {
+    setSelectedArticle(article);
+    setShowEditArticleDialog(true);
+  };
+
+  const handleArticleSaved = () => {
+    setShowNewArticleDialog(false);
+    setShowEditArticleDialog(false);
+    setSelectedArticle(null);
+    fetchArticles();
+  };
+
+  const handleCancelEdit = () => {
+    setShowNewArticleDialog(false);
+    setShowEditArticleDialog(false);
+    setSelectedArticle(null);
+  };
+
   const filteredArticles = articles.filter(article =>
     article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (article.category && article.category.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -148,7 +158,7 @@ export const EnhancedArticleManager = () => {
     total: articles.length,
     published: articles.filter(a => a.status === 'published').length,
     draft: articles.filter(a => a.status === 'draft').length,
-    scheduled: articles.filter(a => a.status === 'scheduled').length,
+    archived: articles.filter(a => a.status === 'archived').length,
   };
 
   return (
@@ -204,7 +214,7 @@ export const EnhancedArticleManager = () => {
               <FileText className="h-5 w-5" />
               Article Management
             </span>
-            <Button>
+            <Button onClick={() => setShowNewArticleDialog(true)}>
               <Plus className="h-4 w-4 mr-2" />
               New Article
             </Button>
@@ -234,7 +244,7 @@ export const EnhancedArticleManager = () => {
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="published">Published</SelectItem>
                   <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="archived">Archived</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -315,7 +325,7 @@ export const EnhancedArticleManager = () => {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleEditArticle(article)}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit Article
                               </DropdownMenuItem>
@@ -351,6 +361,35 @@ export const EnhancedArticleManager = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* New Article Dialog */}
+      <Dialog open={showNewArticleDialog} onOpenChange={setShowNewArticleDialog}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Create New Article</DialogTitle>
+          </DialogHeader>
+          <ArticleForm
+            onSave={handleArticleSaved}
+            onCancel={handleCancelEdit}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Article Dialog */}
+      <Dialog open={showEditArticleDialog} onOpenChange={setShowEditArticleDialog}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>Edit Article</DialogTitle>
+          </DialogHeader>
+          {selectedArticle && (
+            <ArticleForm
+              article={selectedArticle}
+              onSave={handleArticleSaved}
+              onCancel={handleCancelEdit}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
