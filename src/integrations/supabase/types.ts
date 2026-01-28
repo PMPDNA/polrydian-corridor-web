@@ -97,7 +97,7 @@ export type Database = {
           article_id: string
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           referrer: string | null
           session_id: string | null
           user_agent: string | null
@@ -107,7 +107,7 @@ export type Database = {
           article_id: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           referrer?: string | null
           session_id?: string | null
           user_agent?: string | null
@@ -117,7 +117,7 @@ export type Database = {
           article_id?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           referrer?: string | null
           session_id?: string | null
           user_agent?: string | null
@@ -169,7 +169,7 @@ export type Database = {
           reading_time_minutes: number | null
           reference_sources: Json | null
           related_articles: string[] | null
-          search_tsv: unknown | null
+          search_tsv: unknown
           slug: string | null
           status: string
           title: string
@@ -202,7 +202,7 @@ export type Database = {
           reading_time_minutes?: number | null
           reference_sources?: Json | null
           related_articles?: string[] | null
-          search_tsv?: unknown | null
+          search_tsv?: unknown
           slug?: string | null
           status?: string
           title: string
@@ -235,7 +235,7 @@ export type Database = {
           reading_time_minutes?: number | null
           reference_sources?: Json | null
           related_articles?: string[] | null
-          search_tsv?: unknown | null
+          search_tsv?: unknown
           slug?: string | null
           status?: string
           title?: string
@@ -356,7 +356,7 @@ export type Database = {
           changed_fields: string[] | null
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           new_values: Json | null
           old_values: Json | null
           record_id: string
@@ -369,7 +369,7 @@ export type Database = {
           changed_fields?: string[] | null
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
           record_id: string
@@ -382,7 +382,7 @@ export type Database = {
           changed_fields?: string[] | null
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
           record_id?: string
@@ -962,7 +962,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           processed_at: string | null
           processed_by: string | null
           reason: string | null
@@ -976,7 +976,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           processed_at?: string | null
           processed_by?: string | null
           reason?: string | null
@@ -990,7 +990,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           processed_at?: string | null
           processed_by?: string | null
           reason?: string | null
@@ -1156,7 +1156,7 @@ export type Database = {
           execution_time_ms: number | null
           id: string
           integration_type: string
-          ip_address: unknown | null
+          ip_address: unknown
           operation: string
           request_data: Json | null
           response_data: Json | null
@@ -1173,7 +1173,7 @@ export type Database = {
           execution_time_ms?: number | null
           id?: string
           integration_type: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           operation: string
           request_data?: Json | null
           response_data?: Json | null
@@ -1190,7 +1190,7 @@ export type Database = {
           execution_time_ms?: number | null
           id?: string
           integration_type?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           operation?: string
           request_data?: Json | null
           response_data?: Json | null
@@ -1666,7 +1666,7 @@ export type Database = {
           created_at: string
           details: Json | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           user_agent: string | null
           user_id: string | null
         }
@@ -1675,7 +1675,7 @@ export type Database = {
           created_at?: string
           details?: Json | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_id?: string | null
         }
@@ -1684,7 +1684,7 @@ export type Database = {
           created_at?: string
           details?: Json | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           user_agent?: string | null
           user_id?: string | null
         }
@@ -1865,7 +1865,7 @@ export type Database = {
           consent_type: string
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           legal_basis: string | null
           purpose: string
           updated_at: string
@@ -1878,7 +1878,7 @@ export type Database = {
           consent_type: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           legal_basis?: string | null
           purpose: string
           updated_at?: string
@@ -1891,7 +1891,7 @@ export type Database = {
           consent_type?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           legal_basis?: string | null
           purpose?: string
           updated_at?: string
@@ -1929,7 +1929,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           language: string | null
           os: string | null
           page_url: string
@@ -1950,7 +1950,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           language?: string | null
           os?: string | null
           page_url: string
@@ -1971,7 +1971,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           language?: string | null
           os?: string | null
           page_url?: string
@@ -2099,18 +2099,9 @@ export type Database = {
       }
     }
     Functions: {
-      anonymize_old_visitor_data: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      assign_admin_role: {
-        Args: { target_user_id: string }
-        Returns: boolean
-      }
-      assign_initial_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      anonymize_old_visitor_data: { Args: never; Returns: number }
+      assign_admin_role: { Args: { target_user_id: string }; Returns: boolean }
+      assign_initial_admin: { Args: never; Returns: boolean }
       audit_log_event: {
         Args: {
           event_action: string
@@ -2119,18 +2110,8 @@ export type Database = {
         }
         Returns: string
       }
-      binary_quantize: {
-        Args: { "": string } | { "": unknown }
-        Returns: unknown
-      }
-      bytea_to_text: {
-        Args: { data: string }
-        Returns: string
-      }
-      check_admin_access: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      bytea_to_text: { Args: { data: string }; Returns: string }
+      check_admin_access: { Args: never; Returns: boolean }
       check_admin_rate_limit: {
         Args: {
           max_attempts?: number
@@ -2166,42 +2147,21 @@ export type Database = {
         }
         Returns: boolean
       }
-      clean_all_article_content: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      clean_article_content: {
-        Args: { content_text: string }
-        Returns: string
-      }
-      cleanup_old_consultation_bookings: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_old_performance_data: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_visitor_data_gdpr: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      current_user_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      clean_all_article_content: { Args: never; Returns: number }
+      clean_article_content: { Args: { content_text: string }; Returns: string }
+      cleanup_old_consultation_bookings: { Args: never; Returns: undefined }
+      cleanup_old_performance_data: { Args: never; Returns: undefined }
+      cleanup_visitor_data_gdpr: { Args: never; Returns: number }
+      current_user_id: { Args: never; Returns: string }
       current_user_role: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
       decrypt_token_secure: {
         Args: { encrypted_token: string }
         Returns: string
       }
-      encrypt_token_secure: {
-        Args: { token_text: string }
-        Returns: string
-      }
+      encrypt_token_secure: { Args: { token_text: string }; Returns: string }
       enhanced_rate_limit_check: {
         Args: {
           action_type: string
@@ -2211,32 +2171,20 @@ export type Database = {
         }
         Returns: Json
       }
-      extract_first_ip: {
-        Args: { ip_string: string }
-        Returns: unknown
-      }
-      generate_slug: {
-        Args: { title_text: string }
-        Returns: string
-      }
-      get_admin_emails: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      extract_first_ip: { Args: { ip_string: string }; Returns: unknown }
+      generate_slug: { Args: { title_text: string }; Returns: string }
+      get_admin_emails: { Args: never; Returns: Json }
       get_article_unique_views: {
         Args: { article_uuid: string }
         Returns: number
       }
       get_current_user_role: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
-      get_latest_fred_value: {
-        Args: { p_series_id: string }
-        Returns: number
-      }
+      get_latest_fred_value: { Args: { p_series_id: string }; Returns: number }
       get_latest_insights: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           chart_config: Json
           content: string
@@ -2252,42 +2200,6 @@ export type Database = {
           updated_at: string
         }[]
       }
-      gtrgm_compress: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      gtrgm_decompress: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      gtrgm_in: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      gtrgm_options: {
-        Args: { "": unknown }
-        Returns: undefined
-      }
-      gtrgm_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      halfvec_avg: {
-        Args: { "": number[] }
-        Returns: unknown
-      }
-      halfvec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      halfvec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      halfvec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2295,50 +2207,81 @@ export type Database = {
         }
         Returns: boolean
       }
-      hnsw_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_sparsevec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnswhandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      html_entity_decode: {
-        Args: { input: string }
-        Returns: string
-      }
+      html_entity_decode: { Args: { input: string }; Returns: string }
       http: {
         Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
+        SetofOptions: {
+          from: "http_request"
+          to: "http_response"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      http_delete: {
-        Args:
-          | { content: string; content_type: string; uri: string }
-          | { uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_get: {
-        Args: { data: Json; uri: string } | { uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
+      http_delete:
+        | {
+            Args: { uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: { content: string; content_type: string; uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+      http_get:
+        | {
+            Args: { uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: { data: Json; uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       http_head: {
         Args: { uri: string }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
+        SetofOptions: {
+          from: "*"
+          to: "http_response"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       http_header: {
         Args: { field: string; value: string }
         Returns: Database["public"]["CompositeTypes"]["http_header"]
+        SetofOptions: {
+          from: "*"
+          to: "http_header"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       http_list_curlopt: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           curlopt: string
           value: string
@@ -2347,49 +2290,50 @@ export type Database = {
       http_patch: {
         Args: { content: string; content_type: string; uri: string }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
+        SetofOptions: {
+          from: "*"
+          to: "http_response"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      http_post: {
-        Args:
-          | { content: string; content_type: string; uri: string }
-          | { data: Json; uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
+      http_post:
+        | {
+            Args: { content: string; content_type: string; uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
+        | {
+            Args: { data: Json; uri: string }
+            Returns: Database["public"]["CompositeTypes"]["http_response"]
+            SetofOptions: {
+              from: "*"
+              to: "http_response"
+              isOneToOne: true
+              isSetofReturn: false
+            }
+          }
       http_put: {
         Args: { content: string; content_type: string; uri: string }
         Returns: Database["public"]["CompositeTypes"]["http_response"]
+        SetofOptions: {
+          from: "*"
+          to: "http_response"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
-      http_reset_curlopt: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      http_reset_curlopt: { Args: never; Returns: boolean }
       http_set_curlopt: {
         Args: { curlopt: string; value: string }
         Returns: boolean
       }
-      is_admin: {
-        Args: { uid: string }
-        Returns: boolean
-      }
-      ivfflat_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflat_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflathandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      l2_norm: {
-        Args: { "": unknown } | { "": unknown }
-        Returns: number
-      }
-      l2_normalize: {
-        Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: unknown
-      }
+      is_admin: { Args: { uid: string }; Returns: boolean }
       log_integration_event: {
         Args: {
           p_error_code?: string
@@ -2427,10 +2371,7 @@ export type Database = {
         Args: { details?: Json; severity?: string; violation_type: string }
         Returns: undefined
       }
-      migrate_existing_tokens: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      migrate_existing_tokens: { Args: never; Returns: number }
       prevent_role_self_elevation: {
         Args: {
           new_role: Database["public"]["Enums"]["app_role"]
@@ -2439,77 +2380,32 @@ export type Database = {
         }
         Returns: boolean
       }
-      rotate_expired_tokens: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      set_limit: {
-        Args: { "": number }
-        Returns: number
-      }
-      show_limit: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      show_trgm: {
-        Args: { "": string }
-        Returns: string[]
-      }
-      sparsevec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      sparsevec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      sparsevec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
+      rotate_expired_tokens: { Args: never; Returns: number }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       sync_linkedin_article_to_articles: {
         Args: { linkedin_article_id: string }
         Returns: string
       }
-      system_health_check: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      text_to_bytea: {
-        Args: { data: string }
-        Returns: string
-      }
-      urlencode: {
-        Args: { data: Json } | { string: string } | { string: string }
-        Returns: string
-      }
+      system_health_check: { Args: never; Returns: Json }
+      text_to_bytea: { Args: { data: string }; Returns: string }
+      urlencode:
+        | { Args: { data: Json }; Returns: string }
+        | {
+            Args: { string: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.urlencode(string => bytea), public.urlencode(string => varchar). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
+        | {
+            Args: { string: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.urlencode(string => bytea), public.urlencode(string => varchar). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
       validate_password_reset_token: {
         Args: { reset_token: string }
         Returns: boolean
-      }
-      vector_avg: {
-        Args: { "": number[] }
-        Returns: string
-      }
-      vector_dims: {
-        Args: { "": string } | { "": unknown }
-        Returns: number
-      }
-      vector_norm: {
-        Args: { "": string }
-        Returns: number
-      }
-      vector_out: {
-        Args: { "": string }
-        Returns: unknown
-      }
-      vector_send: {
-        Args: { "": string }
-        Returns: string
-      }
-      vector_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
       }
     }
     Enums: {
@@ -2532,7 +2428,7 @@ export type Database = {
         value: string | null
       }
       http_request: {
-        method: unknown | null
+        method: unknown
         uri: string | null
         headers: Database["public"]["CompositeTypes"]["http_header"][] | null
         content_type: string | null
