@@ -61,3 +61,6 @@ verify_jwt = true
 
 [functions.track-cookie-consent]
 verify_jwt = false
+
+[functions.ingest-analytics]
+verify_jwt = false
