@@ -33,7 +33,7 @@ export const ArticleShareButtons = ({
         return;
       }
 
-      // Check if user has admin role
+      // UX-only check — actual authorization is enforced server-side by edge functions
       const { data: userRoles, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
