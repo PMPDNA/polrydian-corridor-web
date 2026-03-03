@@ -48,23 +48,39 @@ serve(async (req) => {
   if (healthResponse) return healthResponse
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
-    )
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+
+    // Require authentication - admin only
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return json({ success: false, error: 'Authentication required' }, { status: 401 })
+    }
+
+    const anonClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    })
+    const token = authHeader.replace('Bearer ', '')
+    const { data: claimsData, error: claimsError } = await anonClient.auth.getClaims(token)
+    if (claimsError || !claimsData?.claims) {
+      return json({ success: false, error: 'Invalid authentication' }, { status: 401 })
+    }
+
+    const userId = claimsData.claims.sub
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    })
+
+    // Verify admin role
+    const serviceClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '')
+    const { data: hasAdmin } = await serviceClient.rpc('has_role', { _user_id: userId, _role: 'admin' })
+    if (!hasAdmin) {
+      return json({ success: false, error: 'Admin access required' }, { status: 403 })
+    }
 
     const fredApiKey = Deno.env.get('FRED_API_KEY')
     if (!fredApiKey) {
       throw new Error('FRED_API_KEY not configured')
-    }
-
-    // Get the authorization header to check for user context
-    const authHeader = req.headers.get('Authorization')
-    let userId = null
-    
-    if (authHeader) {
-      const { data: { user } } = await supabaseClient.auth.getUser(authHeader.replace('Bearer ', ''))
-      userId = user?.id
     }
 
     const { operation, indicators, region = 'US' } = await req.json()
